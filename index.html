@@ -29,15 +29,20 @@
                     <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50" />
                     <!-- Colored arc (noise level) -->
                     <path class="gauge-fill" id="gaugeFill" d="M10,50 A40,40 0 0,1 90,50" />
-                    <!-- Threshold marker at 70% -->
-                    <line class="gauge-threshold" x1="50" y1="50" x2="50" y2="12" transform="rotate(36, 50, 50)" />
-                    <text class="gauge-threshold-label" x="72" y="30" font-size="6">70%</text>
+                    <!-- Threshold marker -->
+                    <line class="gauge-threshold" id="gaugeThreshold" x1="50" y1="50" x2="50" y2="12" transform="rotate(36, 50, 50)" />
+                    <text class="gauge-threshold-label" id="gaugeThresholdLabel" x="72" y="30" font-size="6">70%</text>
                     <!-- Needle -->
                     <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
                     <!-- Center dot -->
                     <circle class="gauge-center" cx="50" cy="50" r="4" />
                 </svg>
                 <span class="gauge-label">Noise Level</span>
+            </div>
+            <!-- Sensitivity slider -->
+            <div class="sensitivity-control">
+                <input type="range" id="sensitivitySlider" min="10" max="90" value="70" class="sensitivity-slider">
+                <span class="sensitivity-label">Sensitivity: <span id="sensitivityValue">70</span>%</span>
             </div>
             <!-- Mic button and counter -->
             <div class="mic-controls">

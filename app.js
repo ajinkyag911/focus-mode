@@ -51,7 +51,11 @@ const speechText = document.getElementById('speechText');
 const micBtn = document.getElementById('micBtn');
 const gaugeFill = document.getElementById('gaugeFill');
 const gaugeNeedle = document.getElementById('gaugeNeedle');
+const gaugeThreshold = document.getElementById('gaugeThreshold');
+const gaugeThresholdLabel = document.getElementById('gaugeThresholdLabel');
 const noiseCounter = document.getElementById('noiseCounter');
+const sensitivitySlider = document.getElementById('sensitivitySlider');
+const sensitivityValue = document.getElementById('sensitivityValue');
 
 // Clock
 const hourHand = document.getElementById('hourHand');
@@ -114,6 +118,17 @@ function loadPreferences() {
         robotToggleBtn.classList.add('active');
     }
     
+    // Noise sensitivity
+    const savedSensitivity = localStorage.getItem('focusMode_sensitivity');
+    if (savedSensitivity) {
+        const sensitivityPercent = parseInt(savedSensitivity);
+        sensitivitySlider.value = sensitivityPercent;
+        sensitivityValue.textContent = sensitivityPercent;
+        updateSensitivity(sensitivityPercent);
+    } else {
+        updateSensitivity(70);
+    }
+    
     // Timer duration - use default, don't load saved value
     minutesInput.value = CONFIG.defaultMinutes;
     timerState.totalSeconds = CONFIG.defaultMinutes * 60;
@@ -159,6 +174,12 @@ function setupEventListeners() {
     
     // Noise meter
     micBtn.addEventListener('click', toggleMicrophone);
+    sensitivitySlider.addEventListener('input', () => {
+        const percent = parseInt(sensitivitySlider.value);
+        sensitivityValue.textContent = percent;
+        updateSensitivity(percent);
+        savePreference('sensitivity', percent);
+    });
     
     // Audio
     audioPlayBtn.addEventListener('click', toggleMusic);
@@ -356,12 +377,12 @@ function analyzeAudio() {
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
     const normalizedVolume = average / 255;
     
-    // Scale the gauge display (0.2 sensitivity = 70% on meter)
-    const volumePercent = Math.min(100, normalizedVolume * 100 * CONFIG.gaugeScale);
+    // Scale the gauge display consistently (0-0.5 volume maps to 0-100%)
+    const volumePercent = Math.min(100, normalizedVolume * 200);
     updateGauge(volumePercent);
     
-    // Threshold at 70% on the gauge (0.2 * 3.5 * 100 = 70)
-    if (normalizedVolume > CONFIG.noiseSensitivity) {
+    // Trigger alert when volume exceeds sensitivity threshold
+    if (volumePercent > parseInt(sensitivitySlider.value)) {
         const now = Date.now();
         if (now - audioState.lastAlertTime > CONFIG.alertCooldown) {
             triggerNoiseAlert();
@@ -381,6 +402,21 @@ function updateGauge(percent) {
     // Update needle rotation (-90 to 90 degrees)
     const angle = -90 + (percent / 100) * 180;
     gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+}
+
+function updateSensitivity(percent) {
+    // Update threshold marker rotation (-90 to 90 degrees based on percent)
+    const angle = -90 + (percent / 100) * 180;
+    gaugeThreshold.setAttribute('transform', `rotate(${angle}, 50, 50)`);
+    
+    // Update threshold label position and text
+    const labelAngle = (angle - 90) * Math.PI / 180;
+    const labelRadius = 42;
+    const labelX = 50 + Math.cos(labelAngle) * labelRadius;
+    const labelY = 50 + Math.sin(labelAngle) * labelRadius;
+    gaugeThresholdLabel.setAttribute('x', labelX);
+    gaugeThresholdLabel.setAttribute('y', labelY);
+    gaugeThresholdLabel.textContent = `${percent}%`;
 }
 
 function triggerNoiseAlert() {
