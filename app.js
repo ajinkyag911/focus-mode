@@ -108,12 +108,9 @@ function loadPreferences() {
         updateThemeIcon(true);
     }
     
-    // Timer duration
-    const savedMinutes = localStorage.getItem('focusMode_minutes');
-    if (savedMinutes) {
-        minutesInput.value = savedMinutes;
-        timerState.totalSeconds = parseInt(savedMinutes) * 60;
-    }
+    // Timer duration - use default, don't load saved value
+    minutesInput.value = CONFIG.defaultMinutes;
+    timerState.totalSeconds = CONFIG.defaultMinutes * 60;
     
     // Music URL
     const savedUrl = localStorage.getItem('focusMode_musicUrl');
