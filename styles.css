@@ -103,9 +103,8 @@ body.dark-mode .background-overlay {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 10px;
-    gap: 5px;
+    justify-content: space-between;
+    padding: 12px;
 }
 
 
@@ -123,10 +122,11 @@ body.dark-mode .background-overlay {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 }
 
 .gauge {
-    width: 90%;
+    width: 100%;
     height: auto;
 }
 
@@ -148,6 +148,19 @@ body.dark-mode .background-overlay {
 }
 
 /* Gradient for gauge - added via JS */
+.gauge-threshold {
+    stroke: #F44336;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 4, 3;
+    opacity: 0.8;
+}
+
+.gauge-threshold-label {
+    fill: #F44336;
+    font-weight: 500;
+}
+
 .gauge-needle {
     stroke: var(--text-primary);
     stroke-width: 2;
@@ -166,10 +179,43 @@ body.dark-mode .background-overlay {
     margin-top: 2px;
 }
 
+.mic-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.noise-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 40px;
+    padding: 4px 8px;
+    border: 1.5px solid rgba(244, 67, 54, 0.3);
+    border-radius: 12px;
+    background: rgba(244, 67, 54, 0.05);
+}
+
+.noise-counter svg {
+    width: 18px;
+    height: 18px;
+    fill: #F44336;
+}
+
+.noise-counter span {
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    font-weight: 700;
+    color: #F44336;
+    line-height: 1;
+}
+
 .component-btn {
     width: 36px;
     height: 36px;
-    margin-top: 10px;
     border: none;
     border-radius: 50%;
     background: var(--bg-secondary);
@@ -274,11 +320,15 @@ body.dark-mode .background-overlay {
     transform: translate(-50%, -50%);
 }
 
+.clock-container .component-box {
+    justify-content: center;
+    gap: 15px;
+}
+
 .clock-label {
     font-size: clamp(0.8rem, 2vw, 1rem);
     color: var(--text-secondary);
     font-weight: 500;
-    margin-top: 8px;
 }
 
 

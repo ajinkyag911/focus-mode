@@ -27,6 +27,9 @@
                     <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50" />
                     <!-- Colored arc (noise level) -->
                     <path class="gauge-fill" id="gaugeFill" d="M10,50 A40,40 0 0,1 90,50" />
+                    <!-- Threshold marker at 70% -->
+                    <line class="gauge-threshold" x1="50" y1="50" x2="50" y2="12" transform="rotate(36, 50, 50)" />
+                    <text class="gauge-threshold-label" x="72" y="30" font-size="6">70%</text>
                     <!-- Needle -->
                     <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
                     <!-- Center dot -->
@@ -34,12 +37,20 @@
                 </svg>
                 <span class="gauge-label">Noise Level</span>
             </div>
-            <!-- Mic toggle button -->
-            <button class="component-btn" id="micBtn" title="Toggle Microphone">
-                <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
-                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-                </svg>
-            </button>
+            <!-- Mic button and counter -->
+            <div class="mic-controls">
+                <button class="component-btn" id="micBtn" title="Toggle Microphone">
+                    <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
+                        <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                    </svg>
+                </button>
+                <div class="noise-counter" title="Alert Count">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                    </svg>
+                    <span id="noiseCounter">0</span>
+                </div>
+            </div>
         </div>
     </div>
 

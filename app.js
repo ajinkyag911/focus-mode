@@ -13,18 +13,25 @@
 // ========== CONFIGURATION ========== //
 const CONFIG = {
     defaultMinutes: 25,
-    noiseSensitivity: 0.15,
+    noiseSensitivity: 0.2,
+    gaugeScale: 3.5, // Scale factor so 0.2 sensitivity shows as 70% on meter
     speechBubbleDuration: 3000,
     alertCooldown: 5000,
     defaultMusicUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk'
 };
 
-// Random messages for noise alerts
+// Random messages for noise alerts (with facial expression emojis)
 const QUIET_MESSAGES = [
-    "Shhh! 🤫", "Quiet please!", "Let's focus! 📚", "Study time! 🧠",
-    "Whisper voices!", "Indoor voices! 🙊", "Too noisy!", "Shhhhh...",
-    "Focus mode! 🎯", "Keep it down!", "Quiet zone! 🔇", "Let's be quiet!",
-    "Working here! 💼", "Silence please!", "🤫 Shh!", "Studying! 📖"
+    "Shhh!", "Quiet please!", "Let's focus!", "Study time!",
+    "Whisper voices!", "Indoor voices!", "Too noisy!", "Shhhhh...",
+    "Focus mode!", "Keep it down!", "Quiet zone!", "Let's be quiet!",
+    "Working here!", "Silence please!", "Shh!", "Studying!"
+];
+
+// Facial expression emojis (angry, stern, pleading, etc.)
+const FACE_EMOJIS = [
+    "😠", "😤", "😡", "🤨", "😑", "😒", "🙄", "😾", 
+    "😐", "😕", "😟", "🥺", "😣", "😖", "😬", "🤫"
 ];
 
 // ========== DOM ELEMENTS ========== //
@@ -45,6 +52,7 @@ const speechText = document.getElementById('speechText');
 const micBtn = document.getElementById('micBtn');
 const gaugeFill = document.getElementById('gaugeFill');
 const gaugeNeedle = document.getElementById('gaugeNeedle');
+const noiseCounter = document.getElementById('noiseCounter');
 
 // Clock
 const hourHand = document.getElementById('hourHand');
@@ -75,7 +83,8 @@ let audioState = {
     audioContext: null,
     analyser: null,
     mediaStream: null,
-    lastAlertTime: 0
+    lastAlertTime: 0,
+    alertCount: 0
 };
 
 let musicState = {
@@ -321,11 +330,13 @@ function analyzeAudio() {
     audioState.analyser.getByteFrequencyData(dataArray);
     
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-    const volumePercent = Math.min(100, (average / 128) * 100);
+    const normalizedVolume = average / 255;
     
+    // Scale the gauge display (0.2 sensitivity = 70% on meter)
+    const volumePercent = Math.min(100, normalizedVolume * 100 * CONFIG.gaugeScale);
     updateGauge(volumePercent);
     
-    const normalizedVolume = average / 255;
+    // Threshold at 70% on the gauge (0.2 * 3.5 * 100 = 70)
     if (normalizedVolume > CONFIG.noiseSensitivity) {
         const now = Date.now();
         if (now - audioState.lastAlertTime > CONFIG.alertCooldown) {
@@ -350,7 +361,12 @@ function updateGauge(percent) {
 
 function triggerNoiseAlert() {
     const message = QUIET_MESSAGES[Math.floor(Math.random() * QUIET_MESSAGES.length)];
-    showSpeechBubble(message);
+    const emoji = FACE_EMOJIS[Math.floor(Math.random() * FACE_EMOJIS.length)];
+    showSpeechBubble(`${message} ${emoji}`);
+    
+    // Increment and update counter
+    audioState.alertCount++;
+    noiseCounter.textContent = audioState.alertCount;
     
     robotImage.classList.add('alert');
     setTimeout(() => robotImage.classList.remove('alert'), 500);
