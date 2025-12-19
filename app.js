@@ -43,7 +43,7 @@ const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
 
 // Robot
-const robotImage = document.getElementById('robotImage');
+const robotWrapper = document.getElementById('robotWrapper');
 const speechBubble = document.getElementById('speechBubble');
 const speechText = document.getElementById('speechText');
 
@@ -69,6 +69,7 @@ const audioPlayer = document.getElementById('audioPlayer');
 // Theme
 const themeBtn = document.getElementById('themeBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const robotToggleBtn = document.getElementById('robotToggleBtn');
 
 // ========== STATE ========== //
 let timerState = {
@@ -105,6 +106,12 @@ function loadPreferences() {
     if (localStorage.getItem('focusMode_darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         updateThemeIcon(true);
+    }
+    
+    // Robot visibility
+    if (localStorage.getItem('focusMode_robotHidden') === 'true') {
+        document.body.classList.add('robot-hidden');
+        robotToggleBtn.classList.add('active');
     }
     
     // Timer duration - use default, don't load saved value
@@ -165,6 +172,9 @@ function setupEventListeners() {
     themeBtn.addEventListener('click', toggleTheme);
     fullscreenBtn.addEventListener('click', toggleFullscreen);
     
+    // Robot toggle
+    robotToggleBtn.addEventListener('click', toggleRobot);
+    
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboard);
 }
@@ -198,6 +208,9 @@ function startTimer() {
     startBtn.disabled = true;
     pauseBtn.disabled = false;
     
+    // Robot starts studying
+    robotWrapper.classList.add('studying');
+    
     timerState.intervalId = setInterval(() => {
         timerState.totalSeconds--;
         updateTimerDisplay();
@@ -211,6 +224,9 @@ function pauseTimer() {
     clearInterval(timerState.intervalId);
     startBtn.disabled = false;
     pauseBtn.disabled = true;
+    
+    // Robot stops studying
+    robotWrapper.classList.remove('studying');
 }
 
 function resetTimer() {
@@ -225,11 +241,18 @@ function resetTimer() {
     updateTimerDisplay();
     startBtn.disabled = false;
     pauseBtn.disabled = true;
+    
+    // Robot back to idle
+    robotWrapper.classList.remove('studying', 'celebrate');
 }
 
 function timerComplete() {
     pauseTimer();
     showSpeechBubble("Time's up! 🎉");
+    
+    // Robot celebrates
+    robotWrapper.classList.add('celebrate');
+    setTimeout(() => robotWrapper.classList.remove('celebrate'), 800);
     
     // Play beep
     try {
@@ -369,8 +392,15 @@ function triggerNoiseAlert() {
     audioState.alertCount++;
     noiseCounter.textContent = audioState.alertCount;
     
-    robotImage.classList.add('alert');
-    setTimeout(() => robotImage.classList.remove('alert'), 500);
+    // Robot alert animation
+    robotWrapper.classList.remove('studying');
+    robotWrapper.classList.add('alert');
+    setTimeout(() => {
+        robotWrapper.classList.remove('alert');
+        if (timerState.isRunning) {
+            robotWrapper.classList.add('studying');
+        }
+    }, 500);
 }
 
 function showSpeechBubble(message) {
@@ -413,6 +443,13 @@ function stopMusic() {
     audioPlayBtn.classList.remove('active');
     audioPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
     audioStatus.textContent = 'Select a channel';
+}
+
+// ========== ROBOT TOGGLE ========== //
+function toggleRobot() {
+    const isHidden = document.body.classList.toggle('robot-hidden');
+    robotToggleBtn.classList.toggle('active', isHidden);
+    savePreference('robotHidden', isHidden);
 }
 
 // ========== THEME ========== //
