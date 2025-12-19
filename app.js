@@ -19,18 +19,19 @@ const CONFIG = {
     alertCooldown: 5000
 };
 
-// Random messages for noise alerts (with facial expression emojis)
+// Random messages for noise alerts (kind reminders for children)
 const QUIET_MESSAGES = [
-    "Shhh!", "Quiet please!", "Let's focus!", "Study time!",
-    "Whisper voices!", "Indoor voices!", "Too noisy!", "Shhhhh...",
-    "Focus mode!", "Keep it down!", "Quiet zone!", "Let's be quiet!",
-    "Working here!", "Silence please!", "Shh!", "Studying!"
+    "Whisper time!", "Let's use quiet voices!", "Oops, a bit loud!",
+    "Soft voices please!", "Time to hush!", "Shhh, quiet time!",
+    "Let's be mice!", "Indoor voices!", "Quieter please!",
+    "Gentle voices!", "Library mode!", "Hush now!",
+    "Too loud, friends!", "Can we whisper?", "Quiet zone!", "Softer please!"
 ];
 
-// Facial expression emojis (angry, stern, pleading, etc.)
+// Friendly emojis (gentle reminders)
 const FACE_EMOJIS = [
-    "😠", "😤", "😡", "🤨", "😑", "😒", "🙄", "😾", 
-    "😐", "😕", "😟", "🥺", "😣", "😖", "😬", "🤫"
+    "🤫", "🙊", "😊", "🐭", "📚", "💤", "🌙", "🤐",
+    "😇", "🙂", "🐰", "🦉", "🧘", "☁️", "🌸", "🍃"
 ];
 
 // ========== DOM ELEMENTS ========== //
