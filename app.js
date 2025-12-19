@@ -12,7 +12,7 @@
 
 // ========== CONFIGURATION ========== //
 const CONFIG = {
-    defaultMinutes: 25,
+    defaultMinutes: 5,
     noiseSensitivity: 0.2,
     gaugeScale: 3.5, // Scale factor so 0.2 sensitivity shows as 70% on meter
     speechBubbleDuration: 3000,
