@@ -1,0 +1,777 @@
+/*
+ * ============================================
+ * FOCUS MODE - STYLESHEET
+ * ============================================
+ * 
+ * A playful, classroom-friendly design with:
+ * - Light and Dark mode support
+ * - macOS-style dock navigation
+ * - Responsive layout for all screen sizes
+ * - Smooth animations and transitions
+ * 
+ * Color Palette (matching robot):
+ * - Primary Purple: #5F20C6
+ * - Primary Magenta: #C53FC4
+ * - Primary Orange: #F5A55A
+ * - Dark Background: #1a1a2e
+ * - Light Background: from background image
+ */
+
+/* ========== CSS VARIABLES ========== */
+/* 
+ * CSS Variables (Custom Properties) allow us to define colors once
+ * and reuse them throughout the stylesheet. This makes it easy to
+ * maintain consistent colors and implement dark mode.
+ */
+:root {
+    /* Primary Colors - from robot gradient */
+    --color-purple: #5F20C6;
+    --color-magenta: #C53FC4;
+    --color-orange: #F5A55A;
+    
+    /* Light Mode Colors */
+    --bg-primary: rgba(255, 255, 255, 0.9);
+    --bg-secondary: rgba(255, 255, 255, 0.95);
+    --text-primary: #2d2d2d;
+    --text-secondary: #666666;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --dock-bg: rgba(255, 255, 255, 0.8);
+    --dock-border: rgba(255, 255, 255, 0.3);
+    --overlay-opacity: 0;
+    
+    /* Shared Colors */
+    --timer-gradient: linear-gradient(135deg, var(--color-orange), var(--color-magenta), var(--color-purple));
+    --button-gradient: linear-gradient(135deg, var(--color-purple), var(--color-magenta));
+    
+    /* Sizing */
+    --dock-height: 70px;
+    --dock-item-size: 50px;
+    --timer-font-size: clamp(4rem, 15vw, 10rem);
+    --robot-max-width: 300px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* Dark Mode Variables */
+/* 
+ * When the 'dark-mode' class is added to the body,
+ * these variables override the light mode values.
+ */
+body.dark-mode {
+    --bg-primary: rgba(26, 26, 46, 0.95);
+    --bg-secondary: rgba(30, 30, 50, 0.98);
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --dock-bg: rgba(30, 30, 50, 0.9);
+    --dock-border: rgba(255, 255, 255, 0.1);
+    --overlay-opacity: 0.5;
+}
+
+
+/* ========== RESET & BASE STYLES ========== */
+/* 
+ * Reset default browser styles and set up base styling.
+ * This ensures consistent appearance across different browsers.
+ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* Background image covers entire screen */
+    background-image: url('assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+    /* Flexbox for centering content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    
+    color: var(--text-primary);
+    transition: color var(--transition-normal);
+}
+
+
+/* ========== BACKGROUND OVERLAY ========== */
+/* 
+ * Semi-transparent overlay for dark mode.
+ * Makes the background image darker for better contrast.
+ */
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, var(--overlay-opacity));
+    pointer-events: none; /* Allows clicks to pass through */
+    transition: background var(--transition-slow);
+    z-index: 0;
+}
+
+
+/* ========== TIMER SECTION ========== */
+/* 
+ * Timer positioned at top center of screen.
+ * Large, easy-to-read display for classroom visibility.
+ */
+.timer-container {
+    position: relative;
+    z-index: 10;
+    margin-top: 3vh;
+    text-align: center;
+    padding: 20px 40px;
+    background: var(--bg-primary);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px var(--shadow-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all var(--transition-normal);
+}
+
+/* Timer display - large countdown numbers */
+.timer-display {
+    font-size: var(--timer-font-size);
+    font-weight: 700;
+    /* Gradient text effect matching robot colors */
+    background: var(--timer-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    /* Subtle text shadow for depth */
+    filter: drop-shadow(2px 2px 4px var(--shadow-color));
+}
+
+/* Timer input controls */
+.timer-input-container {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.timer-input-container label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.timer-input-container input {
+    width: 80px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    border: 2px solid var(--color-purple);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.timer-input-container input:focus {
+    outline: none;
+    border-color: var(--color-magenta);
+    box-shadow: 0 0 0 3px rgba(197, 63, 196, 0.2);
+}
+
+/* Hide input when timer is running */
+.timer-input-container.hidden {
+    display: none;
+}
+
+
+/* ========== ROBOT SECTION ========== */
+/* 
+ * Robot character centered on screen.
+ * Includes speech bubble for noise alerts.
+ */
+.robot-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Robot image styling */
+.robot-image {
+    max-width: var(--robot-max-width);
+    width: 100%;
+    height: auto;
+    /* Subtle floating animation */
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
+    transition: transform var(--transition-normal);
+}
+
+/* Robot "alert" state when noise is detected */
+.robot-image.alert {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Floating animation for idle robot */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Shake animation when alerting */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+
+/* ========== SPEECH BUBBLE ========== */
+/* 
+ * Comic-style speech bubble appears above robot
+ * when noise is detected. Contains random messages.
+ */
+.speech-bubble {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--bg-secondary);
+    padding: 15px 25px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 20;
+}
+
+/* Show speech bubble */
+.speech-bubble.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Speech bubble tail (triangle pointing down) */
+.speech-bubble-tail {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    /* CSS triangle using borders */
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 20px solid var(--bg-secondary);
+}
+
+/* Speech bubble pop-in animation */
+@keyframes popIn {
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.speech-bubble.show {
+    animation: popIn 0.3s ease-out forwards;
+}
+
+
+/* ========== DOCK NAVIGATION ========== */
+/* 
+ * macOS-style dock at bottom of screen.
+ * Contains all control buttons with hover effects.
+ */
+.dock {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    padding: 10px 20px;
+    background: var(--dock-bg);
+    border: 1px solid var(--dock-border);
+    border-radius: 20px;
+    
+    /* Glassmorphism effect */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 
+        0 10px 40px var(--shadow-color),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+    transition: all var(--transition-normal);
+}
+
+/* Dock divider (vertical line separator) */
+.dock-divider {
+    width: 1px;
+    height: 30px;
+    background: var(--text-secondary);
+    opacity: 0.3;
+    margin: 0 5px;
+}
+
+/* Individual dock button */
+.dock-item {
+    position: relative;
+    width: var(--dock-item-size);
+    height: var(--dock-item-size);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.dock-item svg {
+    width: 28px;
+    height: 28px;
+    transition: transform var(--transition-fast);
+}
+
+/* Hover effect - button grows like macOS dock */
+.dock-item:hover {
+    background: rgba(95, 32, 198, 0.1);
+    transform: translateY(-5px) scale(1.1);
+}
+
+.dock-item:hover svg {
+    transform: scale(1.1);
+}
+
+/* Active/pressed state */
+.dock-item:active {
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* Disabled state */
+.dock-item:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.dock-item:disabled:hover {
+    background: transparent;
+}
+
+/* Active state (e.g., mic is on) */
+.dock-item.active {
+    background: var(--button-gradient);
+    color: white;
+}
+
+/* Tooltip that appears above dock items */
+.dock-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.dock-item:hover .dock-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+
+/* ========== NOISE LEVEL INDICATOR ========== */
+/* 
+ * Visual bar showing current noise level.
+ * Appears in top-right when microphone is active.
+ */
+.noise-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 50;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all var(--transition-normal);
+    pointer-events: none;
+}
+
+.noise-indicator.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.noise-bar {
+    width: 150px;
+    height: 12px;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px var(--shadow-color);
+}
+
+.noise-level {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4CAF50, #FFC107, #F44336);
+    border-radius: 6px;
+    transition: width 0.1s ease-out;
+}
+
+.noise-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+
+/* ========== MODAL (POPUP) ========== */
+/* 
+ * Modal dialog for music settings.
+ * Appears centered with a dark overlay behind it.
+ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    
+    transform: scale(0.9) translateY(20px);
+    transition: transform var(--transition-normal);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-fast);
+}
+
+.modal-close:hover {
+    color: var(--color-magenta);
+}
+
+.modal-body p {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    border: 2px solid var(--dock-border);
+    border-radius: 10px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.modal-body input:focus {
+    outline: none;
+    border-color: var(--color-purple);
+    box-shadow: 0 0 0 3px rgba(95, 32, 198, 0.2);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Button styles */
+.btn {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background: var(--button-gradient);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(95, 32, 198, 0.4);
+}
+
+.btn-secondary {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--dock-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(95, 32, 198, 0.1);
+}
+
+.youtube-player-container {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(95, 32, 198, 0.1);
+    border-radius: 10px;
+    display: none;
+}
+
+.youtube-player-container.show {
+    display: block;
+}
+
+.player-note {
+    text-align: center;
+    color: var(--color-purple);
+    font-weight: 500;
+}
+
+
+/* ========== RESPONSIVE DESIGN ========== */
+/* 
+ * Adjustments for different screen sizes.
+ * Ensures app works well on tablets and phones.
+ */
+
+/* Tablets and smaller laptops */
+@media (max-width: 1024px) {
+    :root {
+        --robot-max-width: 250px;
+    }
+    
+    .timer-container {
+        padding: 15px 30px;
+    }
+}
+
+/* Mobile phones (landscape and portrait) */
+@media (max-width: 768px) {
+    :root {
+        --robot-max-width: 200px;
+        --dock-item-size: 44px;
+    }
+    
+    .timer-container {
+        margin-top: 2vh;
+        padding: 12px 24px;
+        border-radius: 15px;
+    }
+    
+    .timer-input-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .dock {
+        padding: 8px 15px;
+        gap: 5px;
+        border-radius: 16px;
+    }
+    
+    .dock-item svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .speech-bubble {
+        font-size: 1.2rem;
+        padding: 12px 20px;
+        top: -70px;
+    }
+    
+    .noise-indicator {
+        top: auto;
+        bottom: 100px;
+        right: 10px;
+    }
+    
+    .noise-bar {
+        width: 100px;
+    }
+}
+
+/* Very small screens (small phones) */
+@media (max-width: 480px) {
+    :root {
+        --robot-max-width: 150px;
+        --dock-item-size: 40px;
+    }
+    
+    .dock-divider {
+        display: none; /* Hide dividers on very small screens */
+    }
+    
+    .modal {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) {
+    .timer-container {
+        margin-top: 10px;
+    }
+    
+    :root {
+        --robot-max-width: 120px;
+    }
+    
+    .robot-container {
+        top: 55%;
+    }
+    
+    .speech-bubble {
+        top: -50px;
+        font-size: 1rem;
+    }
+}
+
+
+/* ========== ACCESSIBILITY ========== */
+/* 
+ * Improvements for users who prefer reduced motion
+ * or use keyboard navigation.
+ */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+.dock-item:focus-visible,
+.btn:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--color-magenta);
+    outline-offset: 2px;
+}
+
+/* Hide focus outline for mouse users */
+.dock-item:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible) {
+    outline: none;
+}
