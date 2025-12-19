@@ -2,81 +2,53 @@
  * ============================================
  * FOCUS MODE - STYLESHEET
  * ============================================
- * 
- * A playful, classroom-friendly design with:
- * - Light and Dark mode support
- * - macOS-style dock navigation
- * - Responsive layout for all screen sizes
- * - Smooth animations and transitions
- * 
- * Color Palette (matching robot):
- * - Primary Purple: #5F20C6
- * - Primary Magenta: #C53FC4
- * - Primary Orange: #F5A55A
- * - Dark Background: #1a1a2e
- * - Light Background: from background image
+ * Clean, component-based design with:
+ * - Timer (top center)
+ * - Noise meter (top left)
+ * - Analog clock (top right)
+ * - Audio player (bottom)
+ * - Robot (center)
  */
 
 /* ========== CSS VARIABLES ========== */
-/* 
- * CSS Variables (Custom Properties) allow us to define colors once
- * and reuse them throughout the stylesheet. This makes it easy to
- * maintain consistent colors and implement dark mode.
- */
 :root {
-    /* Primary Colors - from robot gradient */
+    /* Primary Colors */
     --color-purple: #5F20C6;
     --color-magenta: #C53FC4;
     --color-orange: #F5A55A;
     
-    /* Light Mode Colors */
-    --bg-primary: rgba(255, 255, 255, 0.9);
-    --bg-secondary: rgba(255, 255, 255, 0.95);
+    /* Light Mode */
+    --bg-primary: rgba(255, 255, 255, 0.95);
+    --bg-secondary: rgba(255, 255, 255, 0.9);
     --text-primary: #2d2d2d;
     --text-secondary: #666666;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --dock-bg: rgba(255, 255, 255, 0.8);
-    --dock-border: rgba(255, 255, 255, 0.3);
-    --overlay-opacity: 0;
+    --overlay-opacity: 0.5;
     
-    /* Shared Colors */
+    /* Gradients */
     --timer-gradient: linear-gradient(135deg, var(--color-orange), var(--color-magenta), var(--color-purple));
     --button-gradient: linear-gradient(135deg, var(--color-purple), var(--color-magenta));
     
-    /* Sizing */
-    --dock-height: 70px;
-    --dock-item-size: 50px;
-    --timer-font-size: clamp(4rem, 15vw, 10rem);
-    --robot-max-width: 300px;
+    /* Component sizing */
+    --component-size: min(180px, 23vw);
     
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
 }
 
-/* Dark Mode Variables */
-/* 
- * When the 'dark-mode' class is added to the body,
- * these variables override the light mode values.
- */
+/* Dark Mode */
 body.dark-mode {
     --bg-primary: rgba(26, 26, 46, 0.95);
-    --bg-secondary: rgba(30, 30, 50, 0.98);
+    --bg-secondary: rgba(30, 30, 50, 0.9);
     --text-primary: #ffffff;
     --text-secondary: #b0b0b0;
     --shadow-color: rgba(0, 0, 0, 0.3);
-    --dock-bg: rgba(30, 30, 50, 0.9);
-    --dock-border: rgba(255, 255, 255, 0.1);
-    --overlay-opacity: 0.5;
+    --overlay-opacity: 0.6;
 }
 
 
-/* ========== RESET & BASE STYLES ========== */
-/* 
- * Reset default browser styles and set up base styling.
- * This ensures consistent appearance across different browsers.
- */
+/* ========== RESET & BASE ========== */
 * {
     margin: 0;
     padding: 0;
@@ -86,128 +58,336 @@ body.dark-mode {
 html, body {
     height: 100%;
     width: 100%;
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden;
+}
+
+html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    /* Background image covers entire screen */
+    font-family: 'Roboto', sans-serif;
     background-image: url('assets/background.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     background-attachment: fixed;
-    
-    /* Flexbox for centering content */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    
     color: var(--text-primary);
-    transition: color var(--transition-normal);
 }
 
-
-/* ========== BACKGROUND OVERLAY ========== */
-/* 
- * Semi-transparent overlay for dark mode.
- * Makes the background image darker for better contrast.
- */
 .background-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, var(--overlay-opacity));
-    pointer-events: none; /* Allows clicks to pass through */
-    transition: background var(--transition-slow);
+    background: rgba(255, 255, 255, var(--overlay-opacity));
+    pointer-events: none;
     z-index: 0;
 }
 
-
-/* ========== TIMER SECTION ========== */
-/* 
- * Timer positioned at top center of screen.
- * Large, easy-to-read display for classroom visibility.
- */
-.timer-container {
-    position: relative;
-    z-index: 10;
-    margin-top: 3vh;
-    text-align: center;
-    padding: 20px 40px;
-    background: var(--bg-primary);
-    border-radius: 20px;
-    box-shadow: 0 10px 40px var(--shadow-color);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all var(--transition-normal);
+body.dark-mode .background-overlay {
+    background: rgba(0, 0, 0, var(--overlay-opacity));
 }
 
-/* Timer display - large countdown numbers */
+
+/* ========== SHARED COMPONENT BOX ========== */
+.component-box {
+    width: var(--component-size);
+    height: var(--component-size);
+    background: var(--bg-primary);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 5px;
+}
+
+
+/* ========== NOISE METER (Center Left) ========== */
+.noise-meter-container {
+    position: fixed;
+    top: 50%;
+    left: 15%;
+    transform: translateY(-50%);
+    z-index: 50;
+}
+
+.gauge-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gauge {
+    width: 90%;
+    height: auto;
+}
+
+.gauge-bg {
+    fill: none;
+    stroke: rgba(150, 150, 150, 0.3);
+    stroke-width: 8;
+    stroke-linecap: round;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke: url(#gaugeGradient);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 126;
+    stroke-dashoffset: 126;
+    transition: stroke-dashoffset 0.1s ease;
+}
+
+/* Gradient for gauge - added via JS */
+.gauge-needle {
+    stroke: var(--text-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transform-origin: 50px 50px;
+    transition: transform 0.1s ease;
+}
+
+.gauge-center {
+    fill: var(--text-primary);
+}
+
+.gauge-label {
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.component-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.component-btn:hover {
+    background: var(--button-gradient);
+    color: white;
+    transform: scale(1.1);
+}
+
+.component-btn.active {
+    background: var(--button-gradient);
+    color: white;
+}
+
+.component-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* ========== ANALOG CLOCK (Center Right) ========== */
+.clock-container {
+    position: fixed;
+    top: 50%;
+    right: 15%;
+    transform: translateY(-50%);
+    z-index: 50;
+}
+
+.analog-clock {
+    width: 70%;
+    aspect-ratio: 1;
+    position: relative;
+}
+
+.clock-face {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 3px solid var(--color-purple);
+    position: relative;
+}
+
+.hour-marker {
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background: var(--text-primary);
+}
+
+.marker-12 { top: 4px; left: 50%; transform: translateX(-50%); }
+.marker-3 { right: 4px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+.marker-6 { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.marker-9 { left: 4px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+.clock-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 2px;
+}
+
+.hour-hand {
+    width: 3px;
+    height: 25%;
+    background: var(--text-primary);
+    transform: translateX(-50%) rotate(0deg);
+}
+
+.minute-hand {
+    width: 2px;
+    height: 35%;
+    background: var(--color-purple);
+    transform: translateX(-50%) rotate(0deg);
+}
+
+.second-hand {
+    width: 1px;
+    height: 40%;
+    background: var(--color-magenta);
+    transform: translateX(-50%) rotate(0deg);
+}
+
+.clock-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--color-purple);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.clock-label {
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+
+/* ========== TIMER (Top Center) ========== */
+.timer-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: var(--bg-primary);
+    border-radius: 20px;
+    padding: min(15px, 2vh) min(30px, 4vw);
+    box-shadow: 0 10px 40px var(--shadow-color);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .timer-display {
-    font-size: var(--timer-font-size);
+    font-size: clamp(2rem, 10vw, 6rem);
     font-weight: 700;
-    /* Gradient text effect matching robot colors */
     background: var(--timer-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: 0.05em;
     line-height: 1.1;
-    /* Subtle text shadow for depth */
-    filter: drop-shadow(2px 2px 4px var(--shadow-color));
 }
 
-/* Timer input controls */
+.timer-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .timer-input-container {
-    margin-top: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.timer-input-container label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    gap: 5px;
+    margin-top: 5px;
 }
 
 .timer-input-container input {
-    width: 80px;
-    padding: 8px 12px;
-    font-size: 1rem;
+    width: clamp(40px, 8vw, 60px);
+    padding: 5px 8px;
+    font-size: clamp(0.8rem, 2vw, 1rem);
     font-family: 'Roboto', sans-serif;
     border: 2px solid var(--color-purple);
     border-radius: 8px;
     background: var(--bg-secondary);
     color: var(--text-primary);
     text-align: center;
-    transition: all var(--transition-fast);
 }
 
 .timer-input-container input:focus {
     outline: none;
     border-color: var(--color-magenta);
-    box-shadow: 0 0 0 3px rgba(197, 63, 196, 0.2);
 }
 
-/* Hide input when timer is running */
+.timer-input-label {
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    color: var(--text-secondary);
+}
+
 .timer-input-container.hidden {
     display: none;
 }
 
+.timer-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-/* ========== ROBOT SECTION ========== */
-/* 
- * Robot character centered on screen.
- * Includes speech bubble for noise alerts.
- */
+.timer-btn {
+    width: clamp(36px, 5vw, 44px);
+    height: clamp(36px, 5vw, 44px);
+    border: none;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.timer-btn:hover:not(:disabled) {
+    background: var(--button-gradient);
+    color: white;
+    transform: scale(1.1);
+}
+
+.timer-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.timer-btn svg {
+    width: clamp(18px, 2.5vw, 24px);
+    height: clamp(18px, 2.5vw, 24px);
+}
+
+
+/* ========== ROBOT (Center) ========== */
 .robot-container {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -215,546 +395,227 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: 50vh;
+    padding-top: 20px;
 }
 
-/* Robot image styling */
 .robot-image {
-    max-width: var(--robot-max-width);
+    max-width: min(300px, 40vw);
+    max-height: 45vh;
     width: 100%;
     height: auto;
-    /* Subtle floating animation */
+    object-fit: contain;
     animation: float 3s ease-in-out infinite;
     filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
-    transition: transform var(--transition-normal);
 }
 
-/* Robot "alert" state when noise is detected */
 .robot-image.alert {
     animation: shake 0.5s ease-in-out;
 }
 
-/* Floating animation for idle robot */
 @keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
-/* Shake animation when alerting */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-
-/* ========== SPEECH BUBBLE ========== */
-/* 
- * Comic-style speech bubble appears above robot
- * when noise is detected. Contains random messages.
- */
 .speech-bubble {
     position: absolute;
-    top: -80px;
+    bottom: 100%;
+    margin-bottom: 10px;
     left: 50%;
     transform: translateX(-50%) scale(0);
     background: var(--bg-secondary);
-    padding: 15px 25px;
-    border-radius: 20px;
+    padding: min(12px, 1.5vh) min(20px, 3vw);
+    border-radius: 16px;
     box-shadow: 0 5px 20px var(--shadow-color);
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 2vw, 1.4rem);
     font-weight: 500;
     color: var(--text-primary);
     white-space: nowrap;
     opacity: 0;
-    transition: all var(--transition-normal);
     z-index: 20;
-}
-
-/* Show speech bubble */
-.speech-bubble.show {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-}
-
-/* Speech bubble tail (triangle pointing down) */
-.speech-bubble-tail {
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    /* CSS triangle using borders */
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 20px solid var(--bg-secondary);
-}
-
-/* Speech bubble pop-in animation */
-@keyframes popIn {
-    0% {
-        transform: translateX(-50%) scale(0);
-        opacity: 0;
-    }
-    50% {
-        transform: translateX(-50%) scale(1.1);
-    }
-    100% {
-        transform: translateX(-50%) scale(1);
-        opacity: 1;
-    }
 }
 
 .speech-bubble.show {
     animation: popIn 0.3s ease-out forwards;
 }
 
+.speech-bubble-tail {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 16px solid var(--bg-secondary);
+}
 
-/* ========== DOCK NAVIGATION ========== */
-/* 
- * macOS-style dock at bottom of screen.
- * Contains all control buttons with hover effects.
- */
-.dock {
+@keyframes popIn {
+    0% { transform: translateX(-50%) scale(0); opacity: 0; }
+    50% { transform: translateX(-50%) scale(1.1); }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+
+/* ========== AUDIO PLAYER (Bottom) ========== */
+.audio-player-container {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
-    
+}
+
+.audio-player {
     display: flex;
     align-items: center;
-    gap: 8px;
-    
+    gap: min(12px, 2vw);
     padding: 10px 20px;
-    background: var(--dock-bg);
-    border: 1px solid var(--dock-border);
-    border-radius: 20px;
-    
-    /* Glassmorphism effect */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 
-        0 10px 40px var(--shadow-color),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    
-    transition: all var(--transition-normal);
+    background: var(--bg-primary);
+    border-radius: 50px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    backdrop-filter: blur(10px);
 }
 
-/* Dock divider (vertical line separator) */
-.dock-divider {
-    width: 1px;
-    height: 30px;
-    background: var(--text-secondary);
-    opacity: 0.3;
-    margin: 0 5px;
-}
-
-/* Individual dock button */
-.dock-item {
-    position: relative;
-    width: var(--dock-item-size);
-    height: var(--dock-item-size);
-    
+.audio-btn {
+    width: clamp(32px, 4vw, 40px);
+    height: clamp(32px, 4vw, 40px);
+    border: none;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    background: transparent;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    
-    color: var(--text-primary);
     transition: all var(--transition-fast);
+    flex-shrink: 0;
 }
 
-.dock-item svg {
-    width: 28px;
-    height: 28px;
-    transition: transform var(--transition-fast);
-}
-
-/* Hover effect - button grows like macOS dock */
-.dock-item:hover {
-    background: rgba(95, 32, 198, 0.1);
-    transform: translateY(-5px) scale(1.1);
-}
-
-.dock-item:hover svg {
+.audio-btn:hover {
+    background: var(--button-gradient);
+    color: white;
     transform: scale(1.1);
 }
 
-/* Active/pressed state */
-.dock-item:active {
-    transform: translateY(-2px) scale(1.05);
-}
-
-/* Disabled state */
-.dock-item:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.dock-item:disabled:hover {
-    background: transparent;
-}
-
-/* Active state (e.g., mic is on) */
-.dock-item.active {
+.audio-btn.active {
     background: var(--button-gradient);
     color: white;
 }
 
-/* Tooltip that appears above dock items */
-.dock-tooltip {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) scale(0);
-    
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    
-    opacity: 0;
-    pointer-events: none;
-    transition: all var(--transition-fast);
-    box-shadow: 0 4px 12px var(--shadow-color);
+.audio-btn svg {
+    width: clamp(16px, 2vw, 20px);
+    height: clamp(16px, 2vw, 20px);
 }
 
-.dock-item:hover .dock-tooltip {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-}
-
-
-/* ========== NOISE LEVEL INDICATOR ========== */
-/* 
- * Visual bar showing current noise level.
- * Appears in top-right when microphone is active.
- */
-.noise-indicator {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 50;
-    
+.audio-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
-    
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all var(--transition-normal);
-    pointer-events: none;
+    min-width: 80px;
 }
 
-.noise-indicator.show {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.noise-bar {
-    width: 150px;
-    height: 12px;
-    background: var(--bg-primary);
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: inset 0 2px 4px var(--shadow-color);
-}
-
-.noise-level {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #4CAF50, #FFC107, #F44336);
-    border-radius: 6px;
-    transition: width 0.1s ease-out;
-}
-
-.noise-label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    background: var(--bg-primary);
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-
-/* ========== MODAL (POPUP) ========== */
-/* 
- * Modal dialog for music settings.
- * Appears centered with a dark overlay behind it.
- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all var(--transition-normal);
-}
-
-.modal-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal {
-    background: var(--bg-secondary);
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    
-    transform: scale(0.9) translateY(20px);
-    transition: transform var(--transition-normal);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.modal-overlay.show .modal {
-    transform: scale(1) translateY(0);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modal-header h2 {
-    font-size: 1.5rem;
+.audio-label {
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    font-weight: 500;
     color: var(--text-primary);
 }
 
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 2rem;
+.audio-status {
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem);
     color: var(--text-secondary);
-    cursor: pointer;
-    line-height: 1;
-    transition: color var(--transition-fast);
 }
 
-.modal-close:hover {
-    color: var(--color-magenta);
-}
-
-.modal-body p {
-    color: var(--text-secondary);
-    margin-bottom: 15px;
-}
-
-.modal-body input {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
+.audio-url-input {
+    width: clamp(120px, 20vw, 200px);
+    padding: 8px 12px;
+    font-size: clamp(0.7rem, 1.2vw, 0.85rem);
     font-family: 'Roboto', sans-serif;
-    border: 2px solid var(--dock-border);
-    border-radius: 10px;
-    background: var(--bg-primary);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background: var(--bg-secondary);
     color: var(--text-primary);
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast);
 }
 
-.modal-body input:focus {
+.audio-url-input:focus {
     outline: none;
     border-color: var(--color-purple);
-    box-shadow: 0 0 0 3px rgba(95, 32, 198, 0.2);
 }
 
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-/* Button styles */
-.btn {
-    flex: 1;
-    padding: 12px 20px;
-    font-size: 1rem;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-primary {
-    background: var(--button-gradient);
-    color: white;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(95, 32, 198, 0.4);
-}
-
-.btn-secondary {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    border: 2px solid var(--dock-border);
-}
-
-.btn-secondary:hover {
-    background: rgba(95, 32, 198, 0.1);
-}
-
-.youtube-player-container {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(95, 32, 198, 0.1);
-    border-radius: 10px;
-    display: none;
-}
-
-.youtube-player-container.show {
-    display: block;
-}
-
-.player-note {
-    text-align: center;
-    color: var(--color-purple);
-    font-weight: 500;
+.audio-url-input::placeholder {
+    color: var(--text-secondary);
 }
 
 
-/* ========== RESPONSIVE DESIGN ========== */
-/* 
- * Adjustments for different screen sizes.
- * Ensures app works well on tablets and phones.
- */
-
-/* Tablets and smaller laptops */
-@media (max-width: 1024px) {
-    :root {
-        --robot-max-width: 250px;
-    }
-    
-    .timer-container {
-        padding: 15px 30px;
-    }
-}
-
-/* Mobile phones (landscape and portrait) */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     :root {
-        --robot-max-width: 200px;
-        --dock-item-size: 44px;
+        --component-size: min(150px, 36vw);
     }
     
-    .timer-container {
-        margin-top: 2vh;
-        padding: 12px 24px;
-        border-radius: 15px;
+    .noise-meter-container {
+        left: 5%;
     }
     
-    .timer-input-container {
-        flex-direction: column;
+    .clock-container {
+        right: 5%;
+    }
+    
+    .audio-player {
+        padding: 8px 15px;
         gap: 8px;
     }
     
-    .dock {
-        padding: 8px 15px;
-        gap: 5px;
-        border-radius: 16px;
+    .audio-info {
+        display: none;
     }
     
-    .dock-item svg {
-        width: 24px;
-        height: 24px;
-    }
-    
-    .speech-bubble {
-        font-size: 1.2rem;
-        padding: 12px 20px;
-        top: -70px;
-    }
-    
-    .noise-indicator {
-        top: auto;
-        bottom: 100px;
-        right: 10px;
-    }
-    
-    .noise-bar {
-        width: 100px;
+    .audio-url-input {
+        width: clamp(100px, 30vw, 150px);
     }
 }
 
-/* Very small screens (small phones) */
 @media (max-width: 480px) {
     :root {
-        --robot-max-width: 150px;
-        --dock-item-size: 40px;
+        --component-size: min(120px, 42vw);
     }
     
-    .dock-divider {
-        display: none; /* Hide dividers on very small screens */
+    .noise-meter-container {
+        left: 2%;
     }
     
-    .modal {
-        padding: 20px;
-        margin: 10px;
+    .clock-container {
+        right: 2%;
     }
     
-    .modal-buttons {
-        flex-direction: column;
+    .timer-container {
+        top: 10px;
+        padding: 10px 20px;
+    }
+    
+    .audio-url-input {
+        display: none;
     }
 }
 
-/* Landscape orientation on mobile */
 @media (max-height: 500px) {
-    .timer-container {
-        margin-top: 10px;
-    }
-    
-    :root {
-        --robot-max-width: 120px;
-    }
-    
     .robot-container {
-        top: 55%;
+        max-height: 35vh;
     }
     
-    .speech-bubble {
-        top: -50px;
-        font-size: 1rem;
+    .robot-image {
+        max-height: 30vh;
     }
 }
 
 
 /* ========== ACCESSIBILITY ========== */
-/* 
- * Improvements for users who prefer reduced motion
- * or use keyboard navigation.
- */
-
-/* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
     * {
         animation: none !important;
@@ -762,16 +623,8 @@ body {
     }
 }
 
-/* Focus styles for keyboard navigation */
-.dock-item:focus-visible,
-.btn:focus-visible,
+button:focus-visible,
 input:focus-visible {
     outline: 3px solid var(--color-magenta);
     outline-offset: 2px;
-}
-
-/* Hide focus outline for mouse users */
-.dock-item:focus:not(:focus-visible),
-.btn:focus:not(:focus-visible) {
-    outline: none;
 }

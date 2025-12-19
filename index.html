@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Focus Mode - Classroom Study Timer</title>
     
     <!-- Google Font: Roboto -->
@@ -14,167 +14,151 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- 
-        FOCUS MODE WEB APP
-        A classroom tool for teachers to help students focus during study time.
-        
-        Features:
-        - Countdown timer
-        - Noise detection with robot alerts
-        - Background study music from YouTube
-        - Dark/Light mode toggle
-    -->
-
     <!-- Background overlay for dark mode -->
     <div class="background-overlay"></div>
 
-    <!-- ========== TIMER SECTION ========== -->
-    <!-- Timer is positioned at the top center of the screen -->
-    <div class="timer-container">
-        <!-- Timer display shows MM:SS format -->
-        <div class="timer-display" id="timerDisplay">25:00</div>
-        
-        <!-- Timer input controls (hidden when timer is running) -->
-        <div class="timer-input-container" id="timerInputContainer">
-            <label for="minutesInput">Set Timer (minutes):</label>
-            <input 
-                type="number" 
-                id="minutesInput" 
-                min="1" 
-                max="180" 
-                value="25" 
-                placeholder="25"
-            >
+    <!-- ========== NOISE METER (Top Left) ========== -->
+    <div class="noise-meter-container" id="noiseMeterContainer">
+        <div class="component-box">
+            <!-- Semi-circular gauge -->
+            <div class="gauge-container">
+                <svg class="gauge" viewBox="0 0 100 60">
+                    <!-- Background arc -->
+                    <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50" />
+                    <!-- Colored arc (noise level) -->
+                    <path class="gauge-fill" id="gaugeFill" d="M10,50 A40,40 0 0,1 90,50" />
+                    <!-- Needle -->
+                    <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
+                    <!-- Center dot -->
+                    <circle class="gauge-center" cx="50" cy="50" r="4" />
+                </svg>
+                <span class="gauge-label">Noise Level</span>
+            </div>
+            <!-- Mic toggle button -->
+            <button class="component-btn" id="micBtn" title="Toggle Microphone">
+                <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <!-- ========== ROBOT SECTION ========== -->
-    <!-- Robot is centered on the screen and reacts to noise levels -->
+    <!-- ========== ANALOG CLOCK (Top Right) ========== -->
+    <div class="clock-container">
+        <div class="component-box">
+            <div class="analog-clock">
+                <div class="clock-face">
+                    <!-- Hour markers -->
+                    <div class="hour-marker marker-12"></div>
+                    <div class="hour-marker marker-3"></div>
+                    <div class="hour-marker marker-6"></div>
+                    <div class="hour-marker marker-9"></div>
+                    <!-- Clock hands -->
+                    <div class="clock-hand hour-hand" id="hourHand"></div>
+                    <div class="clock-hand minute-hand" id="minuteHand"></div>
+                    <div class="clock-hand second-hand" id="secondHand"></div>
+                    <div class="clock-center"></div>
+                </div>
+            </div>
+            <span class="clock-label" id="digitalTime">12:00</span>
+        </div>
+    </div>
+
+    <!-- ========== TIMER (Top Center) ========== -->
+    <div class="timer-container">
+        <!-- Timer display and input -->
+        <div class="timer-main">
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <!-- Timer input (visible when stopped) -->
+            <div class="timer-input-container" id="timerInputContainer">
+                <span class="timer-input-label">Set Timer</span>
+                <input 
+                    type="number" 
+                    id="minutesInput" 
+                    min="1" 
+                    max="180" 
+                    value="25" 
+                    placeholder="25"
+                >
+                <span class="timer-input-label">min</span>
+            </div>
+        </div>
+
+        <!-- Timer controls (vertical, right side) -->
+        <div class="timer-controls">
+            <button class="timer-btn" id="startBtn" title="Start">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            <button class="timer-btn" id="pauseBtn" title="Pause" disabled>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            </button>
+            <button class="timer-btn" id="resetBtn" title="Reset">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== ROBOT (Center) ========== -->
     <div class="robot-container">
-        <!-- Speech bubble appears when noise is detected -->
         <div class="speech-bubble" id="speechBubble">
             <span id="speechText">Shhh!</span>
-            <!-- Speech bubble tail (the pointy part) -->
             <div class="speech-bubble-tail"></div>
         </div>
-        
-        <!-- Robot image -->
         <img 
             src="assets/robot_working.png" 
-            alt="Focus Robot - Your study buddy!" 
+            alt="Focus Robot" 
             class="robot-image" 
             id="robotImage"
         >
     </div>
 
-    <!-- ========== DOCK MENU (macOS style) ========== -->
-    <!-- Bottom navigation dock with icon buttons -->
-    <nav class="dock" id="dock">
-        <!-- Start Timer Button -->
-        <button class="dock-item" id="startBtn" title="Start Timer">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <span class="dock-tooltip">Start</span>
-        </button>
-
-        <!-- Pause Timer Button -->
-        <button class="dock-item" id="pauseBtn" title="Pause Timer" disabled>
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-            <span class="dock-tooltip">Pause</span>
-        </button>
-
-        <!-- Reset Timer Button -->
-        <button class="dock-item" id="resetBtn" title="Reset Timer">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-            </svg>
-            <span class="dock-tooltip">Reset</span>
-        </button>
-
-        <!-- Divider -->
-        <div class="dock-divider"></div>
-
-        <!-- Microphone Toggle (Noise Detection) -->
-        <button class="dock-item" id="micBtn" title="Toggle Noise Detection">
-            <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
-                <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-            </svg>
-            <span class="dock-tooltip">Mic On</span>
-        </button>
-
-        <!-- Music Controls Button -->
-        <button class="dock-item" id="musicBtn" title="Music Settings">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-            </svg>
-            <span class="dock-tooltip">Music</span>
-        </button>
-
-        <!-- Divider -->
-        <div class="dock-divider"></div>
-
-        <!-- Dark Mode Toggle -->
-        <button class="dock-item" id="themeBtn" title="Toggle Dark Mode">
-            <svg viewBox="0 0 24 24" fill="currentColor" id="themeIcon">
-                <!-- Moon icon (shown in light mode) -->
-                <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
-            </svg>
-            <span class="dock-tooltip">Dark Mode</span>
-        </button>
-
-        <!-- Fullscreen Toggle -->
-        <button class="dock-item" id="fullscreenBtn" title="Toggle Fullscreen">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-            </svg>
-            <span class="dock-tooltip">Fullscreen</span>
-        </button>
-    </nav>
-
-    <!-- ========== MUSIC MODAL ========== -->
-    <!-- Modal popup for configuring background music -->
-    <div class="modal-overlay" id="musicModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>🎵 Background Music</h2>
-                <button class="modal-close" id="closeMusicModal">&times;</button>
+    <!-- ========== AUDIO PLAYER (Bottom) ========== -->
+    <div class="audio-player-container">
+        <div class="audio-player">
+            <!-- Play/Stop button -->
+            <button class="audio-btn" id="audioPlayBtn" title="Play Music">
+                <svg viewBox="0 0 24 24" fill="currentColor" id="audioPlayIcon">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            
+            <!-- Music info -->
+            <div class="audio-info">
+                <span class="audio-label" id="audioLabel">Study Music</span>
+                <span class="audio-status" id="audioStatus">Click to play</span>
             </div>
-            <div class="modal-body">
-                <p>Enter a YouTube video/livestream URL for study music:</p>
-                
-                <input 
-                    type="text" 
-                    id="youtubeUrl" 
-                    placeholder="https://www.youtube.com/watch?v=..."
-                    value="https://www.youtube.com/watch?v=jfKfPfyJRdk"
-                >
-                
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" id="stopMusicBtn">Stop Music</button>
-                    <button class="btn btn-primary" id="playMusicBtn">Play Music</button>
-                </div>
-
-                <!-- Hidden YouTube iframe for audio playback -->
-                <div class="youtube-player-container" id="youtubePlayerContainer">
-                    <p class="player-note">🔊 Music is playing in the background</p>
-                </div>
-            </div>
+            
+            <!-- URL input -->
+            <input 
+                type="text" 
+                class="audio-url-input" 
+                id="youtubeUrl" 
+                placeholder="YouTube URL..."
+                value="https://www.youtube.com/watch?v=jfKfPfyJRdk"
+            >
+            
+            <!-- Settings buttons -->
+            <button class="audio-btn" id="themeBtn" title="Toggle Dark Mode">
+                <svg viewBox="0 0 24 24" fill="currentColor" id="themeIcon">
+                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                </svg>
+            </button>
+            <button class="audio-btn" id="fullscreenBtn" title="Fullscreen">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <!-- ========== NOISE LEVEL INDICATOR ========== -->
-    <!-- Shows current noise level when microphone is active -->
-    <div class="noise-indicator" id="noiseIndicator">
-        <div class="noise-bar">
-            <div class="noise-level" id="noiseLevel"></div>
-        </div>
-        <span class="noise-label">Noise Level</span>
-    </div>
-
-    <!-- Hidden YouTube iframe (placed outside viewport for audio-only playback) -->
+    <!-- Hidden YouTube iframe -->
     <iframe 
         id="youtubePlayer" 
         width="1" 
@@ -184,7 +168,6 @@
         allowfullscreen
     ></iframe>
 
-    <!-- Main JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
