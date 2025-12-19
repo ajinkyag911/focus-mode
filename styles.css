@@ -591,8 +591,8 @@ body.dark-mode .background-overlay {
     color: var(--text-secondary);
 }
 
-.audio-url-input {
-    width: clamp(120px, 20vw, 200px);
+.audio-select {
+    width: clamp(140px, 22vw, 200px);
     padding: 8px 12px;
     font-size: clamp(0.7rem, 1.2vw, 0.85rem);
     font-family: 'Roboto', sans-serif;
@@ -600,16 +600,22 @@ body.dark-mode .background-overlay {
     border-radius: 20px;
     background: var(--bg-secondary);
     color: var(--text-primary);
+    cursor: pointer;
     transition: border-color var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
 }
 
-.audio-url-input:focus {
+.audio-select:focus {
     outline: none;
     border-color: var(--color-purple);
 }
 
-.audio-url-input::placeholder {
-    color: var(--text-secondary);
+body.dark-mode .audio-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23b0b0b0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
 }
 
 

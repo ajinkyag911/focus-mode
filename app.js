@@ -16,8 +16,7 @@ const CONFIG = {
     noiseSensitivity: 0.2,
     gaugeScale: 3.5, // Scale factor so 0.2 sensitivity shows as 70% on meter
     speechBubbleDuration: 3000,
-    alertCooldown: 5000,
-    defaultMusicUrl: 'https://www.youtube.com/watch?v=jfKfPfyJRdk'
+    alertCooldown: 5000
 };
 
 // Random messages for noise alerts (with facial expression emojis)
@@ -64,8 +63,8 @@ const digitalTime = document.getElementById('digitalTime');
 const audioPlayBtn = document.getElementById('audioPlayBtn');
 const audioPlayIcon = document.getElementById('audioPlayIcon');
 const audioStatus = document.getElementById('audioStatus');
-const youtubeUrl = document.getElementById('youtubeUrl');
-const youtubePlayer = document.getElementById('youtubePlayer');
+const radioChannel = document.getElementById('radioChannel');
+const audioPlayer = document.getElementById('audioPlayer');
 
 // Theme
 const themeBtn = document.getElementById('themeBtn');
@@ -112,10 +111,10 @@ function loadPreferences() {
     minutesInput.value = CONFIG.defaultMinutes;
     timerState.totalSeconds = CONFIG.defaultMinutes * 60;
     
-    // Music URL
-    const savedUrl = localStorage.getItem('focusMode_musicUrl');
-    if (savedUrl) {
-        youtubeUrl.value = savedUrl;
+    // Saved radio channel
+    const savedChannel = localStorage.getItem('focusMode_radioChannel');
+    if (savedChannel) {
+        radioChannel.value = savedChannel;
     }
 }
 
@@ -156,6 +155,11 @@ function setupEventListeners() {
     
     // Audio
     audioPlayBtn.addEventListener('click', toggleMusic);
+    radioChannel.addEventListener('change', () => {
+        if (musicState.isPlaying) {
+            playMusic(); // Auto-switch to new channel
+        }
+    });
     
     // Theme & Fullscreen
     themeBtn.addEventListener('click', toggleTheme);
@@ -375,7 +379,7 @@ function showSpeechBubble(message) {
     setTimeout(() => speechBubble.classList.remove('show'), CONFIG.speechBubbleDuration);
 }
 
-// ========== MUSIC PLAYER ========== //
+// ========== MUSIC PLAYER (Soma.fm) ========== //
 function toggleMusic() {
     if (musicState.isPlaying) {
         stopMusic();
@@ -385,50 +389,30 @@ function toggleMusic() {
 }
 
 function playMusic() {
-    const url = youtubeUrl.value.trim();
-    if (!url) {
-        alert('Please enter a YouTube URL');
-        return;
-    }
+    const streamUrl = radioChannel.value;
     
-    const videoId = extractYoutubeId(url);
-    if (!videoId) {
-        alert('Invalid YouTube URL');
-        return;
-    }
-    
-    youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
-    musicState.isPlaying = true;
-    
-    audioPlayBtn.classList.add('active');
-    audioPlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    audioStatus.textContent = 'Playing...';
-    
-    savePreference('musicUrl', url);
+    audioPlayer.src = streamUrl;
+    audioPlayer.volume = 0.1; // Set volume to 10%
+    audioPlayer.play().then(() => {
+        musicState.isPlaying = true;
+        audioPlayBtn.classList.add('active');
+        audioPlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        audioStatus.textContent = 'Playing...';
+        savePreference('radioChannel', streamUrl);
+    }).catch(err => {
+        console.error('Audio playback failed:', err);
+        audioStatus.textContent = 'Error - try again';
+    });
 }
 
 function stopMusic() {
-    youtubePlayer.src = '';
+    audioPlayer.pause();
+    audioPlayer.src = '';
     musicState.isPlaying = false;
     
     audioPlayBtn.classList.remove('active');
     audioPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    audioStatus.textContent = 'Click to play';
-}
-
-function extractYoutubeId(url) {
-    const patterns = [
-        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
-        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/
-    ];
-    
-    for (const pattern of patterns) {
-        const match = url.match(pattern);
-        if (match) return match[1];
-    }
-    return null;
+    audioStatus.textContent = 'Select a channel';
 }
 
 // ========== THEME ========== //

@@ -143,18 +143,19 @@
             
             <!-- Music info -->
             <div class="audio-info">
-                <span class="audio-label" id="audioLabel">Study Music</span>
-                <span class="audio-status" id="audioStatus">Click to play</span>
+                <span class="audio-label" id="audioLabel">Soma.fm Radio</span>
+                <span class="audio-status" id="audioStatus">Select a channel</span>
             </div>
             
-            <!-- URL input -->
-            <input 
-                type="text" 
-                class="audio-url-input" 
-                id="youtubeUrl" 
-                placeholder="YouTube URL..."
-                value="https://www.youtube.com/watch?v=jfKfPfyJRdk"
-            >
+            <!-- Channel selector -->
+            <select class="audio-select" id="radioChannel">
+                <option value="https://ice1.somafm.com/groovesalad-128-mp3">Groove Salad (Chill)</option>
+                <option value="https://ice1.somafm.com/dronezone-128-mp3">Drone Zone (Ambient)</option>
+                <option value="https://ice1.somafm.com/deepspaceone-128-mp3">Deep Space One</option>
+                <option value="https://ice1.somafm.com/spacestation-128-mp3">Space Station Soma</option>
+                <option value="https://ice1.somafm.com/lush-128-mp3">Lush (Dreamy)</option>
+                <option value="https://ice1.somafm.com/seventies-128-mp3">Left Coast 70s</option>
+            </select>
             
             <!-- Settings buttons -->
             <button class="audio-btn" id="themeBtn" title="Toggle Dark Mode">
@@ -170,15 +171,8 @@
         </div>
     </div>
 
-    <!-- Hidden YouTube iframe -->
-    <iframe 
-        id="youtubePlayer" 
-        width="1" 
-        height="1" 
-        style="position: absolute; left: -9999px;"
-        allow="autoplay; encrypted-media" 
-        allowfullscreen
-    ></iframe>
+    <!-- HTML5 Audio element for Soma.fm -->
+    <audio id="audioPlayer"></audio>
 
     <script src="app.js"></script>
 </body>
