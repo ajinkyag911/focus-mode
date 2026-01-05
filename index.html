@@ -15,91 +15,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body data-theme="space">
     <!-- Background overlay for dark mode -->
     <div class="background-overlay"></div>
 
-    <!-- ========== NOISE METER (Top Left) ========== -->
-    <div class="noise-meter-container" id="noiseMeterContainer">
-        <div class="component-box">
-            <!-- Semi-circular gauge -->
-            <div class="gauge-container">
-                <svg class="gauge" viewBox="0 0 100 60">
-                    <!-- Background arc -->
-                    <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50" />
-                    <!-- Colored arc (noise level) -->
-                    <path class="gauge-fill" id="gaugeFill" d="M10,50 A40,40 0 0,1 90,50" />
-                    <!-- Threshold marker -->
-                    <line class="gauge-threshold" id="gaugeThreshold" x1="50" y1="50" x2="50" y2="12" transform="rotate(36, 50, 50)" />
-                    <text class="gauge-threshold-label" id="gaugeThresholdLabel" x="72" y="30" font-size="6">70%</text>
-                    <!-- Needle -->
-                    <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
-                    <!-- Center dot -->
-                    <circle class="gauge-center" cx="50" cy="50" r="4" />
-                </svg>
-                <span class="gauge-label">Noise Level</span>
-            </div>
-            <!-- Sensitivity slider -->
-            <div class="sensitivity-control">
-                <input type="range" id="sensitivitySlider" min="10" max="90" value="70" class="sensitivity-slider">
-                <span class="sensitivity-label">Sensitivity: <span id="sensitivityValue">70</span>%</span>
-            </div>
-            <!-- Mic button and counter -->
-            <div class="mic-controls">
-                <button class="component-btn" id="micBtn" title="Toggle Microphone">
-                    <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
-                        <path
-                            d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
-                    </svg>
-                </button>
-                <div class="noise-counter" title="Alert Count">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
-                    </svg>
-                    <span id="noiseCounter">0</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== ANALOG CLOCK (Top Right) ========== -->
-    <div class="clock-container">
-        <div class="component-box">
-            <div class="analog-clock">
-                <div class="clock-face">
-                    <!-- Hour markers -->
-                    <div class="hour-marker marker-12"></div>
-                    <div class="hour-marker marker-3"></div>
-                    <div class="hour-marker marker-6"></div>
-                    <div class="hour-marker marker-9"></div>
-                    <!-- Clock hands -->
-                    <div class="clock-hand hour-hand" id="hourHand"></div>
-                    <div class="clock-hand minute-hand" id="minuteHand"></div>
-                    <div class="clock-hand second-hand" id="secondHand"></div>
-                    <div class="clock-center"></div>
-                </div>
-            </div>
-            <span class="clock-label" id="digitalTime">12:00</span>
-        </div>
-    </div>
-
     <!-- ========== TIMER (Top Center) ========== -->
     <div class="timer-container">
-        <!-- Timer display and input -->
         <div class="timer-main">
             <h1 class="app-title">Focus Mode</h1>
             <div class="timer-display" id="timerDisplay">05:00</div>
-
-            <!-- Timer input (visible when stopped) -->
             <div class="timer-input-container" id="timerInputContainer">
                 <span class="timer-input-label">Set Timer </span>
                 <input type="number" id="minutesInput" min="1" max="180" value="5" placeholder="5">
                 <span class="timer-input-label">min</span>
             </div>
         </div>
-
-        <!-- Timer controls (vertical, right side) -->
         <div class="timer-controls">
             <button class="timer-btn" id="startBtn" title="Start">
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -111,12 +41,64 @@
                     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                 </svg>
             </button>
-            <button class="timer-btn" id="resetBtn" title="Reset">
+            <button class="timer-btn" id="resetBtn" title="Edit">
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                 </svg>
             </button>
+        </div>
+    </div>
+
+    <!-- ========== NOISE METER (Left) ========== -->
+    <div class="noise-meter-container" id="noiseMeterContainer">
+        <div class="component-box">
+            <div class="gauge-container">
+                <svg class="gauge" viewBox="0 0 100 60">
+                    <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50" />
+                    <path class="gauge-fill" id="gaugeFill" d="M10,50 A40,40 0 0,1 90,50" />
+                    <line class="gauge-threshold" id="gaugeThreshold" x1="50" y1="50" x2="50" y2="12" transform="rotate(36, 50, 50)" />
+                    <text class="gauge-threshold-label" id="gaugeThresholdLabel" x="72" y="30" font-size="6">70%</text>
+                    <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
+                    <circle class="gauge-center" cx="50" cy="50" r="4" />
+                </svg>
+                <span class="gauge-label">Noise Level</span>
+            </div>
+            <div class="sensitivity-control">
+                <input type="range" id="sensitivitySlider" min="10" max="90" value="70" class="sensitivity-slider">
+                <span class="sensitivity-label">Sensitivity: <span id="sensitivityValue">70</span>%</span>
+            </div>
+            <div class="mic-controls">
+                <button class="component-btn" id="micBtn" title="Toggle Microphone">
+                    <svg viewBox="0 0 24 24" fill="currentColor" id="micIcon">
+                        <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+                    </svg>
+                </button>
+                <div class="noise-counter" title="Alert Count">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+                    </svg>
+                    <span id="noiseCounter">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ANALOG CLOCK (Right) ========== -->
+    <div class="clock-container" id="clockContainer">
+        <div class="component-box">
+            <div class="analog-clock">
+                <div class="clock-face">
+                    <div class="hour-marker marker-12"></div>
+                    <div class="hour-marker marker-3"></div>
+                    <div class="hour-marker marker-6"></div>
+                    <div class="hour-marker marker-9"></div>
+                    <div class="clock-hand hour-hand" id="hourHand"></div>
+                    <div class="clock-hand minute-hand" id="minuteHand"></div>
+                    <div class="clock-hand second-hand" id="secondHand"></div>
+                    <div class="clock-center"></div>
+                </div>
+            </div>
+            <span class="clock-label" id="digitalTime">12:00</span>
         </div>
     </div>
 
@@ -268,24 +250,17 @@
         </div>
     </div>
 
-    <!-- ========== AUDIO PLAYER (Bottom) ========== -->
-    <div class="audio-player-container">
-        <div class="audio-player">
-            <!-- Play/Stop button -->
-            <button class="audio-btn" id="audioPlayBtn" title="Play Music">
+    <!-- ========== BOTTOM BAR (2 rows in single container) ========== -->
+    <div class="bottom-bar-container">
+        <!-- Row 1: Music and Theme -->
+        <div class="bottom-bar-row">
+            <button class="bar-btn" id="audioPlayBtn" title="Play Music">
                 <svg viewBox="0 0 24 24" fill="currentColor" id="audioPlayIcon">
                     <path d="M8 5v14l11-7z" />
                 </svg>
             </button>
 
-            <!-- Music info -->
-            <div class="audio-info">
-                <span class="audio-label" id="audioLabel">Soma.fm Radio</span>
-                <span class="audio-status" id="audioStatus">Select a channel</span>
-            </div>
-
-            <!-- Channel selector -->
-            <select class="audio-select" id="radioChannel">
+            <select class="bar-select" id="radioChannel">
                 <option value="https://ice1.somafm.com/groovesalad-128-mp3">Groove Salad (Chill)</option>
                 <option value="https://ice1.somafm.com/dronezone-128-mp3">Drone Zone (Ambient)</option>
                 <option value="https://ice1.somafm.com/deepspaceone-128-mp3">Deep Space One</option>
@@ -294,22 +269,39 @@
                 <option value="https://ice1.somafm.com/seventies-128-mp3">Left Coast 70s</option>
             </select>
 
-            <!-- Settings buttons -->
-            <button class="audio-btn" id="robotToggleBtn" title="Toggle Robot">
+            <div class="bar-divider"></div>
+
+            <select class="bar-select theme-select" id="themeSelect">
+                <option value="space">🚀 Space</option>
+                <option value="dinosaur">🦖 Dinosaur</option>
+                <option value="dance">💃 Dance</option>
+                <option value="egypt">🏛️ Ancient Egypt</option>
+                <option value="wizard">🧙 Wizard</option>
+                <option value="minecraft">⛏️ Minecraft</option>
+            </select>
+        </div>
+
+        <!-- Row 2: Toggles -->
+        <div class="bottom-bar-row">
+            <button class="bar-btn toggle-btn" id="robotToggleBtn" title="Toggle Robot">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5m9 0a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5z"/>
                 </svg>
+                <span class="btn-label">Robot</span>
             </button>
-            <button class="audio-btn" id="themeBtn" title="Toggle Dark Mode">
-                <svg viewBox="0 0 24 24" fill="currentColor" id="themeIcon">
-                    <path
-                        d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" />
-                </svg>
-            </button>
-            <button class="audio-btn" id="fullscreenBtn" title="Fullscreen">
+
+            <button class="bar-btn toggle-btn" id="noiseMeterToggleBtn" title="Toggle Noise Meter">
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
                 </svg>
+                <span class="btn-label">Noise Meter</span>
+            </button>
+
+            <button class="bar-btn toggle-btn" id="clockToggleBtn" title="Toggle Clock">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                </svg>
+                <span class="btn-label">Clock</span>
             </button>
         </div>
     </div>

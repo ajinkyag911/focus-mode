@@ -6,8 +6,9 @@
  * - Timer (top center)
  * - Noise meter (top left)
  * - Analog clock (top right)
- * - Audio player (bottom)
+ * - Bottom bar (2 rows)
  * - Robot (center)
+ * - 6 Themed backgrounds
  */
 
 /* ========== CSS VARIABLES ========== */
@@ -16,35 +17,51 @@
     --color-purple: #5F20C6;
     --color-magenta: #C53FC4;
     --color-orange: #F5A55A;
-    
+
     /* Light Mode */
     --bg-primary: rgba(255, 255, 255, 0.95);
     --bg-secondary: rgba(255, 255, 255, 0.9);
     --text-primary: #2d2d2d;
     --text-secondary: #666666;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --overlay-opacity: 0.5;
-    
+    --overlay-opacity: 0.4;
+
     /* Gradients */
     --timer-gradient: linear-gradient(135deg, var(--color-orange), var(--color-magenta), var(--color-purple));
     --button-gradient: linear-gradient(135deg, var(--color-purple), var(--color-magenta));
-    
+
     /* Component sizing */
     --component-size: min(297px, 38vw);
-    
+
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
 }
 
-/* Dark Mode */
-body.dark-mode {
-    --bg-primary: rgba(26, 26, 46, 0.95);
-    --bg-secondary: rgba(30, 30, 50, 0.9);
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    --overlay-opacity: 0.6;
+
+/* ========== THEMED BACKGROUNDS ========== */
+body[data-theme="space"] {
+    background-image: url('https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=1920&q=80');
+}
+
+body[data-theme="dinosaur"] {
+    background-image: url('https://images.unsplash.com/photo-1606856110002-d0991ce78250?w=1920&q=80');
+}
+
+body[data-theme="dance"] {
+    background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80');
+}
+
+body[data-theme="egypt"] {
+    background-image: url('https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1920&q=80');
+}
+
+body[data-theme="wizard"] {
+    background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&q=80');
+}
+
+body[data-theme="minecraft"] {
+    background-image: url('https://static.toiimg.com/thumb/msid-121156431,width-1280,height-720,resizemode-4/121156431.jpg');
 }
 
 
@@ -55,7 +72,8 @@ body.dark-mode {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -69,11 +87,11 @@ html {
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-image: url('assets/background.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     color: var(--text-primary);
+    transition: background-image 0.5s ease;
 }
 
 .background-overlay {
@@ -88,12 +106,8 @@ body {
     transition: background 0.5s ease;
 }
 
-body.dark-mode .background-overlay {
-    background: rgba(0, 0, 0, var(--overlay-opacity));
-}
 
-
-/* ========== SHARED COMPONENT BOX ========== */
+/* ========== COMPONENT CONTAINERS ========== */
 .component-box {
     width: var(--component-size);
     height: var(--component-size);
@@ -106,17 +120,24 @@ body.dark-mode .background-overlay {
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-    transition: background 0.5s ease, box-shadow 0.5s ease;
+    transition: all 0.3s ease;
 }
 
 
-/* ========== NOISE METER (Center Left) ========== */
+/* ========== NOISE METER ========== */
 .noise-meter-container {
     position: fixed;
     top: 50%;
     left: 15%;
     transform: translateY(calc(-50% - 40px));
     z-index: 50;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.noise-meter-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .gauge-container {
@@ -149,7 +170,6 @@ body.dark-mode .background-overlay {
     transition: stroke-dashoffset 0.1s ease;
 }
 
-/* Gradient for gauge - added via JS */
 .gauge-threshold {
     stroke: #F44336;
     stroke-width: 2;
@@ -176,10 +196,10 @@ body.dark-mode .background-overlay {
 }
 
 .gauge-label {
-    font-size: clamp(1rem, 2.75vw, 1.4rem);
+    font-size: 1.1rem;
     color: var(--text-secondary);
     margin-top: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .sensitivity-control {
@@ -187,7 +207,7 @@ body.dark-mode .background-overlay {
     flex-direction: column;
     align-items: center;
     width: 85%;
-    gap: 8px;
+    gap: 6px;
 }
 
 .sensitivity-slider {
@@ -230,9 +250,9 @@ body.dark-mode .background-overlay {
 }
 
 .sensitivity-label {
-    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .sensitivity-label span {
@@ -247,32 +267,6 @@ body.dark-mode .background-overlay {
     gap: 10px;
     width: 100%;
     margin-top: auto;
-    margin-bottom: 5px;
-}
-
-.noise-counter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    min-width: 55px;
-    padding: 5px 10px;
-    border: 2px solid rgba(244, 67, 54, 0.3);
-    border-radius: 16px;
-    background: rgba(244, 67, 54, 0.05);
-}
-
-.noise-counter svg {
-    width: 24px;
-    height: 24px;
-    fill: #F44336;
-}
-
-.noise-counter span {
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-    font-weight: 700;
-    color: #F44336;
-    line-height: 1;
 }
 
 .component-btn {
@@ -301,26 +295,57 @@ body.dark-mode .background-overlay {
 }
 
 .component-btn svg {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
+}
+
+.noise-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.noise-counter svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-magenta);
 }
 
 
-/* ========== ANALOG CLOCK (Center Right) ========== */
+/* ========== ANALOG CLOCK ========== */
 .clock-container {
     position: fixed;
     top: 50%;
     right: 15%;
     transform: translateY(calc(-50% - 40px));
     z-index: 50;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.clock-container .component-box {
+    justify-content: center;
+    gap: 8px;
+}
+
+.clock-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .analog-clock {
-    width: 70%;
+    width: clamp(160px, 65%, 220px);
     aspect-ratio: 1;
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 10px;
-    margin-bottom: -20px;
 }
 
 .clock-face {
@@ -328,159 +353,181 @@ body.dark-mode .background-overlay {
     height: 100%;
     border-radius: 50%;
     background: var(--bg-secondary);
-    border: 3px solid var(--color-purple);
+    border: 4px solid var(--color-purple);
     position: relative;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .hour-marker {
     position: absolute;
-    width: 2px;
-    height: 8px;
-    background: var(--text-primary);
+    width: 4px;
+    height: 12px;
+    background: var(--text-secondary);
+    border-radius: 2px;
 }
 
-.marker-12 { top: 4px; left: 50%; transform: translateX(-50%); }
-.marker-3 { right: 4px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-.marker-6 { bottom: 4px; left: 50%; transform: translateX(-50%); }
-.marker-9 { left: 4px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+.marker-12 {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.marker-3 {
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%) rotate(90deg);
+}
+
+.marker-6 {
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.marker-9 {
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%) rotate(90deg);
+}
 
 .clock-hand {
     position: absolute;
     bottom: 50%;
     left: 50%;
     transform-origin: bottom center;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 .hour-hand {
-    width: 3px;
+    width: 4px;
     height: 25%;
     background: var(--text-primary);
-    transform: translateX(-50%) rotate(0deg);
 }
 
 .minute-hand {
-    width: 2px;
+    width: 3px;
     height: 35%;
     background: var(--color-purple);
-    transform: translateX(-50%) rotate(0deg);
 }
 
 .second-hand {
-    width: 1px;
+    width: 2px;
     height: 40%;
     background: var(--color-magenta);
-    transform: translateX(-50%) rotate(0deg);
 }
 
 .clock-center {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 8px;
-    height: 8px;
-    background: var(--color-purple);
-    border-radius: 50%;
     transform: translate(-50%, -50%);
-}
-
-.clock-container .component-box {
-    justify-content: space-between;
+    width: 12px;
+    height: 12px;
+    background: var(--button-gradient);
+    border-radius: 50%;
+    z-index: 10;
 }
 
 .clock-label {
-    font-size: clamp(1.32rem, 3.3vw, 1.65rem);
-    color: var(--text-secondary);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
     font-weight: 500;
+    color: var(--text-primary);
+    margin-top: 40px;
 }
 
 
 /* ========== TIMER (Top Center) ========== */
 .timer-container {
     position: fixed;
-    top: 20px;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10;
-    background: var(--bg-primary);
-    border-radius: 33px;
-    padding: min(25px, 3.3vh) min(50px, 6.6vw);
-    box-shadow: 0 10px 40px var(--shadow-color);
-    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
-    gap: 25px;
-    transition: top 0.4s ease, transform 0.4s ease, background 0.5s ease, box-shadow 0.5s ease;
-}
-
-.timer-display {
-    font-size: clamp(3.3rem, 16.5vw, 9.9rem);
-    font-weight: 700;
-    background: var(--timer-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.1;
+    justify-content: center;
+    gap: clamp(30px, 6vw, 50px);
+    background: var(--bg-primary);
+    padding: 20px 30px;
+    min-height: var(--component-size);
+    min-width: calc(var(--component-size) * 1.6);
+    border-radius: 30px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    transition: all 0.4s ease;
 }
 
 .timer-main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 }
 
 .app-title {
-    font-size: clamp(1.32rem, 3.3vw, 1.65rem);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
     font-weight: 500;
     color: var(--text-secondary);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 3px;
+    margin-bottom: 10px;
+}
+
+.timer-display {
+    font-size: clamp(6rem, 14vw, 8rem);
+    font-weight: 700;
+    background: var(--timer-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
 }
 
 .timer-input-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 5px;
+    gap: 12px;
+    margin-top: 15px;
+    transition: opacity 0.3s ease, height 0.3s ease;
 }
 
-.timer-input-container input {
-    width: clamp(66px, 13.2vw, 99px);
-    padding: 8px 13px;
-    font-size: clamp(1.32rem, 3.3vw, 1.65rem);
+.timer-input-container.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+.timer-input-label {
+    font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+    color: var(--text-secondary);
+}
+
+#minutesInput {
+    width: 80px;
+    padding: 12px 16px;
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
     font-family: 'Roboto', sans-serif;
-    border: 3px solid var(--color-purple);
-    border-radius: 13px;
+    font-weight: 500;
+    border: 2px solid var(--color-purple);
+    border-radius: 12px;
     background: var(--bg-secondary);
     color: var(--text-primary);
     text-align: center;
 }
 
-.timer-input-container input:focus {
+#minutesInput:focus {
     outline: none;
     border-color: var(--color-magenta);
-}
-
-.timer-input-label {
-    font-size: clamp(1.155rem, 2.475vw, 1.485rem);
-    color: var(--text-secondary);
-}
-
-.timer-input-container.hidden {
-    display: none;
 }
 
 .timer-controls {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .timer-btn {
-    width: clamp(59px, 8.25vw, 73px);
-    height: clamp(59px, 8.25vw, 73px);
+    width: clamp(40px, 5vw, 50px);
+    height: clamp(40px, 5vw, 50px);
     border: none;
     border-radius: 50%;
     background: var(--bg-secondary);
@@ -504,31 +551,31 @@ body.dark-mode .background-overlay {
 }
 
 .timer-btn svg {
-    width: clamp(30px, 4.125vw, 40px);
-    height: clamp(30px, 4.125vw, 40px);
+    width: clamp(20px, 2.5vw, 24px);
+    height: clamp(20px, 2.5vw, 24px);
 }
 
 
 /* ========== ROBOT (Center) ========== */
 .robot-container {
     position: fixed;
-    top: 60%;
+    top: 58%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: 50vh;
-    padding-top: 20px;
-    transition: opacity 0.4s ease;
+    z-index: 10;
+    transition: opacity 0.5s ease;
 }
 
 .robot-wrapper {
-    max-width: min(200px, 30vw);
-    max-height: 35vh;
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
-    animation: float 3s ease-in-out infinite;
+    width: clamp(120px, 16vw, 180px);
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
 }
 
 .robot-svg {
@@ -536,47 +583,111 @@ body.dark-mode .background-overlay {
     height: auto;
 }
 
-/* Idle floating */
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+/* Animation: Idle bobbing */
+.robot-wrapper {
+    animation: float 4s ease-in-out infinite;
 }
 
-/* Alert shake */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Animation: Active/studying */
+.robot-wrapper.studying {
+    animation: studying 2s ease-in-out infinite;
+}
+
+@keyframes studying {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-5px) rotate(1deg);
+    }
+
+    75% {
+        transform: translateY(-5px) rotate(-1deg);
+    }
+}
+
+/* Alert state */
 .robot-wrapper.alert {
     animation: shake 0.5s ease-in-out;
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-    20%, 40%, 60%, 80% { transform: translateX(8px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-10px);
+    }
+
+    40% {
+        transform: translateX(10px);
+    }
+
+    60% {
+        transform: translateX(-8px);
+    }
+
+    80% {
+        transform: translateX(8px);
+    }
 }
 
-
-
-/* Eyes looking around */
+/* Pupils */
 .robot-pupil {
-    animation: lookAround 4s ease-in-out infinite;
+    animation: lookAround 6s ease-in-out infinite;
 }
 
 @keyframes lookAround {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(2px, 0); }
-    50% { transform: translate(-1px, 1px); }
-    75% { transform: translate(1px, -1px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(2px);
+    }
+
+    50% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(1px);
+    }
 }
 
-/* Alert - eyes look up */
-.robot-wrapper.alert .robot-pupil {
-    animation: none;
-    transform: translate(0, -3px);
+/* Antenna glow */
+.robot-antenna {
+    animation: glow 2s ease-in-out infinite alternate;
 }
 
-/* Studying - eyes look down */
-.robot-wrapper.studying .robot-pupil {
-    animation: none;
-    transform: translate(0, 2px);
+@keyframes glow {
+    0% {
+        filter: drop-shadow(0 0 3px var(--color-orange));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 10px var(--color-magenta));
+    }
 }
 
 /* Mouth */
@@ -595,10 +706,23 @@ body.dark-mode .background-overlay {
 }
 
 @keyframes celebrate {
-    0%, 100% { transform: translateY(0) scale(1); }
-    25% { transform: translateY(-20px) scale(1.05); }
-    50% { transform: translateY(-5px) scale(1); }
-    75% { transform: translateY(-12px) scale(1.02); }
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    25% {
+        transform: translateY(-20px) scale(1.05);
+    }
+
+    50% {
+        transform: translateY(-5px) scale(1);
+    }
+
+    75% {
+        transform: translateY(-12px) scale(1.02);
+    }
 }
 
 .speech-bubble {
@@ -634,9 +758,19 @@ body.dark-mode .background-overlay {
 }
 
 @keyframes popIn {
-    0% { transform: translateX(-50%) scale(0); opacity: 0; }
-    50% { transform: translateX(-50%) scale(1.1); }
-    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
 }
 
 
@@ -651,36 +785,43 @@ body.robot-hidden .timer-container {
     transform: translate(-50%, calc(-50% - 40px));
 }
 
-#robotToggleBtn.active {
-    background: var(--button-gradient);
-    color: white;
-}
 
-
-/* ========== AUDIO PLAYER (Bottom) ========== */
-.audio-player-container {
+/* ========== BOTTOM BAR (Single container with 2 rows) ========== */
+.bottom-bar-container {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100;
-}
-
-.audio-player {
     display: flex;
-    align-items: center;
-    gap: min(18px, 3vw);
-    padding: 15px 30px;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 24px;
     background: var(--bg-primary);
-    border-radius: 75px;
+    border-radius: 24px;
     box-shadow: 0 8px 32px var(--shadow-color);
     backdrop-filter: blur(10px);
-    transition: background 0.5s ease, box-shadow 0.5s ease;
+    z-index: 100;
+    transition: background 0.5s ease;
 }
 
-.audio-btn {
-    width: clamp(48px, 6vw, 60px);
-    height: clamp(48px, 6vw, 60px);
+.bottom-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.bar-divider {
+    width: 2px;
+    height: 30px;
+    background: var(--text-secondary);
+    opacity: 0.3;
+    border-radius: 1px;
+}
+
+.bar-btn {
+    width: clamp(42px, 5vw, 50px);
+    height: clamp(42px, 5vw, 50px);
     border: none;
     border-radius: 50%;
     background: var(--bg-secondary);
@@ -693,46 +834,41 @@ body.robot-hidden .timer-container {
     flex-shrink: 0;
 }
 
-.audio-btn:hover {
+.bar-btn:hover {
     background: var(--button-gradient);
     color: white;
     transform: scale(1.1);
 }
 
-.audio-btn.active {
+.bar-btn.active {
     background: var(--button-gradient);
     color: white;
 }
 
-.audio-btn svg {
-    width: clamp(24px, 3vw, 30px);
-    height: clamp(24px, 3vw, 30px);
+.bar-btn svg {
+    width: clamp(20px, 2.5vw, 24px);
+    height: clamp(20px, 2.5vw, 24px);
 }
 
-.audio-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 120px;
+.toggle-btn {
+    width: auto;
+    border-radius: 25px;
+    padding: 0 16px;
+    gap: 8px;
 }
 
-.audio-label {
-    font-size: clamp(1.05rem, 2.25vw, 1.35rem);
+.btn-label {
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
     font-weight: 500;
-    color: var(--text-primary);
+    white-space: nowrap;
 }
 
-.audio-status {
-    font-size: clamp(0.9rem, 1.8vw, 1.125rem);
-    color: var(--text-secondary);
-}
-
-.audio-select {
-    width: clamp(210px, 33vw, 300px);
-    padding: 12px 18px;
-    font-size: clamp(1.05rem, 1.8vw, 1.275rem);
+.bar-select {
+    padding: 10px 16px;
+    font-size: clamp(0.9rem, 1.6vw, 1rem);
     font-family: 'Roboto', sans-serif;
-    border: 3px solid transparent;
-    border-radius: 30px;
+    border: 2px solid transparent;
+    border-radius: 25px;
     background: var(--bg-secondary);
     color: var(--text-primary);
     cursor: pointer;
@@ -740,17 +876,17 @@ body.robot-hidden .timer-container {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 15px center;
-    padding-right: 45px;
+    background-position: right 12px center;
+    padding-right: 36px;
 }
 
-.audio-select:focus {
+.bar-select:focus {
     outline: none;
     border-color: var(--color-purple);
 }
 
-body.dark-mode .audio-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%23b0b0b0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+.theme-select {
+    min-width: 150px;
 }
 
 
@@ -759,26 +895,31 @@ body.dark-mode .audio-select {
     :root {
         --component-size: min(150px, 36vw);
     }
-    
+
     .noise-meter-container {
         left: 5%;
     }
-    
+
     .clock-container {
         right: 5%;
     }
-    
-    .audio-player {
-        padding: 8px 15px;
+
+    .bottom-bar-container {
+        padding: 12px 16px;
+    }
+
+    .bottom-bar-row {
         gap: 8px;
     }
-    
-    .audio-info {
+
+    .btn-label {
         display: none;
     }
-    
-    .audio-url-input {
-        width: clamp(100px, 30vw, 150px);
+
+    .toggle-btn {
+        width: 42px;
+        padding: 0;
+        border-radius: 50%;
     }
 }
 
@@ -786,22 +927,28 @@ body.dark-mode .audio-select {
     :root {
         --component-size: min(120px, 42vw);
     }
-    
+
     .noise-meter-container {
         left: 2%;
     }
-    
+
     .clock-container {
         right: 2%;
     }
-    
+
     .timer-container {
         top: 10px;
         padding: 10px 20px;
     }
-    
-    .audio-url-input {
-        display: none;
+
+    .bar-select {
+        max-width: 120px;
+        font-size: 0.85rem;
+    }
+
+    .bottom-bar-container {
+        width: 95vw;
+        padding: 10px 12px;
     }
 }
 
@@ -809,8 +956,8 @@ body.dark-mode .audio-select {
     .robot-container {
         max-height: 35vh;
     }
-    
-    .robot-image {
+
+    .robot-wrapper {
         max-height: 30vh;
     }
 }
@@ -825,7 +972,8 @@ body.dark-mode .audio-select {
 }
 
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
     outline: 3px solid var(--color-magenta);
     outline-offset: 2px;
 }

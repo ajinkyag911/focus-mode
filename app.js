@@ -6,20 +6,31 @@
  * - Timer (top center)
  * - Noise Meter (top left) 
  * - Analog Clock (top right)
- * - Audio Player (bottom)
+ * - Bottom Bar (2 rows)
  * - Robot with speech bubble (center)
+ * - 6 Themed backgrounds
  */
 
 // ========== CONFIGURATION ========== //
 const CONFIG = {
     defaultMinutes: 5,
     noiseSensitivity: 0.2,
-    gaugeScale: 3.5, // Scale factor so 0.2 sensitivity shows as 70% on meter
+    gaugeScale: 3.5,
     speechBubbleDuration: 3000,
     alertCooldown: 5000
 };
 
-// Random messages for noise alerts (kind reminders for children)
+// Theme backgrounds (Unsplash - open source)
+const THEMES = {
+    space: 'https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=1920&q=80',
+    dinosaur: 'https://images.unsplash.com/photo-1606856110002-d0991ce78250?w=1920&q=80',
+    dance: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80',
+    egypt: 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1920&q=80',
+    wizard: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&q=80',
+    minecraft: 'https://static.toiimg.com/thumb/msid-121156431,width-1280,height-720,resizemode-4/121156431.jpg'
+};
+
+// Random messages for noise alerts
 const QUIET_MESSAGES = [
     "Whisper time!", "Let's use quiet voices!", "Oops, a bit loud!",
     "Soft voices please!", "Time to hush!", "Shhh, quiet time!",
@@ -28,7 +39,7 @@ const QUIET_MESSAGES = [
     "Too loud, friends!", "Can we whisper?", "Quiet zone!", "Softer please!"
 ];
 
-// Friendly emojis (gentle reminders)
+// Friendly emojis
 const FACE_EMOJIS = [
     "🤫", "🙊", "😊", "🐭", "📚", "💤", "🌙", "🤐",
     "😇", "🙂", "🐰", "🦉", "🧘", "☁️", "🌸", "🍃"
@@ -49,6 +60,7 @@ const speechBubble = document.getElementById('speechBubble');
 const speechText = document.getElementById('speechText');
 
 // Noise Meter
+const noiseMeterContainer = document.getElementById('noiseMeterContainer');
 const micBtn = document.getElementById('micBtn');
 const gaugeFill = document.getElementById('gaugeFill');
 const gaugeNeedle = document.getElementById('gaugeNeedle');
@@ -59,6 +71,7 @@ const sensitivitySlider = document.getElementById('sensitivitySlider');
 const sensitivityValue = document.getElementById('sensitivityValue');
 
 // Clock
+const clockContainer = document.getElementById('clockContainer');
 const hourHand = document.getElementById('hourHand');
 const minuteHand = document.getElementById('minuteHand');
 const secondHand = document.getElementById('secondHand');
@@ -67,14 +80,14 @@ const digitalTime = document.getElementById('digitalTime');
 // Audio
 const audioPlayBtn = document.getElementById('audioPlayBtn');
 const audioPlayIcon = document.getElementById('audioPlayIcon');
-const audioStatus = document.getElementById('audioStatus');
 const radioChannel = document.getElementById('radioChannel');
 const audioPlayer = document.getElementById('audioPlayer');
 
-// Theme
-const themeBtn = document.getElementById('themeBtn');
-const fullscreenBtn = document.getElementById('fullscreenBtn');
+// Bottom bar toggles
+const themeSelect = document.getElementById('themeSelect');
 const robotToggleBtn = document.getElementById('robotToggleBtn');
+const noiseMeterToggleBtn = document.getElementById('noiseMeterToggleBtn');
+const clockToggleBtn = document.getElementById('clockToggleBtn');
 
 // ========== STATE ========== //
 let timerState = {
@@ -96,6 +109,12 @@ let musicState = {
     isPlaying: false
 };
 
+let componentVisibility = {
+    robot: true,
+    noiseMeter: true,
+    clock: true
+};
+
 // ========== INITIALIZATION ========== //
 function init() {
     loadPreferences();
@@ -103,20 +122,32 @@ function init() {
     setupEventListeners();
     startClock();
     addGaugeGradient();
+    updateToggleButtons();
     console.log('🤖 Focus Mode initialized!');
 }
 
 function loadPreferences() {
-    // Dark mode
-    if (localStorage.getItem('focusMode_darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        updateThemeIcon(true);
-    }
+    // Theme
+    const savedTheme = localStorage.getItem('focusMode_theme') || 'space';
+    setTheme(savedTheme);
+    themeSelect.value = savedTheme;
     
     // Robot visibility
     if (localStorage.getItem('focusMode_robotHidden') === 'true') {
+        componentVisibility.robot = false;
         document.body.classList.add('robot-hidden');
-        robotToggleBtn.classList.add('active');
+    }
+    
+    // Noise meter visibility
+    if (localStorage.getItem('focusMode_noiseMeterHidden') === 'true') {
+        componentVisibility.noiseMeter = false;
+        noiseMeterContainer.classList.add('hidden');
+    }
+    
+    // Clock visibility
+    if (localStorage.getItem('focusMode_clockHidden') === 'true') {
+        componentVisibility.clock = false;
+        clockContainer.classList.add('hidden');
     }
     
     // Noise sensitivity
@@ -130,7 +161,7 @@ function loadPreferences() {
         updateSensitivity(70);
     }
     
-    // Timer duration - use default, don't load saved value
+    // Timer duration
     minutesInput.value = CONFIG.defaultMinutes;
     timerState.totalSeconds = CONFIG.defaultMinutes * 60;
     
@@ -145,9 +176,9 @@ function savePreference(key, value) {
     localStorage.setItem(`focusMode_${key}`, value);
 }
 
-// Add gradient definition for gauge
 function addGaugeGradient() {
     const svg = document.querySelector('.gauge');
+    if (!svg) return;
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     defs.innerHTML = `
         <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -186,23 +217,28 @@ function setupEventListeners() {
     audioPlayBtn.addEventListener('click', toggleMusic);
     radioChannel.addEventListener('change', () => {
         if (musicState.isPlaying) {
-            playMusic(); // Auto-switch to new channel
+            playMusic();
         }
     });
     
-    // Theme & Fullscreen
-    themeBtn.addEventListener('click', toggleTheme);
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    // Theme
+    themeSelect.addEventListener('change', () => {
+        const theme = themeSelect.value;
+        setTheme(theme);
+        savePreference('theme', theme);
+    });
     
-    // Robot toggle
+    // Component toggles
     robotToggleBtn.addEventListener('click', toggleRobot);
+    noiseMeterToggleBtn.addEventListener('click', toggleNoiseMeter);
+    clockToggleBtn.addEventListener('click', toggleClock);
     
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboard);
 }
 
 function handleKeyboard(e) {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
     
     switch(e.key.toLowerCase()) {
         case ' ':
@@ -211,9 +247,12 @@ function handleKeyboard(e) {
             break;
         case 'r': resetTimer(); break;
         case 'm': toggleMicrophone(); break;
-        case 'd': toggleTheme(); break;
-        case 'f': toggleFullscreen(); break;
     }
+}
+
+// ========== THEME ========== //
+function setTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
 }
 
 // ========== TIMER ========== //
@@ -230,7 +269,6 @@ function startTimer() {
     startBtn.disabled = true;
     pauseBtn.disabled = false;
     
-    // Robot starts studying
     robotWrapper.classList.add('studying');
     
     timerState.intervalId = setInterval(() => {
@@ -247,36 +285,27 @@ function pauseTimer() {
     startBtn.disabled = false;
     pauseBtn.disabled = true;
     
-    // Robot stops studying
     robotWrapper.classList.remove('studying');
 }
 
 function resetTimer() {
-    timerState.isRunning = false;
-    clearInterval(timerState.intervalId);
+    pauseTimer();
     timerState.intervalId = null;
-    
     const minutes = parseInt(minutesInput.value) || CONFIG.defaultMinutes;
     timerState.totalSeconds = minutes * 60;
-    
-    timerInputContainer.classList.remove('hidden');
     updateTimerDisplay();
+    timerInputContainer.classList.remove('hidden');
     startBtn.disabled = false;
     pauseBtn.disabled = true;
-    
-    // Robot back to idle
-    robotWrapper.classList.remove('studying', 'celebrate');
 }
 
 function timerComplete() {
     pauseTimer();
     showSpeechBubble("Time's up! 🎉");
     
-    // Robot celebrates
     robotWrapper.classList.add('celebrate');
     setTimeout(() => robotWrapper.classList.remove('celebrate'), 800);
     
-    // Play beep
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -308,17 +337,14 @@ function updateClock() {
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
     
-    // Calculate rotation angles
     const hourDeg = (hours * 30) + (minutes * 0.5);
     const minDeg = minutes * 6;
     const secDeg = seconds * 6;
     
-    // Apply rotations
     hourHand.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
     minuteHand.style.transform = `translateX(-50%) rotate(${minDeg}deg)`;
     secondHand.style.transform = `translateX(-50%) rotate(${secDeg}deg)`;
     
-    // Update digital time with AM/PM
     const hours24 = now.getHours();
     const ampm = hours24 >= 12 ? 'PM' : 'AM';
     const hours12 = hours24 % 12 || 12;
@@ -378,11 +404,9 @@ function analyzeAudio() {
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
     const normalizedVolume = average / 255;
     
-    // Scale the gauge display consistently (0-0.5 volume maps to 0-100%)
     const volumePercent = Math.min(100, normalizedVolume * 200);
     updateGauge(volumePercent);
     
-    // Trigger alert when volume exceeds sensitivity threshold
     if (volumePercent > parseInt(sensitivitySlider.value)) {
         const now = Date.now();
         if (now - audioState.lastAlertTime > CONFIG.alertCooldown) {
@@ -395,22 +419,18 @@ function analyzeAudio() {
 }
 
 function updateGauge(percent) {
-    // Update arc fill (stroke-dashoffset)
-    const maxDash = 126; // Approximate arc length
+    const maxDash = 126;
     const offset = maxDash - (percent / 100) * maxDash;
     gaugeFill.style.strokeDashoffset = offset;
     
-    // Update needle rotation (-90 to 90 degrees)
     const angle = -90 + (percent / 100) * 180;
     gaugeNeedle.style.transform = `rotate(${angle}deg)`;
 }
 
 function updateSensitivity(percent) {
-    // Update threshold marker rotation (-90 to 90 degrees based on percent)
     const angle = -90 + (percent / 100) * 180;
     gaugeThreshold.setAttribute('transform', `rotate(${angle}, 50, 50)`);
     
-    // Update threshold label position and text
     const labelAngle = (angle - 90) * Math.PI / 180;
     const labelRadius = 42;
     const labelX = 50 + Math.cos(labelAngle) * labelRadius;
@@ -425,11 +445,9 @@ function triggerNoiseAlert() {
     const emoji = FACE_EMOJIS[Math.floor(Math.random() * FACE_EMOJIS.length)];
     showSpeechBubble(`${message} ${emoji}`);
     
-    // Increment and update counter
     audioState.alertCount++;
     noiseCounter.textContent = audioState.alertCount;
     
-    // Robot alert animation
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
     setTimeout(() => {
@@ -446,7 +464,7 @@ function showSpeechBubble(message) {
     setTimeout(() => speechBubble.classList.remove('show'), CONFIG.speechBubbleDuration);
 }
 
-// ========== MUSIC PLAYER (Soma.fm) ========== //
+// ========== MUSIC PLAYER ========== //
 function toggleMusic() {
     if (musicState.isPlaying) {
         stopMusic();
@@ -459,16 +477,14 @@ function playMusic() {
     const streamUrl = radioChannel.value;
     
     audioPlayer.src = streamUrl;
-    audioPlayer.volume = 0.1; // Set volume to 10%
+    audioPlayer.volume = 0.1;
     audioPlayer.play().then(() => {
         musicState.isPlaying = true;
         audioPlayBtn.classList.add('active');
         audioPlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        audioStatus.textContent = 'Playing...';
         savePreference('radioChannel', streamUrl);
     }).catch(err => {
         console.error('Audio playback failed:', err);
-        audioStatus.textContent = 'Error - try again';
     });
 }
 
@@ -479,39 +495,34 @@ function stopMusic() {
     
     audioPlayBtn.classList.remove('active');
     audioPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    audioStatus.textContent = 'Select a channel';
 }
 
-// ========== ROBOT TOGGLE ========== //
+// ========== COMPONENT TOGGLES ========== //
 function toggleRobot() {
-    const isHidden = document.body.classList.toggle('robot-hidden');
-    robotToggleBtn.classList.toggle('active', isHidden);
-    savePreference('robotHidden', isHidden);
+    componentVisibility.robot = !componentVisibility.robot;
+    document.body.classList.toggle('robot-hidden', !componentVisibility.robot);
+    savePreference('robotHidden', !componentVisibility.robot);
+    updateToggleButtons();
 }
 
-// ========== THEME ========== //
-function toggleTheme() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    updateThemeIcon(isDark);
-    savePreference('darkMode', isDark);
+function toggleNoiseMeter() {
+    componentVisibility.noiseMeter = !componentVisibility.noiseMeter;
+    noiseMeterContainer.classList.toggle('hidden', !componentVisibility.noiseMeter);
+    savePreference('noiseMeterHidden', !componentVisibility.noiseMeter);
+    updateToggleButtons();
 }
 
-function updateThemeIcon(isDark) {
-    const themeIcon = document.getElementById('themeIcon');
-    if (isDark) {
-        themeIcon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/>';
-    } else {
-        themeIcon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
-    }
+function toggleClock() {
+    componentVisibility.clock = !componentVisibility.clock;
+    clockContainer.classList.toggle('hidden', !componentVisibility.clock);
+    savePreference('clockHidden', !componentVisibility.clock);
+    updateToggleButtons();
 }
 
-// ========== FULLSCREEN ========== //
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-        document.exitFullscreen();
-    }
+function updateToggleButtons() {
+    robotToggleBtn.classList.toggle('active', componentVisibility.robot);
+    noiseMeterToggleBtn.classList.toggle('active', componentVisibility.noiseMeter);
+    clockToggleBtn.classList.toggle('active', componentVisibility.clock);
 }
 
 // ========== START ========== //
