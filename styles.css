@@ -196,10 +196,14 @@ body {
 }
 
 .gauge-label {
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 2vw, 1rem);
     color: var(--text-secondary);
     margin-top: 5px;
     margin-bottom: 10px;
+    text-align: center;
+    min-height: 1.5em;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .sensitivity-control {
@@ -323,7 +327,7 @@ body {
     position: fixed;
     top: 50%;
     right: 15%;
-    transform: translateY(calc(-50% - 40px));
+    transform: translateY(calc(-50% - 34px));
     z-index: 50;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
@@ -340,7 +344,7 @@ body {
 }
 
 .analog-clock {
-    width: clamp(160px, 65%, 220px);
+    width: clamp(180px, 75%, 250px);
     aspect-ratio: 1;
     display: flex;
     align-items: center;
@@ -360,34 +364,33 @@ body {
 
 .hour-marker {
     position: absolute;
-    width: 4px;
-    height: 12px;
-    background: var(--text-secondary);
-    border-radius: 2px;
+    font-size: clamp(14px, 3vw, 20px);
+    line-height: 1;
+    text-align: center;
 }
 
 .marker-12 {
-    top: 5px;
+    top: 4px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .marker-3 {
     top: 50%;
-    right: 5px;
-    transform: translateY(-50%) rotate(90deg);
+    right: 4px;
+    transform: translateY(-50%);
 }
 
 .marker-6 {
-    bottom: 5px;
+    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .marker-9 {
     top: 50%;
-    left: 5px;
-    transform: translateY(-50%) rotate(90deg);
+    left: 4px;
+    transform: translateY(-50%);
 }
 
 .clock-hand {
@@ -432,7 +435,7 @@ body {
     font-size: clamp(1.2rem, 3vw, 1.6rem);
     font-weight: 500;
     color: var(--text-primary);
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 
@@ -526,7 +529,7 @@ body {
 
 .timer-display-wrapper {
     position: absolute;
-    bottom: 32px;
+    bottom: 36px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -536,7 +539,7 @@ body {
 }
 
 .timer-display {
-    font-size: clamp(4.5rem, 10vw, 6.2rem);
+    font-size: clamp(5rem, 11vw, 7rem);
     font-weight: 700;
     background: var(--timer-gradient);
     -webkit-background-clip: text;
@@ -977,6 +980,45 @@ body.robot-hidden .timer-container {
 
 .theme-select {
     min-width: 150px;
+}
+
+
+/* ========== THEME DECORATIONS ========== */
+.theme-decorations {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.theme-decoration {
+    position: absolute;
+    opacity: 0.15;
+    filter: blur(0.5px);
+    transition: all 0.5s ease;
+}
+
+.decoration-1 {
+    top: 8%;
+    left: 3%;
+    width: clamp(40px, 6vw, 80px);
+    animation: float-slow 8s ease-in-out infinite;
+}
+
+.decoration-2 {
+    bottom: 15%;
+    right: 4%;
+    width: clamp(35px, 5vw, 70px);
+    animation: float-slow 10s ease-in-out infinite reverse;
+}
+
+@keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
 }
 
 

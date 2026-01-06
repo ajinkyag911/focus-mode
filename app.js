@@ -277,6 +277,48 @@ function handleKeyboard(e) {
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
     updateThemeIndicator(theme);
+    updateClockEmojis(theme);
+    updateNoiseMeterLabel(theme);
+    updateThemeDecorations(theme);
+}
+
+function updateClockEmojis(theme) {
+    const emojis = THEME_CLOCK_EMOJIS[theme] || THEME_CLOCK_EMOJIS.space;
+    const markers = document.querySelectorAll('.hour-marker');
+    markers.forEach((marker, index) => {
+        marker.textContent = emojis[index];
+    });
+}
+
+function updateNoiseMeterLabel(theme, noiseLevel = 0) {
+    const labels = THEME_NOISE_LABELS[theme] || THEME_NOISE_LABELS.space;
+    const gaugeLabel = document.querySelector('.gauge-label');
+    if (!gaugeLabel) return;
+    
+    let label;
+    if (noiseLevel < 30) {
+        label = labels.quiet;
+    } else if (noiseLevel < 70) {
+        label = labels.medium;
+    } else {
+        label = labels.loud;
+    }
+    gaugeLabel.textContent = label;
+}
+
+function updateThemeDecorations(theme) {
+    let container = document.getElementById('themeDecorations');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'themeDecorations';
+        container.className = 'theme-decorations';
+        document.body.appendChild(container);
+    }
+    
+    const images = THEME_DECORATIONS[theme] || THEME_DECORATIONS.space;
+    container.innerHTML = images.map((src, i) => 
+        `<img src="${src}" class="theme-decoration decoration-${i + 1}" alt="" />`
+    ).join('');
 }
 
 // ========== TIMER ========== //
@@ -435,6 +477,54 @@ const THEME_INDICATORS = {
     minecraft: '💎'
 };
 
+// Theme clock emojis (for 12, 3, 6, 9 positions)
+const THEME_CLOCK_EMOJIS = {
+    space: ['🚀', '🌟', '🌙', '🪐'],
+    dinosaur: ['🦕', '🌿', '🦴', '🌋'],
+    dance: ['🎵', '💃', '🎶', '🕺'],
+    egypt: ['☀️', '🐪', '🏺', '🐍'],
+    wizard: ['⭐', '🧙', '📖', '🦉'],
+    minecraft: ['⛏️', '🧱', '💎', '🌲']
+};
+
+// Theme noise meter labels
+const THEME_NOISE_LABELS = {
+    space: { quiet: '🤫 Silent Space', medium: '🛸 Spacecraft Hum', loud: '🚀 Rocket Launch!' },
+    dinosaur: { quiet: '🦕 Peaceful Forest', medium: '🌿 Rustling Leaves', loud: '🦖 T-Rex Roar!' },
+    dance: { quiet: '🎵 Soft Melody', medium: '💃 Dance Floor', loud: '🎸 Rock Concert!' },
+    egypt: { quiet: '🏺 Quiet Tomb', medium: '🐪 Desert Winds', loud: '👁️ Pharaoh\'s Call!' },
+    wizard: { quiet: '📖 Library Whisper', medium: '✨ Magic Brewing', loud: '🔮 Spell Casting!' },
+    minecraft: { quiet: '🌲 Peaceful Biome', medium: '⛏️ Mining Sounds', loud: '💥 Creeper Boom!' }
+};
+
+// Theme decorative images (open-source SVG icons from OpenMoji/Twemoji CDN)
+const THEME_DECORATIONS = {
+    space: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f31f.svg',  // Star
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f30c.svg'   // Milky Way
+    ],
+    dinosaur: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1fab4.svg',  // Potted Plant
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f33f.svg'   // Herb
+    ],
+    dance: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3b5.svg',  // Music Note
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg'    // Sparkles
+    ],
+    egypt: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3db.svg',  // Classical Building
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2b50.svg'    // Star
+    ],
+    wizard: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg',   // Sparkles
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f31f.svg'   // Glowing Star
+    ],
+    minecraft: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9f1.svg',  // Brick
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1fab5.svg'   // Wood
+    ]
+};
+
 function updateThemeIndicator(theme) {
     const emoji = THEME_INDICATORS[theme] || '🚀';
     timerArcIndicator.textContent = emoji;
@@ -540,6 +630,9 @@ function updateGauge(percent) {
     
     const angle = -90 + (percent / 100) * 180;
     gaugeNeedle.style.transform = `rotate(${angle}deg)`;
+    
+    const currentTheme = document.body.getAttribute('data-theme') || 'space';
+    updateNoiseMeterLabel(currentTheme, percent);
 }
 
 function updateSensitivity(percent) {
