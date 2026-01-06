@@ -474,11 +474,11 @@ body {
 /* Timer Arc Container */
 .timer-arc-container {
     position: relative;
-    width: clamp(300px, 38vw, 400px);
+    width: clamp(340px, 42vw, 450px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: -20px;
+    margin-bottom: -32px;
 }
 
 .timer-arc {
@@ -536,7 +536,7 @@ body {
 }
 
 .timer-display {
-    font-size: clamp(4rem, 9vw, 5.5rem);
+    font-size: clamp(4.5rem, 10vw, 6.2rem);
     font-weight: 700;
     background: var(--timer-gradient);
     -webkit-background-clip: text;
@@ -575,7 +575,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(4rem, 9vw, 5.5rem);
+    font-size: clamp(4.5rem, 10vw, 6.2rem);
     font-weight: 700;
     font-family: 'Roboto', sans-serif;
     text-align: center;
@@ -583,7 +583,7 @@ body {
     background: transparent;
     color: var(--color-purple);
     width: auto;
-    max-width: 250px;
+    max-width: 280px;
     opacity: 0;
     pointer-events: none;
     padding: 4px 12px;
