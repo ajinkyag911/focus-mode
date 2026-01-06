@@ -48,7 +48,10 @@ const FACE_EMOJIS = [
 // ========== DOM ELEMENTS ========== //
 // Timer
 const timerDisplay = document.getElementById('timerDisplay');
-const timerInputContainer = document.getElementById('timerInputContainer');
+const timerEditInput = document.getElementById('timerEditInput');
+const timerArcProgress = document.getElementById('timerArcProgress');
+const timerArcIndicator = document.getElementById('timerArcIndicator');
+const timerContainer = document.querySelector('.timer-container');
 const minutesInput = document.getElementById('minutesInput');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
@@ -92,8 +95,10 @@ const clockToggleBtn = document.getElementById('clockToggleBtn');
 // ========== STATE ========== //
 let timerState = {
     totalSeconds: CONFIG.defaultMinutes * 60,
+    initialSeconds: CONFIG.defaultMinutes * 60,
     isRunning: false,
-    intervalId: null
+    intervalId: null,
+    isEditing: false
 };
 
 let audioState = {
@@ -119,6 +124,7 @@ let componentVisibility = {
 function init() {
     loadPreferences();
     updateTimerDisplay();
+    updateArc();
     setupEventListeners();
     startClock();
     addGaugeGradient();
@@ -162,8 +168,11 @@ function loadPreferences() {
     }
     
     // Timer duration
-    minutesInput.value = CONFIG.defaultMinutes;
-    timerState.totalSeconds = CONFIG.defaultMinutes * 60;
+    const savedMinutes = localStorage.getItem('focusMode_minutes');
+    const minutes = savedMinutes ? parseInt(savedMinutes) : CONFIG.defaultMinutes;
+    minutesInput.value = minutes;
+    timerState.totalSeconds = minutes * 60;
+    timerState.initialSeconds = minutes * 60;
     
     // Saved radio channel
     const savedChannel = localStorage.getItem('focusMode_radioChannel');
@@ -197,11 +206,25 @@ function setupEventListeners() {
     startBtn.addEventListener('click', startTimer);
     pauseBtn.addEventListener('click', pauseTimer);
     resetBtn.addEventListener('click', resetTimer);
-    minutesInput.addEventListener('change', () => {
-        const minutes = parseInt(minutesInput.value) || CONFIG.defaultMinutes;
-        timerState.totalSeconds = minutes * 60;
-        updateTimerDisplay();
-        savePreference('minutes', minutes);
+    
+    // Inline editing - click timer display to edit
+    timerDisplay.addEventListener('click', startTimerEdit);
+    timerDisplay.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            startTimerEdit();
+        }
+    });
+    
+    // Edit input handling
+    timerEditInput.addEventListener('blur', finishTimerEdit);
+    timerEditInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            finishTimerEdit();
+        } else if (e.key === 'Escape') {
+            cancelTimerEdit();
+        }
     });
     
     // Noise meter
@@ -253,19 +276,70 @@ function handleKeyboard(e) {
 // ========== THEME ========== //
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
+    updateThemeIndicator(theme);
 }
 
 // ========== TIMER ========== //
+function startTimerEdit() {
+    if (timerState.isRunning) return;
+    timerState.isEditing = true;
+    timerDisplay.style.opacity = '0';
+    timerEditInput.classList.add('editing');
+    timerEditInput.value = timerDisplay.textContent;
+    timerEditInput.focus();
+    timerEditInput.select();
+}
+
+function finishTimerEdit() {
+    if (!timerState.isEditing) return;
+    timerState.isEditing = false;
+    
+    const value = timerEditInput.value.trim();
+    let totalSeconds = parseTimeInput(value);
+    
+    if (totalSeconds > 0 && totalSeconds <= 180 * 60) {
+        timerState.totalSeconds = totalSeconds;
+        timerState.initialSeconds = totalSeconds;
+        const minutes = Math.ceil(totalSeconds / 60);
+        minutesInput.value = minutes;
+        savePreference('minutes', minutes);
+    }
+    
+    timerEditInput.classList.remove('editing');
+    timerDisplay.style.opacity = '1';
+    updateTimerDisplay();
+    updateArc();
+}
+
+function cancelTimerEdit() {
+    timerState.isEditing = false;
+    timerEditInput.classList.remove('editing');
+    timerDisplay.style.opacity = '1';
+}
+
+function parseTimeInput(value) {
+    if (value.includes(':')) {
+        const parts = value.split(':');
+        const mins = parseInt(parts[0]) || 0;
+        const secs = parseInt(parts[1]) || 0;
+        return mins * 60 + secs;
+    }
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+        return num * 60;
+    }
+    return 0;
+}
+
 function startTimer() {
     if (timerState.isRunning) return;
     
     if (!timerState.intervalId) {
-        const minutes = parseInt(minutesInput.value) || CONFIG.defaultMinutes;
-        timerState.totalSeconds = minutes * 60;
+        timerState.initialSeconds = timerState.totalSeconds;
     }
     
     timerState.isRunning = true;
-    timerInputContainer.classList.add('hidden');
+    timerContainer.classList.add('running');
     startBtn.disabled = true;
     pauseBtn.disabled = false;
     
@@ -274,6 +348,7 @@ function startTimer() {
     timerState.intervalId = setInterval(() => {
         timerState.totalSeconds--;
         updateTimerDisplay();
+        updateArc();
         if (timerState.totalSeconds <= 0) timerComplete();
     }, 1000);
 }
@@ -282,6 +357,7 @@ function pauseTimer() {
     if (!timerState.isRunning) return;
     timerState.isRunning = false;
     clearInterval(timerState.intervalId);
+    timerContainer.classList.remove('running');
     startBtn.disabled = false;
     pauseBtn.disabled = true;
     
@@ -293,14 +369,17 @@ function resetTimer() {
     timerState.intervalId = null;
     const minutes = parseInt(minutesInput.value) || CONFIG.defaultMinutes;
     timerState.totalSeconds = minutes * 60;
+    timerState.initialSeconds = minutes * 60;
     updateTimerDisplay();
-    timerInputContainer.classList.remove('hidden');
+    updateArc();
+    timerContainer.classList.remove('running');
     startBtn.disabled = false;
     pauseBtn.disabled = true;
 }
 
 function timerComplete() {
     pauseTimer();
+    
     showSpeechBubble("Time's up! 🎉");
     
     robotWrapper.classList.add('celebrate');
@@ -323,6 +402,42 @@ function updateTimerDisplay() {
     const mins = Math.floor(timerState.totalSeconds / 60);
     const secs = timerState.totalSeconds % 60;
     timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateArc() {
+    const arcLength = 251.33; // Length of semi-circle arc (π * r = π * 80)
+    const progress = timerState.initialSeconds > 0 
+        ? timerState.totalSeconds / timerState.initialSeconds 
+        : 1;
+    
+    // Fill from left to right (offset decreases as time passes)
+    const offset = arcLength * progress;
+    timerArcProgress.style.strokeDasharray = arcLength;
+    timerArcProgress.style.strokeDashoffset = offset;
+    
+    // Move indicator along the arc
+    // Arc goes from (20, 100) to (180, 100) with center at (100, 100) and radius 80
+    const elapsed = 1 - progress;
+    const angle = Math.PI * elapsed; // 0 to π (left to right)
+    const x = 100 - 80 * Math.cos(angle);
+    const y = 100 - 80 * Math.sin(angle);
+    timerArcIndicator.setAttribute('x', x);
+    timerArcIndicator.setAttribute('y', y);
+}
+
+// Theme indicator emojis
+const THEME_INDICATORS = {
+    space: '🛸',
+    dinosaur: '🦖',
+    dance: '🪩',
+    egypt: '👁️',
+    wizard: '🔮',
+    minecraft: '💎'
+};
+
+function updateThemeIndicator(theme) {
+    const emoji = THEME_INDICATORS[theme] || '🚀';
+    timerArcIndicator.textContent = emoji;
 }
 
 // ========== ANALOG CLOCK ========== //
