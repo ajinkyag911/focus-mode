@@ -22,12 +22,24 @@ const CONFIG = {
 
 // Theme backgrounds (Unsplash - open source)
 const THEMES = {
-    space: 'https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=1920&q=80',
-    dinosaur: 'https://images.unsplash.com/photo-1606856110002-d0991ce78250?w=1920&q=80',
-    dance: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80',
-    egypt: 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1920&q=80',
-    wizard: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&q=80',
-    minecraft: 'https://static.toiimg.com/thumb/msid-121156431,width-1280,height-720,resizemode-4/121156431.jpg'
+    space: 'assets/backgrounds/space.png',
+    dinosaur: 'assets/backgrounds/dinosaur.png',
+    dance: 'assets/backgrounds/dance.png',
+    egypt: 'assets/backgrounds/egypt.png',
+    wizard: 'assets/backgrounds/wizard.png',
+    zombies: 'assets/backgrounds/zombie.png',
+    library: 'assets/backgrounds/library.png'
+};
+
+// Robot images per theme (filename in assets/robots/normal/ and assets/robots/alert/)
+const ROBOT_IMAGES = {
+    space: 'space.png',
+    dinosaur: 'dinosaur.png',
+    dance: 'dance.png',
+    egypt: 'egypt.png',
+    wizard: 'wizard.png',
+    zombies: 'zombie.png',
+    library: 'library.png'
 };
 
 // Random messages for noise alerts
@@ -59,6 +71,7 @@ const resetBtn = document.getElementById('resetBtn');
 
 // Robot
 const robotWrapper = document.getElementById('robotWrapper');
+const robotImage = document.getElementById('robotImage');
 const speechBubble = document.getElementById('speechBubble');
 const speechText = document.getElementById('speechText');
 
@@ -280,6 +293,13 @@ function setTheme(theme) {
     updateClockEmojis(theme);
     updateNoiseMeterLabel(theme);
     updateThemeDecorations(theme);
+    updateRobotImage(theme, false);
+}
+
+function updateRobotImage(theme, isAlert = false) {
+    const filename = ROBOT_IMAGES[theme] || ROBOT_IMAGES.space;
+    const folder = isAlert ? 'alert' : 'normal';
+    robotImage.src = `assets/robots/${folder}/${filename}`;
 }
 
 function updateClockEmojis(theme) {
@@ -474,7 +494,8 @@ const THEME_INDICATORS = {
     dance: '🪩',
     egypt: '👁️',
     wizard: '🔮',
-    minecraft: '💎'
+    zombies: '🧟',
+    library: '📚'
 };
 
 // Theme clock emojis (for 12, 3, 6, 9 positions)
@@ -484,7 +505,8 @@ const THEME_CLOCK_EMOJIS = {
     dance: ['🎵', '💃', '🎶', '🕺'],
     egypt: ['☀️', '🐪', '🏺', '🐍'],
     wizard: ['⭐', '🧙', '📖', '🦉'],
-    minecraft: ['⛏️', '🧱', '💎', '🌲']
+    zombies: ['🧟', '🪦', '💀', '🌙'],
+    library: ['📖', '🦉', '📚', '🕯️']
 };
 
 // Theme noise meter labels
@@ -494,7 +516,8 @@ const THEME_NOISE_LABELS = {
     dance: { quiet: '🎵 Soft Melody', medium: '💃 Dance Floor', loud: '🎸 Rock Concert!' },
     egypt: { quiet: '🏺 Quiet Tomb', medium: '🐪 Desert Winds', loud: '👁️ Pharaoh\'s Call!' },
     wizard: { quiet: '📖 Library Whisper', medium: '✨ Magic Brewing', loud: '🔮 Spell Casting!' },
-    minecraft: { quiet: '🌲 Peaceful Biome', medium: '⛏️ Mining Sounds', loud: '💥 Creeper Boom!' }
+    zombies: { quiet: '🪦 Graveyard Silence', medium: '🦇 Spooky Sounds', loud: '🧟 Zombie Horde!' },
+    library: { quiet: '📖 Silent Reading', medium: '✏️ Page Turning', loud: '📢 Shh! Too Loud!' }
 };
 
 // Theme decorative images (open-source SVG icons from OpenMoji/Twemoji CDN)
@@ -519,9 +542,13 @@ const THEME_DECORATIONS = {
         'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/2728.svg',   // Sparkles
         'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f31f.svg'   // Glowing Star
     ],
-    minecraft: [
-        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9f1.svg',  // Brick
-        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1fab5.svg'   // Wood
+    zombies: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f9df.svg',  // Zombie
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f480.svg'   // Skull
+    ],
+    library: [
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4da.svg',  // Books
+        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f989.svg'   // Owl
     ]
 };
 
@@ -656,10 +683,15 @@ function triggerNoiseAlert() {
     audioState.alertCount++;
     noiseCounter.textContent = audioState.alertCount;
     
+    const currentTheme = document.body.getAttribute('data-theme') || 'space';
+    
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
+    updateRobotImage(currentTheme, true);
+    
     setTimeout(() => {
         robotWrapper.classList.remove('alert');
+        updateRobotImage(currentTheme, false);
         if (timerState.isRunning) {
             robotWrapper.classList.add('studying');
         }

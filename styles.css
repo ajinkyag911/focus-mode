@@ -41,27 +41,31 @@
 
 /* ========== THEMED BACKGROUNDS ========== */
 body[data-theme="space"] {
-    background-image: url('https://images.unsplash.com/photo-1462332420958-a05d1e002413?w=1920&q=80');
+    background-image: url('assets/backgrounds/space.png');
 }
 
 body[data-theme="dinosaur"] {
-    background-image: url('https://images.unsplash.com/photo-1606856110002-d0991ce78250?w=1920&q=80');
+    background-image: url('assets/backgrounds/dinosaur.png');
 }
 
 body[data-theme="dance"] {
-    background-image: url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=1920&q=80');
+    background-image: url('assets/backgrounds/dance.png');
 }
 
 body[data-theme="egypt"] {
-    background-image: url('https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1920&q=80');
+    background-image: url('assets/backgrounds/egypt.png');
 }
 
 body[data-theme="wizard"] {
-    background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&q=80');
+    background-image: url('assets/backgrounds/wizard.png');
 }
 
-body[data-theme="minecraft"] {
-    background-image: url('https://static.toiimg.com/thumb/msid-121156431,width-1280,height-720,resizemode-4/121156431.jpg');
+body[data-theme="zombies"] {
+    background-image: url('assets/backgrounds/zombie.png');
+}
+
+body[data-theme="library"] {
+    background-image: url('assets/backgrounds/library.png');
 }
 
 
@@ -95,15 +99,7 @@ body {
 }
 
 .background-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, var(--overlay-opacity));
-    pointer-events: none;
-    z-index: 0;
-    transition: background 0.5s ease;
+    display: none;
 }
 
 
@@ -454,19 +450,19 @@ body[data-theme="wizard"] .clock-center { background: #f0e68c; box-shadow: 0 0 1
 body[data-theme="wizard"] .hour-marker { text-shadow: 0 0 8px #9b59b6; }
 body[data-theme="wizard"] .clock-label { color: #9b59b6; text-shadow: 0 0 8px rgba(155,89,182,0.4); }
 
-/* Minecraft Theme Clock */
-body[data-theme="minecraft"] .clock-face {
-    background-image: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=400&q=80');
-    --clock-border: #5d4037;
-    --clock-overlay: rgba(30,60,30,0.2);
-    --clock-shadow: 0 0 15px rgba(93, 64, 55, 0.4);
+/* Zombies Theme Clock */
+body[data-theme="zombies"] .clock-face {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --clock-border: #4a0e0e;
+    --clock-overlay: rgba(74,14,14,0.2);
+    --clock-shadow: 0 0 15px rgba(74, 14, 14, 0.4);
 }
-body[data-theme="minecraft"] .hour-hand { background: #4a4a4a; border-radius: 0; width: 6px; }
-body[data-theme="minecraft"] .minute-hand { background: #6a6a6a; border-radius: 0; width: 4px; }
-body[data-theme="minecraft"] .second-hand { background: #e74c3c; border-radius: 0; }
-body[data-theme="minecraft"] .clock-center { background: #4a4a4a; border-radius: 3px; }
-body[data-theme="minecraft"] .hour-marker { text-shadow: 2px 2px 0 rgba(0,0,0,0.8); }
-body[data-theme="minecraft"] .clock-label { color: #5d4037; font-family: 'Courier New', monospace; font-weight: bold; }
+body[data-theme="zombies"] .hour-hand { background: #2d5016; border-radius: 0; width: 6px; }
+body[data-theme="zombies"] .minute-hand { background: #4a7023; border-radius: 0; width: 4px; }
+body[data-theme="zombies"] .second-hand { background: #8b0000; border-radius: 0; }
+body[data-theme="zombies"] .clock-center { background: #2d5016; border-radius: 3px; }
+body[data-theme="zombies"] .hour-marker { text-shadow: 2px 2px 0 rgba(0,0,0,0.8); }
+body[data-theme="zombies"] .clock-label { color: #4a7023; font-family: 'Creepster', cursive; font-weight: bold; }
 
 .hour-marker {
     position: absolute;
@@ -769,12 +765,19 @@ body[data-theme="minecraft"] .clock-label { color: #5d4037; font-family: 'Courie
 }
 
 .robot-wrapper {
+    position: relative;
     width: clamp(120px, 16vw, 180px);
     height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: transform 0.3s ease;
+}
+
+.robot-image {
+    width: clamp(150px, 20vw, 250px);
+    height: clamp(200px, 30vh, 350px);
+    object-fit: contain;
 }
 
 .robot-svg {
@@ -926,10 +929,10 @@ body[data-theme="minecraft"] .clock-label { color: #5d4037; font-family: 'Courie
 
 .speech-bubble {
     position: absolute;
-    bottom: 100%;
-    margin-bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%) scale(0);
+    top: 10%;
+    left: 100%;
+    margin-left: -1px;
+    transform: scale(0);
     background: var(--bg-secondary);
     padding: min(12px, 1.5vh) min(20px, 3vw);
     border-radius: 16px;
@@ -942,32 +945,37 @@ body[data-theme="minecraft"] .clock-label { color: #5d4037; font-family: 'Courie
     z-index: 20;
 }
 
+body[data-theme="space"] .speech-bubble {
+    margin-left: -17px;
+    top: calc(10% + 32px);
+}
+
 .speech-bubble.show {
     animation: popIn 0.3s ease-out forwards;
 }
 
 .speech-bubble-tail {
     position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 16px solid var(--bg-secondary);
+    top: 50%;
+    left: -12px;
+    transform: translateY(-50%);
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-right: 16px solid var(--bg-secondary);
 }
 
 @keyframes popIn {
     0% {
-        transform: translateX(-50%) scale(0);
+        transform: scale(0);
         opacity: 0;
     }
 
     50% {
-        transform: translateX(-50%) scale(1.1);
+        transform: scale(1.1);
     }
 
     100% {
-        transform: translateX(-50%) scale(1);
+        transform: scale(1);
         opacity: 1;
     }
 }
