@@ -62,10 +62,16 @@ body[data-theme="wizard"] {
 
 body[data-theme="zombies"] {
     background-image: url('assets/backgrounds/zombie.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #1a1a2e;
 }
 
 body[data-theme="library"] {
     background-image: url('assets/backgrounds/library.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #2d1b0e;
 }
 
 
@@ -934,15 +940,27 @@ body[data-theme="zombies"] .clock-label { color: #4a7023; font-family: 'Creepste
     margin-left: -1px;
     transform: scale(0);
     background: var(--bg-secondary);
-    padding: min(12px, 1.5vh) min(20px, 3vw);
-    border-radius: 16px;
+    padding: 8px 10px;
+    border-radius: 10px;
     box-shadow: 0 5px 20px var(--shadow-color);
     font-size: clamp(1rem, 2vw, 1.4rem);
     font-weight: 500;
     color: var(--text-primary);
-    white-space: nowrap;
+    white-space: pre-line;
+    text-align: center;
+    min-width: 180px;
     opacity: 0;
     z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#speechText {
+    display: block;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
 }
 
 body[data-theme="space"] .speech-bubble {
@@ -962,6 +980,9 @@ body[data-theme="space"] .speech-bubble {
     border-top: 12px solid transparent;
     border-bottom: 12px solid transparent;
     border-right: 16px solid var(--bg-secondary);
+    flex-shrink: 0;
+    width: 0;
+    height: 0;
 }
 
 @keyframes popIn {

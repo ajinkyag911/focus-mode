@@ -42,20 +42,55 @@ const ROBOT_IMAGES = {
     library: 'library.png'
 };
 
-// Random messages for noise alerts
-const QUIET_MESSAGES = [
-    "Whisper time!", "Let's use quiet voices!", "Oops, a bit loud!",
-    "Soft voices please!", "Time to hush!", "Shhh, quiet time!",
-    "Let's be mice!", "Indoor voices!", "Quieter please!",
-    "Gentle voices!", "Library mode!", "Hush now!",
-    "Too loud, friends!", "Can we whisper?", "Quiet zone!", "Softer please!"
-];
+// Theme-specific messages for noise alerts
+const THEMED_MESSAGES = {
+    space: [
+        "Quiet in\nthe spacecraft! 🚀", "Houston says:\ntoo loud!", "Silent like\nspace! 🌌",
+        "Astronauts\nwhisper! 👨‍🚀", "Zero gravity\nvoices!", "Mission control:\nshhh!",
+        "Starship\nquiet mode! ⭐", "Aliens might\nhear us!"
+    ],
+    dinosaur: [
+        "Don't wake\nthe T-Rex! 🦖", "Quiet or dinos\nwill find us!", "Prehistoric\nwhispers!",
+        "Shhh, raptors\nnearby! 🦕", "Fossils need\nsilence!", "Dino nap\ntime!",
+        "Quiet in\nthe jungle!", "Even pterodactyls\nare quieter!"
+    ],
+    dance: [
+        "Save energy\nfor dancing! 💃", "Quiet between\nsongs!", "Shhh, DJ's\nmixing! 🎧",
+        "Dance floor\nwhispers! 🕺", "Soft moves\nonly!", "Groove\nquietly!",
+        "Keep the rhythm\ninside!", "Silent disco\nmode! 🪩"
+    ],
+    egypt: [
+        "Quiet in\nthe pyramid! 🏛️", "Pharaohs need\nsilence!", "Sphinx says\nshhh! 🐪",
+        "Don't disturb\nthe mummies!", "Ancient whispers\nonly!", "Tomb silence\nplease!",
+        "Hieroglyphic\nhush! ☀️", "Desert calm\nneeded!"
+    ],
+    wizard: [
+        "Quiet for\nthe spell! ✨", "Wizards need\nfocus!", "Shhh, magic\nbrewing! 🧙",
+        "Don't break\nthe enchantment!", "Wand whispers\nonly! 🪄", "Potion needs\nsilence!",
+        "Mystical hush\nplease!", "Spellcasting\nin progress! 🔮"
+    ],
+    zombies: [
+        "Shhh, zombies\nwill hear! 🧟", "Stay quiet\nto survive!", "Don't attract\nthe horde!",
+        "Whisper or\nthey'll find us! 💀", "Undead silence\nneeded!", "Brain-saving\nquiet!",
+        "Zombie apocalypse\nrules: hush!", "The walking dead\nare listening! 🪦"
+    ],
+    library: [
+        "Library voices\nplease! 📚", "Books need\nquiet!", "Shhh, readers\nstudying! 🦉",
+        "Whisper in\nthe stacks!", "Page-turning\nsilence!", "Librarian\nsays hush!",
+        "Quiet reading\nzone! 📖", "Knowledge\nneeds calm! ✏️"
+    ]
+};
 
-// Friendly emojis
-const FACE_EMOJIS = [
-    "🤫", "🙊", "😊", "🐭", "📚", "💤", "🌙", "🤐",
-    "😇", "🙂", "🐰", "🦉", "🧘", "☁️", "🌸", "🍃"
-];
+// Theme-specific emojis
+const THEMED_EMOJIS = {
+    space: ["🚀", "🌟", "👨‍🚀", "🛸", "🌙", "⭐", "🪐", "🌌"],
+    dinosaur: ["🦖", "🦕", "🌿", "🥚", "🌴", "🦴", "🐊", "🌋"],
+    dance: ["💃", "🕺", "🎵", "🎧", "🪩", "✨", "🎤", "🎶"],
+    egypt: ["🏛️", "🐪", "☀️", "⭐", "🏜️", "👑", "🐍", "🌙"],
+    wizard: ["🧙", "✨", "🪄", "🔮", "⚡", "🌟", "📜", "🦉"],
+    zombies: ["🧟", "💀", "🪦", "🧠", "👻", "🦇", "🌙", "⚰️"],
+    library: ["📚", "🦉", "📖", "✏️", "🔖", "📝", "🎓", "💡"]
+};
 
 // ========== DOM ELEMENTS ========== //
 // Timer
@@ -676,14 +711,16 @@ function updateSensitivity(percent) {
 }
 
 function triggerNoiseAlert() {
-    const message = QUIET_MESSAGES[Math.floor(Math.random() * QUIET_MESSAGES.length)];
-    const emoji = FACE_EMOJIS[Math.floor(Math.random() * FACE_EMOJIS.length)];
+    const currentTheme = document.body.getAttribute('data-theme') || 'space';
+    const messages = THEMED_MESSAGES[currentTheme] || THEMED_MESSAGES.space;
+    const emojis = THEMED_EMOJIS[currentTheme] || THEMED_EMOJIS.space;
+    
+    const message = messages[Math.floor(Math.random() * messages.length)];
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
     showSpeechBubble(`${message} ${emoji}`);
     
     audioState.alertCount++;
     noiseCounter.textContent = audioState.alertCount;
-    
-    const currentTheme = document.body.getAttribute('data-theme') || 'space';
     
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
