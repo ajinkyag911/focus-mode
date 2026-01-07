@@ -49,7 +49,7 @@ body[data-theme="dinosaur"] {
 }
 
 body[data-theme="dance"] {
-    background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80');
+    background-image: url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=1920&q=80');
 }
 
 body[data-theme="egypt"] {
@@ -356,11 +356,117 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: var(--bg-secondary);
-    border: 4px solid var(--color-purple);
+    background: var(--clock-bg, var(--bg-secondary));
+    border: 4px solid var(--clock-border, var(--color-purple));
     position: relative;
-    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--clock-shadow, inset 0 3px 10px rgba(0, 0, 0, 0.1));
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
 }
+
+.clock-face::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--clock-overlay, rgba(0,0,0,0.3));
+    pointer-events: none;
+    z-index: 1;
+}
+
+.clock-face .hour-marker,
+.clock-face .clock-hand,
+.clock-face .clock-center {
+    z-index: 2;
+}
+
+/* Space Theme Clock */
+body[data-theme="space"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&q=80');
+    --clock-border: var(--color-purple);
+    --clock-overlay: radial-gradient(circle, rgba(0,20,40,0.25) 0%, rgba(0,10,20,0.4) 100%);
+    --clock-shadow: 0 0 20px rgba(95, 32, 198, 0.4);
+}
+body[data-theme="space"] .hour-hand { background: #ffffff; box-shadow: 0 0 10px var(--color-magenta); }
+body[data-theme="space"] .minute-hand { background: var(--color-purple); box-shadow: 0 0 8px var(--color-purple); }
+body[data-theme="space"] .second-hand { background: var(--color-orange); box-shadow: 0 0 6px var(--color-orange); }
+body[data-theme="space"] .clock-center { background: var(--button-gradient); box-shadow: 0 0 15px var(--color-magenta); }
+body[data-theme="space"] .hour-marker { text-shadow: 0 0 8px var(--color-magenta); }
+body[data-theme="space"] .clock-label { color: var(--color-purple); text-shadow: 0 0 10px rgba(95,32,198,0.5); }
+
+/* Dinosaur Theme Clock */
+body[data-theme="dinosaur"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&q=80');
+    --clock-border: #2d5016;
+    --clock-overlay: radial-gradient(circle, rgba(20,40,10,0.2) 0%, rgba(10,30,5,0.35) 100%);
+    --clock-shadow: 0 0 15px rgba(34, 139, 34, 0.3);
+}
+body[data-theme="dinosaur"] .hour-hand { background: #f5f5dc; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+body[data-theme="dinosaur"] .minute-hand { background: #8B4513; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+body[data-theme="dinosaur"] .second-hand { background: #ff6b35; }
+body[data-theme="dinosaur"] .clock-center { background: #8B4513; border: 2px solid #f5f5dc; }
+body[data-theme="dinosaur"] .hour-marker { text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+body[data-theme="dinosaur"] .clock-label { color: #2d5016; }
+
+/* Dance Theme Clock */
+body[data-theme="dance"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?w=400&q=80');
+    --clock-border: var(--color-magenta);
+    --clock-overlay: radial-gradient(circle, rgba(50,0,50,0.15) 0%, rgba(20,0,30,0.3) 100%);
+    --clock-shadow: 0 0 25px rgba(197, 63, 196, 0.5);
+}
+body[data-theme="dance"] .hour-hand { background: #ffffff; box-shadow: 0 0 10px var(--color-orange); }
+body[data-theme="dance"] .minute-hand { background: var(--color-magenta); box-shadow: 0 0 10px var(--color-magenta); }
+body[data-theme="dance"] .second-hand { background: var(--color-orange); box-shadow: 0 0 8px var(--color-orange); }
+body[data-theme="dance"] .clock-center { background: var(--button-gradient); box-shadow: 0 0 15px var(--color-magenta); }
+body[data-theme="dance"] .hour-marker { text-shadow: 0 0 10px var(--color-magenta); }
+body[data-theme="dance"] .clock-label { color: var(--color-magenta); text-shadow: 0 0 8px rgba(197,63,196,0.4); }
+
+/* Egypt Theme Clock */
+body[data-theme="egypt"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1553913861-c0a351e8f7b4?w=400&q=80');
+    --clock-border: #d4af37;
+    --clock-overlay: radial-gradient(circle, rgba(50,40,20,0.2) 0%, rgba(30,20,10,0.35) 100%);
+    --clock-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+body[data-theme="egypt"] .hour-hand { background: #1a1a1a; box-shadow: 1px 1px 2px rgba(212,175,55,0.5); }
+body[data-theme="egypt"] .minute-hand { background: #d4af37; box-shadow: 0 0 6px rgba(212,175,55,0.6); }
+body[data-theme="egypt"] .second-hand { background: #c41e3a; }
+body[data-theme="egypt"] .clock-center { background: #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.6); }
+body[data-theme="egypt"] .hour-marker { text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+body[data-theme="egypt"] .clock-label { color: #d4af37; }
+
+/* Wizard Theme Clock */
+body[data-theme="wizard"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=400&q=80');
+    --clock-border: #8e44ad;
+    --clock-overlay: radial-gradient(circle, rgba(30,10,50,0.2) 0%, rgba(15,5,30,0.35) 100%);
+    --clock-shadow: 0 0 25px rgba(142, 68, 173, 0.5);
+}
+body[data-theme="wizard"] .hour-hand { background: #f0e68c; box-shadow: 0 0 8px #f0e68c; }
+body[data-theme="wizard"] .minute-hand { background: #9b59b6; box-shadow: 0 0 8px #9b59b6; }
+body[data-theme="wizard"] .second-hand { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+body[data-theme="wizard"] .clock-center { background: #f0e68c; box-shadow: 0 0 12px #f0e68c; }
+body[data-theme="wizard"] .hour-marker { text-shadow: 0 0 8px #9b59b6; }
+body[data-theme="wizard"] .clock-label { color: #9b59b6; text-shadow: 0 0 8px rgba(155,89,182,0.4); }
+
+/* Minecraft Theme Clock */
+body[data-theme="minecraft"] .clock-face {
+    background-image: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=400&q=80');
+    --clock-border: #5d4037;
+    --clock-overlay: rgba(30,60,30,0.2);
+    --clock-shadow: 0 0 15px rgba(93, 64, 55, 0.4);
+}
+body[data-theme="minecraft"] .hour-hand { background: #4a4a4a; border-radius: 0; width: 6px; }
+body[data-theme="minecraft"] .minute-hand { background: #6a6a6a; border-radius: 0; width: 4px; }
+body[data-theme="minecraft"] .second-hand { background: #e74c3c; border-radius: 0; }
+body[data-theme="minecraft"] .clock-center { background: #4a4a4a; border-radius: 3px; }
+body[data-theme="minecraft"] .hour-marker { text-shadow: 2px 2px 0 rgba(0,0,0,0.8); }
+body[data-theme="minecraft"] .clock-label { color: #5d4037; font-family: 'Courier New', monospace; font-weight: bold; }
 
 .hour-marker {
     position: absolute;
