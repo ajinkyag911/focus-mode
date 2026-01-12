@@ -21,8 +21,9 @@
     --text-secondary: #666666;
     --text-muted: #999999;
     
-    /* Sidebar */
-    --sidebar-width: 320px;
+    /* Sidebar - width calculated so 2 square cards fit vertically */
+    /* 100vh - theme(40px) - musicPlayer(50px) - 3gaps(30px) - 2padding(24px) = available for 2 cards */
+    --sidebar-width: calc((100vh - 144px) / 2 + 24px);
     --sidebar-padding: 12px;
     --card-radius: 20px;
     --card-gap: 10px;
@@ -158,6 +159,7 @@ body {
     align-items: center;
     justify-content: center;
     flex: 1;
+    aspect-ratio: 1 / 1;
     padding: 16px;
 }
 
@@ -288,6 +290,7 @@ body {
     align-items: center;
     justify-content: center;
     flex: 1;
+    aspect-ratio: 1 / 1;
     padding: 16px;
 }
 
