@@ -22,7 +22,7 @@
     --text-muted: #999999;
     
     /* Sidebar */
-    --sidebar-width: 280px;
+    --sidebar-width: 320px;
     --sidebar-padding: 12px;
     --card-radius: 20px;
     --card-gap: 10px;
@@ -156,21 +156,23 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 12px;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    padding: 16px;
 }
 
 .card-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--color-purple-dark);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
 .timer-arc-container {
     position: relative;
     width: 100%;
-    max-width: 200px;
+    max-width: 240px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -207,7 +209,7 @@ body {
 }
 
 .timer-display {
-    font-size: 38px;
+    font-size: 48px;
     font-weight: 700;
     color: var(--color-purple-dark);
     letter-spacing: -1px;
@@ -225,11 +227,11 @@ body {
     bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 38px;
+    font-size: 48px;
     font-weight: 700;
     color: var(--color-purple-dark);
     text-align: center;
-    width: 130px;
+    width: 160px;
     border: none;
     background: transparent;
     font-family: inherit;
@@ -245,13 +247,13 @@ body {
 
 .timer-controls {
     display: flex;
-    gap: 6px;
-    margin-top: 6px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 .timer-btn {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: 50%;
     background: #f5f5f5;
@@ -284,7 +286,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 14px 16px 12px;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    padding: 16px;
 }
 
 .noise-card.hidden {
@@ -299,7 +303,7 @@ body {
 }
 
 .gauge {
-    width: 120px;
+    width: 160px;
     height: auto;
 }
 
@@ -341,10 +345,10 @@ body {
 }
 
 .gauge-label {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 6px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -353,8 +357,8 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 14px;
 }
 
 .sensitivity-slider {
