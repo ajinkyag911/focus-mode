@@ -22,8 +22,8 @@
     --text-muted: #999999;
     
     /* Sidebar - width calculated so 2 square cards fit vertically */
-    /* 100vh - theme(40px) - musicPlayer(50px) - 3gaps(30px) - 2padding(24px) = available for 2 cards */
-    --sidebar-width: calc((100vh - 144px) / 2 + 24px);
+    /* 100vh - theme(40px) - musicPlayer(60px) - 3gaps(30px) - 2padding(24px) = available for 2 cards */
+    --sidebar-width: calc((100vh - 154px) / 2 + 24px);
     --sidebar-padding: 12px;
     --card-radius: 20px;
     --card-gap: 10px;
@@ -111,9 +111,9 @@ body {
 .theme-selector {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
+    justify-content: space-between;
     padding: 8px 0;
+    width: 100%;
 }
 
 .theme-label {
@@ -466,15 +466,16 @@ body {
 .music-player {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: var(--card-bg);
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);
-    padding: 12px 16px;
+    padding: 10px 12px;
     margin-top: auto;
     flex-shrink: 0;
     width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .play-btn {
@@ -508,8 +509,8 @@ body {
 
 .music-select {
     flex: 1;
-    padding: 8px 28px 8px 12px;
-    font-size: 13px;
+    padding: 8px 24px 8px 10px;
+    font-size: 12px;
     font-family: inherit;
     font-weight: 500;
     border: 1px solid #e0e0e0;
@@ -520,8 +521,11 @@ body {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 8px center;
+    background-position: right 6px center;
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .music-select:focus {
