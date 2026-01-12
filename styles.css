@@ -22,9 +22,9 @@
     --text-muted: #999999;
     
     /* Sidebar - width calculated so 2 square cards fit vertically */
-    /* 100vh - theme(40px) - musicPlayer(60px) - 3gaps(30px) - 2padding(24px) = available for 2 cards */
-    --sidebar-width: calc((100vh - 154px) / 2 + 24px);
-    --sidebar-padding: 12px;
+    /* 100vh - theme(40px) - musicPlayer(70px) - 3gaps(30px) - 2padding(32px) = available for 2 cards */
+    --sidebar-width: calc((100vh - 172px) / 2 + 32px);
+    --sidebar-padding: 16px;
     --card-radius: 20px;
     --card-gap: 10px;
 
@@ -472,7 +472,6 @@ body {
     box-shadow: var(--card-shadow);
     padding: 10px 12px;
     margin-top: auto;
-    margin-bottom: 8px;
     flex-shrink: 0;
     width: 100%;
     box-sizing: border-box;
