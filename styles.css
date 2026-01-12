@@ -117,7 +117,7 @@ body {
 }
 
 .theme-label {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -472,6 +472,7 @@ body {
     box-shadow: var(--card-shadow);
     padding: 10px 12px;
     margin-top: auto;
+    margin-bottom: 8px;
     flex-shrink: 0;
     width: 100%;
     box-sizing: border-box;
