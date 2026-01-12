@@ -319,14 +319,14 @@ body {
 .gauge-bg {
     fill: none;
     stroke: #f0f0f0;
-    stroke-width: 10;
+    stroke-width: 6;
     stroke-linecap: round;
 }
 
 .gauge-fill {
     fill: none;
     stroke: url(#gaugeGradient);
-    stroke-width: 10;
+    stroke-width: 6;
     stroke-linecap: round;
     stroke-dasharray: 126;
     stroke-dashoffset: 126;
@@ -335,7 +335,7 @@ body {
 
 .gauge-threshold {
     stroke: #F44336;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-linecap: round;
     stroke-dasharray: 4, 3;
     opacity: 0.8;
@@ -343,7 +343,7 @@ body {
 
 .gauge-needle {
     stroke: #333;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-linecap: round;
     transform-origin: 50px 50px;
     transition: transform 0.1s ease;
