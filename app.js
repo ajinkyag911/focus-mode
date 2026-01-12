@@ -97,8 +97,7 @@ const THEMED_EMOJIS = {
 const timerDisplay = document.getElementById('timerDisplay');
 const timerEditInput = document.getElementById('timerEditInput');
 const timerArcProgress = document.getElementById('timerArcProgress');
-const timerArcIndicator = document.getElementById('timerArcIndicator');
-const timerContainer = document.querySelector('.timer-container');
+const timerCard = document.querySelector('.timer-card');
 const minutesInput = document.getElementById('minutesInput');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
@@ -116,17 +115,9 @@ const micBtn = document.getElementById('micBtn');
 const gaugeFill = document.getElementById('gaugeFill');
 const gaugeNeedle = document.getElementById('gaugeNeedle');
 const gaugeThreshold = document.getElementById('gaugeThreshold');
-const gaugeThresholdLabel = document.getElementById('gaugeThresholdLabel');
 const noiseCounter = document.getElementById('noiseCounter');
 const sensitivitySlider = document.getElementById('sensitivitySlider');
 const sensitivityValue = document.getElementById('sensitivityValue');
-
-// Clock
-const clockContainer = document.getElementById('clockContainer');
-const hourHand = document.getElementById('hourHand');
-const minuteHand = document.getElementById('minuteHand');
-const secondHand = document.getElementById('secondHand');
-const digitalTime = document.getElementById('digitalTime');
 
 // Audio
 const audioPlayBtn = document.getElementById('audioPlayBtn');
@@ -134,11 +125,8 @@ const audioPlayIcon = document.getElementById('audioPlayIcon');
 const radioChannel = document.getElementById('radioChannel');
 const audioPlayer = document.getElementById('audioPlayer');
 
-// Bottom bar toggles
+// Theme
 const themeSelect = document.getElementById('themeSelect');
-const robotToggleBtn = document.getElementById('robotToggleBtn');
-const noiseMeterToggleBtn = document.getElementById('noiseMeterToggleBtn');
-const clockToggleBtn = document.getElementById('clockToggleBtn');
 
 // ========== STATE ========== //
 let timerState = {
@@ -164,8 +152,7 @@ let musicState = {
 
 let componentVisibility = {
     robot: true,
-    noiseMeter: true,
-    clock: true
+    noiseMeter: true
 };
 
 // ========== INITIALIZATION ========== //
@@ -174,9 +161,6 @@ function init() {
     updateTimerDisplay();
     updateArc();
     setupEventListeners();
-    startClock();
-    addGaugeGradient();
-    updateToggleButtons();
     console.log('🤖 Focus Mode initialized!');
 }
 
@@ -196,12 +180,6 @@ function loadPreferences() {
     if (localStorage.getItem('focusMode_noiseMeterHidden') === 'true') {
         componentVisibility.noiseMeter = false;
         noiseMeterContainer.classList.add('hidden');
-    }
-    
-    // Clock visibility
-    if (localStorage.getItem('focusMode_clockHidden') === 'true') {
-        componentVisibility.clock = false;
-        clockContainer.classList.add('hidden');
     }
     
     // Noise sensitivity
@@ -299,11 +277,6 @@ function setupEventListeners() {
         savePreference('theme', theme);
     });
     
-    // Component toggles
-    robotToggleBtn.addEventListener('click', toggleRobot);
-    noiseMeterToggleBtn.addEventListener('click', toggleNoiseMeter);
-    clockToggleBtn.addEventListener('click', toggleClock);
-    
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboard);
 }
@@ -324,10 +297,7 @@ function handleKeyboard(e) {
 // ========== THEME ========== //
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
-    updateThemeIndicator(theme);
-    updateClockEmojis(theme);
     updateNoiseMeterLabel(theme);
-    updateThemeDecorations(theme);
     updateRobotImage(theme, false);
 }
 
@@ -335,14 +305,6 @@ function updateRobotImage(theme, isAlert = false) {
     const filename = ROBOT_IMAGES[theme] || ROBOT_IMAGES.space;
     const folder = isAlert ? 'alert' : 'normal';
     robotImage.src = `assets/robots/${folder}/${filename}`;
-}
-
-function updateClockEmojis(theme) {
-    const emojis = THEME_CLOCK_EMOJIS[theme] || THEME_CLOCK_EMOJIS.space;
-    const markers = document.querySelectorAll('.hour-marker');
-    markers.forEach((marker, index) => {
-        marker.textContent = emojis[index];
-    });
 }
 
 function updateNoiseMeterLabel(theme, noiseLevel = 0) {
@@ -359,21 +321,6 @@ function updateNoiseMeterLabel(theme, noiseLevel = 0) {
         label = labels.loud;
     }
     gaugeLabel.textContent = label;
-}
-
-function updateThemeDecorations(theme) {
-    let container = document.getElementById('themeDecorations');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'themeDecorations';
-        container.className = 'theme-decorations';
-        document.body.appendChild(container);
-    }
-    
-    const images = THEME_DECORATIONS[theme] || THEME_DECORATIONS.space;
-    container.innerHTML = images.map((src, i) => 
-        `<img src="${src}" class="theme-decoration decoration-${i + 1}" alt="" />`
-    ).join('');
 }
 
 // ========== TIMER ========== //
@@ -436,7 +383,7 @@ function startTimer() {
     }
     
     timerState.isRunning = true;
-    timerContainer.classList.add('running');
+    timerCard.classList.add('running');
     startBtn.disabled = true;
     pauseBtn.disabled = false;
     
@@ -454,7 +401,7 @@ function pauseTimer() {
     if (!timerState.isRunning) return;
     timerState.isRunning = false;
     clearInterval(timerState.intervalId);
-    timerContainer.classList.remove('running');
+    timerCard.classList.remove('running');
     startBtn.disabled = false;
     pauseBtn.disabled = true;
     
@@ -469,7 +416,7 @@ function resetTimer() {
     timerState.initialSeconds = minutes * 60;
     updateTimerDisplay();
     updateArc();
-    timerContainer.classList.remove('running');
+    timerCard.classList.remove('running');
     startBtn.disabled = false;
     pauseBtn.disabled = true;
 }
@@ -511,15 +458,6 @@ function updateArc() {
     const offset = arcLength * progress;
     timerArcProgress.style.strokeDasharray = arcLength;
     timerArcProgress.style.strokeDashoffset = offset;
-    
-    // Move indicator along the arc
-    // Arc goes from (20, 100) to (180, 100) with center at (100, 100) and radius 80
-    const elapsed = 1 - progress;
-    const angle = Math.PI * elapsed; // 0 to π (left to right)
-    const x = 100 - 80 * Math.cos(angle);
-    const y = 100 - 80 * Math.sin(angle);
-    timerArcIndicator.setAttribute('x', x);
-    timerArcIndicator.setAttribute('y', y);
 }
 
 // Theme indicator emojis
@@ -586,38 +524,6 @@ const THEME_DECORATIONS = {
         'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f989.svg'   // Owl
     ]
 };
-
-function updateThemeIndicator(theme) {
-    const emoji = THEME_INDICATORS[theme] || '🚀';
-    timerArcIndicator.textContent = emoji;
-}
-
-// ========== ANALOG CLOCK ========== //
-function startClock() {
-    updateClock();
-    setInterval(updateClock, 1000);
-}
-
-function updateClock() {
-    const now = new Date();
-    const hours = now.getHours() % 12;
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    
-    const hourDeg = (hours * 30) + (minutes * 0.5);
-    const minDeg = minutes * 6;
-    const secDeg = seconds * 6;
-    
-    hourHand.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-    minuteHand.style.transform = `translateX(-50%) rotate(${minDeg}deg)`;
-    secondHand.style.transform = `translateX(-50%) rotate(${secDeg}deg)`;
-    
-    const hours24 = now.getHours();
-    const ampm = hours24 >= 12 ? 'PM' : 'AM';
-    const hours12 = hours24 % 12 || 12;
-    const m = minutes.toString().padStart(2, '0');
-    digitalTime.textContent = `${hours12}:${m} ${ampm}`;
-}
 
 // ========== NOISE DETECTION ========== //
 async function toggleMicrophone() {
@@ -700,14 +606,6 @@ function updateGauge(percent) {
 function updateSensitivity(percent) {
     const angle = -90 + (percent / 100) * 180;
     gaugeThreshold.setAttribute('transform', `rotate(${angle}, 50, 50)`);
-    
-    const labelAngle = (angle - 90) * Math.PI / 180;
-    const labelRadius = 42;
-    const labelX = 50 + Math.cos(labelAngle) * labelRadius;
-    const labelY = 50 + Math.sin(labelAngle) * labelRadius;
-    gaugeThresholdLabel.setAttribute('x', labelX);
-    gaugeThresholdLabel.setAttribute('y', labelY);
-    gaugeThresholdLabel.textContent = `${percent}%`;
 }
 
 function triggerNoiseAlert() {
@@ -772,34 +670,6 @@ function stopMusic() {
     
     audioPlayBtn.classList.remove('active');
     audioPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-}
-
-// ========== COMPONENT TOGGLES ========== //
-function toggleRobot() {
-    componentVisibility.robot = !componentVisibility.robot;
-    document.body.classList.toggle('robot-hidden', !componentVisibility.robot);
-    savePreference('robotHidden', !componentVisibility.robot);
-    updateToggleButtons();
-}
-
-function toggleNoiseMeter() {
-    componentVisibility.noiseMeter = !componentVisibility.noiseMeter;
-    noiseMeterContainer.classList.toggle('hidden', !componentVisibility.noiseMeter);
-    savePreference('noiseMeterHidden', !componentVisibility.noiseMeter);
-    updateToggleButtons();
-}
-
-function toggleClock() {
-    componentVisibility.clock = !componentVisibility.clock;
-    clockContainer.classList.toggle('hidden', !componentVisibility.clock);
-    savePreference('clockHidden', !componentVisibility.clock);
-    updateToggleButtons();
-}
-
-function updateToggleButtons() {
-    robotToggleBtn.classList.toggle('active', componentVisibility.robot);
-    noiseMeterToggleBtn.classList.toggle('active', componentVisibility.noiseMeter);
-    clockToggleBtn.classList.toggle('active', componentVisibility.clock);
 }
 
 // ========== START ========== //
