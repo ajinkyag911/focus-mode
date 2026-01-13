@@ -128,6 +128,7 @@ const audioPlayer = document.getElementById('audioPlayer');
 
 // Theme
 const themeSelect = document.getElementById('themeSelect');
+const timerThemeIndicator = document.getElementById('timerThemeIndicator');
 
 // ========== STATE ========== //
 let timerState = {
@@ -296,10 +297,53 @@ function handleKeyboard(e) {
 }
 
 // ========== THEME ========== //
+// Theme-specific noise meter colors (based on background image colors)
+const THEME_GAUGE_COLORS = {
+    space: { start: '#1a237e', mid: '#5c6bc0', end: '#e91e63', needle: '#7c4dff' },
+    dinosaur: { start: '#2e7d32', mid: '#8bc34a', end: '#ff5722', needle: '#4e342e' },
+    dance: { start: '#e91e63', mid: '#ff4081', end: '#7b1fa2', needle: '#f50057' },
+    egypt: { start: '#ff8f00', mid: '#ffc107', end: '#d84315', needle: '#5d4037' },
+    wizard: { start: '#4a148c', mid: '#9c27b0', end: '#e91e63', needle: '#7c4dff' },
+    zombies: { start: '#1b5e20', mid: '#4caf50', end: '#b71c1c', needle: '#212121' },
+    library: { start: '#3e2723', mid: '#8d6e63', end: '#bf360c', needle: '#4e342e' }
+};
+
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
     updateNoiseMeterLabel(theme);
     updateRobotForTheme(theme);
+    updateTimerThemeIndicator(theme);
+    updateNoiseMeterColors(theme);
+}
+
+function updateNoiseMeterColors(theme) {
+    const colors = THEME_GAUGE_COLORS[theme] || THEME_GAUGE_COLORS.space;
+    
+    // Update gradient stops
+    const gradient = document.getElementById('gaugeGradient');
+    if (gradient) {
+        const stops = gradient.querySelectorAll('stop');
+        if (stops.length >= 3) {
+            stops[0].style.stopColor = colors.start;
+            stops[1].style.stopColor = colors.mid;
+            stops[2].style.stopColor = colors.end;
+        }
+    }
+    
+    // Update needle and center colors
+    if (gaugeNeedle) {
+        gaugeNeedle.style.stroke = colors.needle;
+    }
+    const gaugeCenter = document.querySelector('.gauge-center');
+    if (gaugeCenter) {
+        gaugeCenter.style.fill = colors.needle;
+    }
+}
+
+function updateTimerThemeIndicator(theme) {
+    if (timerThemeIndicator) {
+        timerThemeIndicator.textContent = THEME_INDICATORS[theme] || THEME_INDICATORS.space;
+    }
 }
 
 function updateRobotForTheme(theme) {
@@ -541,6 +585,30 @@ function updateArc() {
     const offset = arcLength * progress;
     timerArcProgress.style.strokeDasharray = arcLength;
     timerArcProgress.style.strokeDashoffset = offset;
+    
+    // Update indicator position along the arc
+    updateIndicatorPosition(progress);
+}
+
+function updateIndicatorPosition(progress) {
+    if (!timerThemeIndicator) return;
+    
+    // Indicator starts at left (progress=1) and moves to right (progress=0)
+    // angle = π when progress=1 (left), angle = 0 when progress=0 (right)
+    const angle = Math.PI * progress;
+    
+    // Calculate position on the arc (viewBox is 200x120, arc center at 100,100)
+    const centerX = 50; // percentage
+    const centerY = 83; // percentage (100/120 ≈ 83%)
+    const radiusX = 40; // percentage (80/200 = 40%)
+    const radiusY = 67; // percentage (80/120 ≈ 67%)
+    
+    // cos(π) = -1 (left), cos(0) = 1 (right)
+    const x = centerX + radiusX * Math.cos(angle);
+    const y = centerY - radiusY * Math.sin(angle);
+    
+    timerThemeIndicator.style.left = `${x}%`;
+    timerThemeIndicator.style.top = `${y}%`;
 }
 
 // Theme indicator emojis

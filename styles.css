@@ -251,6 +251,16 @@ body {
     outline: none;
 }
 
+/* Timer theme indicator - positioned along the arc */
+.timer-theme-indicator {
+    position: absolute;
+    font-size: clamp(20px, 3.5vh, 32px);
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    transition: left 0.5s ease, top 0.5s ease;
+    transform: translate(-50%, -50%);
+}
+
 .timer-controls {
     display: flex;
     gap: clamp(8px, 1.5vh, 14px);

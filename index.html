@@ -39,9 +39,9 @@
                 <svg class="timer-arc" viewBox="0 0 200 120">
                     <defs>
                         <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#E8D5FF"/>
-                            <stop offset="50%" style="stop-color:#C4A3FF"/>
-                            <stop offset="100%" style="stop-color:#E8D5FF"/>
+                            <stop offset="0%" style="stop-color:#9B7ED9"/>
+                            <stop offset="50%" style="stop-color:#7B5FC4"/>
+                            <stop offset="100%" style="stop-color:#9B7ED9"/>
                         </linearGradient>
                     </defs>
                     <!-- Background arc -->
@@ -49,6 +49,7 @@
                     <!-- Progress arc -->
                     <path class="timer-arc-progress" id="timerArcProgress" d="M20 100 A80 80 0 0 1 180 100" />
                 </svg>
+                <span class="timer-theme-indicator" id="timerThemeIndicator">🛸</span>
                 <div class="timer-display-wrapper">
                     <div class="timer-display" id="timerDisplay" tabindex="0">00:00</div>
                     <input type="text" class="timer-edit-input" id="timerEditInput" pattern="[0-9:]*" maxlength="5" value="05:00">
