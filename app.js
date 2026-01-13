@@ -106,6 +106,7 @@ const resetBtn = document.getElementById('resetBtn');
 // Robot
 const robotWrapper = document.getElementById('robotWrapper');
 const robotImage = document.getElementById('robotImage');
+const robotVideo = document.getElementById('robotVideo');
 const speechBubble = document.getElementById('speechBubble');
 const speechText = document.getElementById('speechText');
 
@@ -298,7 +299,24 @@ function handleKeyboard(e) {
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
     updateNoiseMeterLabel(theme);
-    updateRobotImage(theme, false);
+    updateRobotForTheme(theme);
+}
+
+function updateRobotForTheme(theme) {
+    if (theme === 'dinosaur') {
+        // Show video, hide image for dinosaur theme
+        robotImage.style.display = 'none';
+        robotVideo.style.display = 'block';
+        robotVideo.currentTime = 0;
+        robotVideo.pause(); // Start paused at 0 sec (normal state)
+        dinosaurAlertState = false;
+    } else {
+        // Show image, hide video for other themes
+        robotImage.style.display = 'block';
+        robotVideo.style.display = 'none';
+        robotVideo.pause();
+        updateRobotImage(theme, false);
+    }
 }
 
 function updateRobotImage(theme, isAlert = false) {
@@ -307,20 +325,85 @@ function updateRobotImage(theme, isAlert = false) {
     robotImage.src = `assets/robots/${folder}/${filename}`;
 }
 
+// Dinosaur video alert state
+// Normal: paused at 0 seconds
+// Alert: plays from 0 to 4 seconds, stays at 4 while noise is high
+// When noise goes low: plays from 4 to end, then resets to 0
+let dinosaurAlertState = false;
+let dinosaurTransitioning = false;
+let dinosaurAtAlertFrame = false;
+let dinosaurPlayingToAlert = false;
+
+function keepDinosaurAtAlert() {
+    if (document.body.getAttribute('data-theme') !== 'dinosaur') return;
+    
+    // If already at alert frame, keep it there
+    if (dinosaurAtAlertFrame) {
+        return;
+    }
+    
+    // If already playing towards alert, let it continue
+    if (dinosaurPlayingToAlert) {
+        // Check if reached 4 seconds
+        if (robotVideo.currentTime >= 4) {
+            robotVideo.pause();
+            dinosaurAtAlertFrame = true;
+            dinosaurPlayingToAlert = false;
+        }
+        return;
+    }
+    
+    // If transitioning back to normal, let it finish first
+    if (dinosaurTransitioning) {
+        return;
+    }
+    
+    // Start playing to alert if not already
+    if (!dinosaurAlertState) {
+        dinosaurAlertState = true;
+        dinosaurPlayingToAlert = true;
+        robotVideo.play();
+    }
+}
+
+function releaseDinosaurFromAlert() {
+    if (document.body.getAttribute('data-theme') !== 'dinosaur') return;
+    if (dinosaurTransitioning) return;
+    if (dinosaurPlayingToAlert) return; // Let it finish playing to alert first
+    if (!dinosaurAlertState && !dinosaurAtAlertFrame) return;
+    
+    dinosaurAlertState = false;
+    dinosaurAtAlertFrame = false;
+    dinosaurTransitioning = true;
+    
+    // Continue playing from current position to end, then reset to 0
+    robotVideo.play();
+    
+    const checkEndTime = () => {
+        if (robotVideo.ended || robotVideo.currentTime >= robotVideo.duration - 0.1) {
+            robotVideo.pause();
+            robotVideo.currentTime = 0;
+            dinosaurTransitioning = false;
+        } else if (dinosaurTransitioning) {
+            requestAnimationFrame(checkEndTime);
+        }
+    };
+    requestAnimationFrame(checkEndTime);
+}
+
+function setDinosaurAlertState(isAlert) {
+    // This function is now handled by keepDinosaurAtAlert and releaseDinosaurFromAlert
+    // Keeping for backwards compatibility with triggerNoiseAlert
+    if (isAlert) {
+        keepDinosaurAtAlert();
+    }
+}
+
 function updateNoiseMeterLabel(theme, noiseLevel = 0) {
-    const labels = THEME_NOISE_LABELS[theme] || THEME_NOISE_LABELS.space;
     const gaugeLabel = document.querySelector('.gauge-label');
     if (!gaugeLabel) return;
     
-    let label;
-    if (noiseLevel < 30) {
-        label = labels.quiet;
-    } else if (noiseLevel < 70) {
-        label = labels.medium;
-    } else {
-        label = labels.loud;
-    }
-    gaugeLabel.textContent = label;
+    gaugeLabel.textContent = '🔊 Noise Level';
 }
 
 // ========== TIMER ========== //
@@ -580,7 +663,19 @@ function analyzeAudio() {
     const volumePercent = Math.min(100, normalizedVolume * 200);
     updateGauge(volumePercent);
     
-    if (volumePercent > parseInt(sensitivitySlider.value)) {
+    const isNoiseHigh = volumePercent > parseInt(sensitivitySlider.value);
+    
+    // Handle dinosaur video state continuously
+    const currentTheme = document.body.getAttribute('data-theme');
+    if (currentTheme === 'dinosaur') {
+        if (isNoiseHigh) {
+            keepDinosaurAtAlert();
+        } else {
+            releaseDinosaurFromAlert();
+        }
+    }
+    
+    if (isNoiseHigh) {
         const now = Date.now();
         if (now - audioState.lastAlertTime > CONFIG.alertCooldown) {
             triggerNoiseAlert();
@@ -622,15 +717,25 @@ function triggerNoiseAlert() {
     
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
-    updateRobotImage(currentTheme, true);
+    
+    // Handle dinosaur video alert state
+    if (currentTheme === 'dinosaur') {
+        setDinosaurAlertState(true);
+    } else {
+        updateRobotImage(currentTheme, true);
+    }
     
     setTimeout(() => {
         robotWrapper.classList.remove('alert');
-        updateRobotImage(currentTheme, false);
+        if (currentTheme === 'dinosaur') {
+            setDinosaurAlertState(false);
+        } else {
+            updateRobotImage(currentTheme, false);
+        }
         if (timerState.isRunning) {
             robotWrapper.classList.add('studying');
         }
-    }, 500);
+    }, CONFIG.speechBubbleDuration);
 }
 
 function showSpeechBubble(message) {

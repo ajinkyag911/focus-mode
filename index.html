@@ -91,7 +91,7 @@
                     <line class="gauge-needle" id="gaugeNeedle" x1="50" y1="50" x2="50" y2="15" />
                     <circle class="gauge-center" cx="50" cy="50" r="4" />
                 </svg>
-                <span class="gauge-label">Noise Level</span>
+                <span class="gauge-label">🔊 Noise Level</span>
             </div>
             <div class="sensitivity-control">
                 <input type="range" id="sensitivitySlider" min="10" max="90" value="70" class="sensitivity-slider">
@@ -136,6 +136,7 @@
         <div class="robot-container">
             <div class="robot-wrapper" id="robotWrapper">
                 <img class="robot-image" id="robotImage" src="assets/robots/normal/space.png" alt="Robot">
+                <video class="robot-video" id="robotVideo" src="assets/videos/dinosaur.mp4" muted playsinline style="display: none;"></video>
                 <div class="speech-bubble" id="speechBubble">
                     <span id="speechText">Shhh!</span>
                     <div class="speech-bubble-tail"></div>
