@@ -325,6 +325,7 @@ function setTheme(theme) {
     updateRobotForTheme(theme);
     updateTimerThemeIndicator(theme);
     updateNoiseMeterColors(theme);
+    updateTimerTitle(theme);
 }
 
 function updateNoiseMeterColors(theme) {
@@ -354,6 +355,13 @@ function updateNoiseMeterColors(theme) {
 function updateTimerThemeIndicator(theme) {
     if (timerThemeIndicator) {
         timerThemeIndicator.textContent = THEME_INDICATORS[theme] || THEME_INDICATORS.space;
+    }
+}
+
+function updateTimerTitle(theme) {
+    const cardTitle = document.querySelector('.card-title');
+    if (cardTitle) {
+        cardTitle.textContent = THEME_TIMER_TITLES[theme] || THEME_TIMER_TITLES.space;
     }
 }
 
@@ -649,6 +657,17 @@ const THEME_INDICATORS = {
     wizard: '🔮',
     zombies: '🧟',
     library: '📚'
+};
+
+// Theme timer titles
+const THEME_TIMER_TITLES = {
+    space: 'Launch Timer',
+    dinosaur: 'Dino Clock',
+    dance: 'Dance Timer',
+    egypt: 'Sand Timer',
+    wizard: 'Wizard Watch',
+    zombies: 'Spooky Timer',
+    library: 'Study Timer'
 };
 
 // Theme clock emojis (for 12, 3, 6, 9 positions)
