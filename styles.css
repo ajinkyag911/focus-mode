@@ -5,6 +5,14 @@
  * New sidebar layout matching Frame.png design
  */
 
+/* ========== FONT IMPORTS ========== */
+@import url('https://fonts.cdnfonts.com/css/african-2');
+@import url('https://fonts.cdnfonts.com/css/budmo');
+@import url('https://fonts.cdnfonts.com/css/norse');
+@import url('https://fonts.cdnfonts.com/css/bradley-gratis');
+@import url('https://fonts.cdnfonts.com/css/goodfish');
+@import url('https://fonts.cdnfonts.com/css/good-timing');
+
 /* ========== CSS VARIABLES ========== */
 :root {
     /* Primary Colors */
@@ -61,6 +69,51 @@ body[data-theme="zombies"] {
 
 body[data-theme="library"] {
     --bg-image: url('assets/backgrounds/library.png');
+}
+
+
+/* ========== THEME FONTS ========== */
+/* Theme fonts apply to UI elements except theme selector */
+body[data-theme="space"] .card,
+body[data-theme="space"] .music-player,
+body[data-theme="space"] .speech-bubble {
+    font-family: 'Good Timing', sans-serif;
+}
+
+body[data-theme="dinosaur"] .card,
+body[data-theme="dinosaur"] .music-player,
+body[data-theme="dinosaur"] .speech-bubble {
+    font-family: 'African', sans-serif;
+}
+
+body[data-theme="dance"] .card,
+body[data-theme="dance"] .music-player,
+body[data-theme="dance"] .speech-bubble {
+    font-family: 'Budmo', sans-serif;
+}
+
+body[data-theme="egypt"] .card,
+body[data-theme="egypt"] .music-player,
+body[data-theme="egypt"] .speech-bubble {
+    font-family: 'Norse', sans-serif;
+}
+
+body[data-theme="wizard"] .card,
+body[data-theme="wizard"] .music-player,
+body[data-theme="wizard"] .speech-bubble {
+    font-family: 'Bradley Gratis', cursive;
+}
+
+body[data-theme="zombies"] .card,
+body[data-theme="zombies"] .music-player,
+body[data-theme="zombies"] .speech-bubble {
+    font-family: 'Creepster', cursive;
+}
+
+body[data-theme="library"] .card,
+body[data-theme="library"] .music-player,
+body[data-theme="library"] .speech-bubble {
+    font-family: 'Goodfish', serif;
 }
 
 
@@ -168,7 +221,7 @@ body {
 }
 
 .card-title {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 600;
     color: var(--color-purple-dark);
     margin-bottom: 8px;
@@ -208,17 +261,17 @@ body {
 
 .timer-display-wrapper {
     position: absolute;
-    bottom: 15%;
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
 }
 
 .timer-display {
-    font-size: clamp(28px, 6vh, 56px);
+    font-size: clamp(32px, 7vh, 64px);
     font-weight: 700;
     color: var(--color-purple-dark);
-    letter-spacing: -1px;
+    letter-spacing: 2px;
     cursor: pointer;
     transition: color var(--transition-fast);
 }
@@ -233,14 +286,15 @@ body {
     bottom: 15%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: clamp(28px, 6vh, 56px);
+    font-size: clamp(32px, 7vh, 64px);
     font-weight: 700;
     color: var(--color-purple-dark);
     text-align: center;
-    width: 200px;
+    width: 220px;
     border: none;
     background: transparent;
     font-family: inherit;
+    letter-spacing: 2px;
 }
 
 .timer-edit-input.editing {
@@ -254,11 +308,19 @@ body {
 /* Timer theme indicator - positioned along the arc */
 .timer-theme-indicator {
     position: absolute;
-    font-size: clamp(20px, 3.5vh, 32px);
+    font-size: clamp(18px, 3vh, 28px);
     z-index: 10;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     transition: left 0.5s ease, top 0.5s ease;
     transform: translate(-50%, -50%);
+    /* White circle with shadow */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(30px, 4vh, 42px);
+    height: clamp(30px, 4vh, 42px);
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .timer-controls {
@@ -368,7 +430,7 @@ body {
 }
 
 .gauge-label {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--text-primary);
     margin-top: 12px;
