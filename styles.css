@@ -785,6 +785,131 @@ body[data-theme="space"] .speech-bubble-tail {
     border-bottom: 12px solid transparent;
 }
 
+/* Dance theme - speech bubble positioned to the right with left-pointing tail */
+body[data-theme="dance"] .speech-bubble {
+    bottom: 60%;
+    left: 60%;
+    right: auto;
+    transform: scale(0.8);
+    transform-origin: left center;
+    margin-bottom: 0;
+}
+
+body[data-theme="dance"] .speech-bubble.show {
+    transform: scale(1);
+}
+
+body[data-theme="dance"] .speech-bubble-tail {
+    bottom: 50%;
+    left: -10px;
+    right: auto;
+    transform: translateY(50%);
+    border-left: none;
+    border-right: 12px solid white;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+}
+
+/* Egypt theme - speech bubble positioned to the right with left-pointing tail */
+body[data-theme="egypt"] .speech-bubble {
+    bottom: 60%;
+    left: 60%;
+    right: auto;
+    transform: scale(0.8);
+    transform-origin: left center;
+    margin-bottom: 0;
+}
+
+body[data-theme="egypt"] .speech-bubble.show {
+    transform: scale(1);
+}
+
+body[data-theme="egypt"] .speech-bubble-tail {
+    bottom: 50%;
+    left: -10px;
+    right: auto;
+    transform: translateY(50%);
+    border-left: none;
+    border-right: 12px solid white;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+}
+
+/* Wizard theme - speech bubble positioned to the right with left-pointing tail */
+body[data-theme="wizard"] .speech-bubble {
+    bottom: 60%;
+    left: 60%;
+    right: auto;
+    transform: scale(0.8);
+    transform-origin: left center;
+    margin-bottom: 0;
+}
+
+body[data-theme="wizard"] .speech-bubble.show {
+    transform: scale(1);
+}
+
+body[data-theme="wizard"] .speech-bubble-tail {
+    bottom: 50%;
+    left: -10px;
+    right: auto;
+    transform: translateY(50%);
+    border-left: none;
+    border-right: 12px solid white;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+}
+
+/* Zombies theme - speech bubble positioned to the right with left-pointing tail */
+body[data-theme="zombies"] .speech-bubble {
+    bottom: 60%;
+    left: 60%;
+    right: auto;
+    transform: scale(0.8);
+    transform-origin: left center;
+    margin-bottom: 0;
+}
+
+body[data-theme="zombies"] .speech-bubble.show {
+    transform: scale(1);
+}
+
+body[data-theme="zombies"] .speech-bubble-tail {
+    bottom: 50%;
+    left: -10px;
+    right: auto;
+    transform: translateY(50%);
+    border-left: none;
+    border-right: 12px solid white;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+}
+
+/* Library theme - speech bubble positioned to the right with left-pointing tail */
+body[data-theme="library"] .speech-bubble {
+    bottom: 60%;
+    left: 60%;
+    right: auto;
+    transform: scale(0.8);
+    transform-origin: left center;
+    margin-bottom: 0;
+}
+
+body[data-theme="library"] .speech-bubble.show {
+    transform: scale(1);
+}
+
+body[data-theme="library"] .speech-bubble-tail {
+    bottom: 50%;
+    left: -10px;
+    right: auto;
+    transform: translateY(50%);
+    border-left: none;
+    border-right: 12px solid white;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+}
+
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 900px) {

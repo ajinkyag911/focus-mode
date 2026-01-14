@@ -308,6 +308,17 @@ const THEME_GAUGE_COLORS = {
     library: { start: '#3e2723', mid: '#8d6e63', end: '#bf360c', needle: '#4e342e' }
 };
 
+// Theme video files
+const THEME_VIDEOS = {
+    space: 'space.mp4',
+    dinosaur: 'dinosaur.mp4',
+    dance: 'dance.mp4',
+    egypt: 'egypt.mp4',
+    wizard: 'wizard.mp4',
+    zombies: 'zombie.mp4',
+    library: 'library.mp4'
+};
+
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
     updateNoiseMeterLabel(theme);
@@ -347,15 +358,20 @@ function updateTimerThemeIndicator(theme) {
 }
 
 function updateRobotForTheme(theme) {
-    if (theme === 'dinosaur') {
-        // Show video, hide image for dinosaur theme
+    // All themes now use video
+    const videoFile = THEME_VIDEOS[theme];
+    if (videoFile) {
         robotImage.style.display = 'none';
         robotVideo.style.display = 'block';
+        robotVideo.src = `assets/videos/${videoFile}`;
         robotVideo.currentTime = 0;
         robotVideo.pause(); // Start paused at 0 sec (normal state)
-        dinosaurAlertState = false;
+        videoAlertState = false;
+        videoAtAlertFrame = false;
+        videoPlayingToAlert = false;
+        videoTransitioning = false;
     } else {
-        // Show image, hide video for other themes
+        // Fallback to image if no video
         robotImage.style.display = 'block';
         robotVideo.style.display = 'none';
         robotVideo.pause();
@@ -369,56 +385,58 @@ function updateRobotImage(theme, isAlert = false) {
     robotImage.src = `assets/robots/${folder}/${filename}`;
 }
 
-// Dinosaur video alert state
+// Video alert state (for all themes with videos)
 // Normal: paused at 0 seconds
 // Alert: plays from 0 to 4 seconds, stays at 4 while noise is high
 // When noise goes low: plays from 4 to end, then resets to 0
-let dinosaurAlertState = false;
-let dinosaurTransitioning = false;
-let dinosaurAtAlertFrame = false;
-let dinosaurPlayingToAlert = false;
+let videoAlertState = false;
+let videoTransitioning = false;
+let videoAtAlertFrame = false;
+let videoPlayingToAlert = false;
 
-function keepDinosaurAtAlert() {
-    if (document.body.getAttribute('data-theme') !== 'dinosaur') return;
+function keepVideoAtAlert() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    if (!THEME_VIDEOS[currentTheme]) return;
     
     // If already at alert frame, keep it there
-    if (dinosaurAtAlertFrame) {
+    if (videoAtAlertFrame) {
         return;
     }
     
     // If already playing towards alert, let it continue
-    if (dinosaurPlayingToAlert) {
+    if (videoPlayingToAlert) {
         // Check if reached 4 seconds
         if (robotVideo.currentTime >= 4) {
             robotVideo.pause();
-            dinosaurAtAlertFrame = true;
-            dinosaurPlayingToAlert = false;
+            videoAtAlertFrame = true;
+            videoPlayingToAlert = false;
         }
         return;
     }
     
     // If transitioning back to normal, let it finish first
-    if (dinosaurTransitioning) {
+    if (videoTransitioning) {
         return;
     }
     
     // Start playing to alert if not already
-    if (!dinosaurAlertState) {
-        dinosaurAlertState = true;
-        dinosaurPlayingToAlert = true;
+    if (!videoAlertState) {
+        videoAlertState = true;
+        videoPlayingToAlert = true;
         robotVideo.play();
     }
 }
 
-function releaseDinosaurFromAlert() {
-    if (document.body.getAttribute('data-theme') !== 'dinosaur') return;
-    if (dinosaurTransitioning) return;
-    if (dinosaurPlayingToAlert) return; // Let it finish playing to alert first
-    if (!dinosaurAlertState && !dinosaurAtAlertFrame) return;
+function releaseVideoFromAlert() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    if (!THEME_VIDEOS[currentTheme]) return;
+    if (videoTransitioning) return;
+    if (videoPlayingToAlert) return; // Let it finish playing to alert first
+    if (!videoAlertState && !videoAtAlertFrame) return;
     
-    dinosaurAlertState = false;
-    dinosaurAtAlertFrame = false;
-    dinosaurTransitioning = true;
+    videoAlertState = false;
+    videoAtAlertFrame = false;
+    videoTransitioning = true;
     
     // Continue playing from current position to end, then reset to 0
     robotVideo.play();
@@ -427,20 +445,31 @@ function releaseDinosaurFromAlert() {
         if (robotVideo.ended || robotVideo.currentTime >= robotVideo.duration - 0.1) {
             robotVideo.pause();
             robotVideo.currentTime = 0;
-            dinosaurTransitioning = false;
-        } else if (dinosaurTransitioning) {
+            videoTransitioning = false;
+        } else if (videoTransitioning) {
             requestAnimationFrame(checkEndTime);
         }
     };
     requestAnimationFrame(checkEndTime);
 }
 
-function setDinosaurAlertState(isAlert) {
-    // This function is now handled by keepDinosaurAtAlert and releaseDinosaurFromAlert
-    // Keeping for backwards compatibility with triggerNoiseAlert
+function setVideoAlertState(isAlert) {
     if (isAlert) {
-        keepDinosaurAtAlert();
+        keepVideoAtAlert();
     }
+}
+
+// Legacy dinosaur functions for backwards compatibility
+function keepDinosaurAtAlert() {
+    keepVideoAtAlert();
+}
+
+function releaseDinosaurFromAlert() {
+    releaseVideoFromAlert();
+}
+
+function setDinosaurAlertState(isAlert) {
+    setVideoAlertState(isAlert);
 }
 
 function updateNoiseMeterLabel(theme, noiseLevel = 0) {
@@ -733,13 +762,13 @@ function analyzeAudio() {
     
     const isNoiseHigh = volumePercent > parseInt(sensitivitySlider.value);
     
-    // Handle dinosaur video state continuously
+    // Handle video state continuously for all themes
     const currentTheme = document.body.getAttribute('data-theme');
-    if (currentTheme === 'dinosaur') {
+    if (THEME_VIDEOS[currentTheme]) {
         if (isNoiseHigh) {
-            keepDinosaurAtAlert();
+            keepVideoAtAlert();
         } else {
-            releaseDinosaurFromAlert();
+            releaseVideoFromAlert();
         }
     }
     
@@ -786,17 +815,17 @@ function triggerNoiseAlert() {
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
     
-    // Handle dinosaur video alert state
-    if (currentTheme === 'dinosaur') {
-        setDinosaurAlertState(true);
+    // Handle video alert state for all video themes
+    if (THEME_VIDEOS[currentTheme]) {
+        setVideoAlertState(true);
     } else {
         updateRobotImage(currentTheme, true);
     }
     
     setTimeout(() => {
         robotWrapper.classList.remove('alert');
-        if (currentTheme === 'dinosaur') {
-            setDinosaurAlertState(false);
+        if (THEME_VIDEOS[currentTheme]) {
+            setVideoAlertState(false);
         } else {
             updateRobotImage(currentTheme, false);
         }
