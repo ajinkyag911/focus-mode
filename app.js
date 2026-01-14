@@ -119,6 +119,7 @@ const gaugeThreshold = document.getElementById('gaugeThreshold');
 const noiseCounter = document.getElementById('noiseCounter');
 const sensitivitySlider = document.getElementById('sensitivitySlider');
 const sensitivityValue = document.getElementById('sensitivityValue');
+const noiseEffectLayer = document.getElementById('noiseEffectLayer');
 
 // Audio
 const audioPlayBtn = document.getElementById('audioPlayBtn');
@@ -326,6 +327,7 @@ function setTheme(theme) {
     updateTimerThemeIndicator(theme);
     updateNoiseMeterColors(theme);
     updateTimerTitle(theme);
+    updateTimerArcGradient(theme);
 }
 
 function updateNoiseMeterColors(theme) {
@@ -362,6 +364,19 @@ function updateTimerTitle(theme) {
     const cardTitle = document.querySelector('.card-title');
     if (cardTitle) {
         cardTitle.textContent = THEME_TIMER_TITLES[theme] || THEME_TIMER_TITLES.space;
+    }
+}
+
+function updateTimerArcGradient(theme) {
+    const gradient = document.getElementById('arcGradient');
+    if (gradient) {
+        const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
+        const stops = gradient.querySelectorAll('stop');
+        if (stops.length >= 3) {
+            stops[0].style.stopColor = colors.start;
+            stops[1].style.stopColor = colors.end;
+            stops[2].style.stopColor = colors.end;
+        }
     }
 }
 
@@ -679,6 +694,17 @@ const THEME_TIMER_TITLES = {
     library: 'Study Timer'
 };
 
+// Theme timer arc gradients (left to right)
+const THEME_ARC_GRADIENTS = {
+    space: { start: 'rgba(59, 59, 59, 1)', end: 'rgba(156, 252, 236, 1)' },
+    dinosaur: { start: 'rgba(2, 171, 71, 1)', end: 'rgba(189, 206, 70, 1)' },
+    dance: { start: 'rgba(111, 63, 177, 1)', end: 'rgba(129, 212, 250, 1)' },
+    egypt: { start: 'rgba(178, 73, 56, 1)', end: 'rgba(243, 171, 71, 1)' },
+    wizard: { start: 'rgba(184, 100, 199, 1)', end: 'rgba(145, 177, 234, 1)' },
+    zombies: { start: 'rgba(234, 99, 99, 1)', end: 'rgba(255, 179, 179, 1)' },
+    library: { start: 'rgba(0, 145, 234, 1)', end: 'rgba(244, 67, 54, 1)' }
+};
+
 // Theme clock emojis (for 12, 3, 6, 9 positions)
 const THEME_CLOCK_EMOJIS = {
     space: ['🚀', '🌟', '🌙', '🪐'],
@@ -789,6 +815,15 @@ function analyzeAudio() {
     updateGauge(volumePercent);
     
     const isNoiseHigh = volumePercent > parseInt(sensitivitySlider.value);
+    
+    // Toggle visual effect layer
+    if (noiseEffectLayer) {
+        if (isNoiseHigh) {
+            noiseEffectLayer.classList.add('active');
+        } else {
+            noiseEffectLayer.classList.remove('active');
+        }
+    }
     
     // Handle video state continuously for all themes
     const currentTheme = document.body.getAttribute('data-theme');
