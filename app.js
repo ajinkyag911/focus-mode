@@ -542,6 +542,15 @@ function parseTimeInput(value) {
 function startTimer() {
     if (timerState.isRunning) return;
     
+    // If timer is at 0, reset it before starting
+    if (timerState.totalSeconds <= 0) {
+        const minutes = parseInt(minutesInput.value) || CONFIG.defaultMinutes;
+        timerState.totalSeconds = minutes * 60;
+        timerState.initialSeconds = minutes * 60;
+        updateTimerDisplay();
+        updateArc();
+    }
+    
     if (!timerState.intervalId) {
         timerState.initialSeconds = timerState.totalSeconds;
     }
