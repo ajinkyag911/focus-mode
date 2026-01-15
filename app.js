@@ -619,14 +619,29 @@ function timerComplete() {
     
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 800;
-        gain.gain.value = 0.3;
-        osc.start();
-        setTimeout(() => osc.stop(), 500);
+        const now = ctx.currentTime;
+        
+        // Create a pleasant bell sound with harmonics
+        const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5 - major chord
+        
+        frequencies.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            
+            // Bell-like envelope with natural decay
+            const volume = 0.15 / (i + 1); // Harmonics are quieter
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+            
+            osc.start(now);
+            osc.stop(now + 1.5);
+        });
     } catch (e) {}
 }
 
