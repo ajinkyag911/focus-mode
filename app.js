@@ -392,7 +392,7 @@ function updateTimerTextColor(theme) {
     const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
     const timerDisplay = document.getElementById('timerDisplay');
     if (timerDisplay) {
-        timerDisplay.style.color = colors.end;
+        timerDisplay.style.color = colors.start;
     }
 }
 
@@ -410,7 +410,7 @@ function updateNoiseNeedleColor(theme) {
     const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
     const gaugeNeedle = document.getElementById('gaugeNeedle');
     if (gaugeNeedle) {
-        gaugeNeedle.style.stroke = colors.end;
+        gaugeNeedle.style.stroke = colors.start;
     }
 }
 
