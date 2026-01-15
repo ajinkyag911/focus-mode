@@ -899,6 +899,18 @@ body[data-theme="space"] .robot-image {
     width: clamp(360px, 50vw, 560px);
 }
 
+body[data-theme="space"] .robot-container {
+    bottom: 0;
+}
+
+body[data-theme="space"] .robot-video {
+    width: auto;
+    height: 100vh;
+    max-width: 100vw;
+    object-fit: contain;
+    object-position: bottom center;
+}
+
 body[data-theme="space"] .speech-bubble {
     bottom: 60%;
     left: 60%;
