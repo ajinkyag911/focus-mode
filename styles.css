@@ -244,9 +244,10 @@ body {
 
 .timer-arc-bg {
     fill: none;
-    stroke: #f0e8f8;
+    stroke: rgba(156, 252, 236, 0.25);
     stroke-width: 14;
     stroke-linecap: round;
+    transition: stroke 0.3s ease, opacity 0.3s ease;
 }
 
 .timer-arc-progress {
@@ -270,14 +271,10 @@ body {
 .timer-display {
     font-size: clamp(32px, 7vh, 64px);
     font-weight: 700;
-    color: var(--color-purple-dark);
+    color: #7B5FC4;
     letter-spacing: 2px;
     cursor: pointer;
     transition: color var(--transition-fast);
-}
-
-.timer-display:hover {
-    color: var(--color-purple);
 }
 
 .timer-edit-input {

@@ -377,6 +377,41 @@ function updateTimerArcGradient(theme) {
             stops[2].style.stopColor = colors.end;
         }
     }
+    
+    // Update timer text color to gradient end color
+    updateTimerTextColor(theme);
+    
+    // Update timer arc background (unfilled portion) to lighter version of start color
+    updateTimerArcBgColor(theme);
+    
+    // Update noise meter needle color
+    updateNoiseNeedleColor(theme);
+}
+
+function updateTimerTextColor(theme) {
+    const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.color = colors.end;
+    }
+}
+
+function updateTimerArcBgColor(theme) {
+    const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
+    const arcBg = document.querySelector('.timer-arc-bg');
+    if (arcBg) {
+        // Extract RGB values and make it lighter with lower opacity
+        arcBg.style.stroke = colors.start;
+        arcBg.style.opacity = '0.25';
+    }
+}
+
+function updateNoiseNeedleColor(theme) {
+    const colors = THEME_ARC_GRADIENTS[theme] || THEME_ARC_GRADIENTS.space;
+    const gaugeNeedle = document.getElementById('gaugeNeedle');
+    if (gaugeNeedle) {
+        gaugeNeedle.style.stroke = colors.end;
+    }
 }
 
 function updateRobotForTheme(theme) {
