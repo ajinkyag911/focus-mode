@@ -99,8 +99,8 @@ const timerEditInput = document.getElementById('timerEditInput');
 const timerArcProgress = document.getElementById('timerArcProgress');
 const timerCard = document.querySelector('.timer-card');
 const minutesInput = document.getElementById('minutesInput');
-const startBtn = document.getElementById('startBtn');
-const pauseBtn = document.getElementById('pauseBtn');
+const toggleBtn = document.getElementById('toggleBtn');
+const toggleIcon = document.getElementById('toggleIcon');
 const resetBtn = document.getElementById('resetBtn');
 
 // Robot
@@ -232,8 +232,7 @@ function addGaugeGradient() {
 // ========== EVENT LISTENERS ========== //
 function setupEventListeners() {
     // Timer
-    startBtn.addEventListener('click', startTimer);
-    pauseBtn.addEventListener('click', pauseTimer);
+    toggleBtn.addEventListener('click', toggleTimer);
     resetBtn.addEventListener('click', resetTimer);
     
     // Inline editing - click timer display to edit
@@ -290,7 +289,7 @@ function handleKeyboard(e) {
     switch(e.key.toLowerCase()) {
         case ' ':
             e.preventDefault();
-            timerState.isRunning ? pauseTimer() : startTimer();
+            toggleTimer();
             break;
         case 'r': resetTimer(); break;
         case 'm': toggleMicrophone(); break;
@@ -554,6 +553,26 @@ function parseTimeInput(value) {
     return 0;
 }
 
+function toggleTimer() {
+    if (timerState.isRunning) {
+        pauseTimer();
+    } else {
+        startTimer();
+    }
+}
+
+function updateToggleButtonIcon() {
+    // Play icon path: M8 5v14l11-7z
+    // Pause icon path: M6 19h4V5H6v14zm8-14v14h4V5h-4z
+    if (timerState.isRunning) {
+        // Show pause icon
+        toggleIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />';
+    } else {
+        // Show play icon
+        toggleIcon.innerHTML = '<path d="M8 5v14l11-7z" />';
+    }
+}
+
 function startTimer() {
     if (timerState.isRunning) return;
     
@@ -572,8 +591,7 @@ function startTimer() {
     
     timerState.isRunning = true;
     timerCard.classList.add('running');
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
+    updateToggleButtonIcon();
     
     robotWrapper.classList.add('studying');
     
@@ -590,8 +608,7 @@ function pauseTimer() {
     timerState.isRunning = false;
     clearInterval(timerState.intervalId);
     timerCard.classList.remove('running');
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
+    updateToggleButtonIcon();
     
     robotWrapper.classList.remove('studying');
 }
@@ -605,8 +622,7 @@ function resetTimer() {
     updateTimerDisplay();
     updateArc();
     timerCard.classList.remove('running');
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
+    updateToggleButtonIcon();
 }
 
 function timerComplete() {
