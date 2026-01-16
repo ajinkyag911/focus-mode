@@ -1185,41 +1185,70 @@ function playAlertSound(soundType) {
     
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const now = audioContext.currentTime;
+    const masterGain = audioContext.createGain();
+    masterGain.connect(audioContext.destination);
+    masterGain.gain.setValueAtTime(0.25, now);
     
     if (soundType === 'bell') {
-        // Bell sound - short descending tone
-        const bell = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        bell.connect(gain);
-        gain.connect(audioContext.destination);
+        // Realistic bell sound with multiple harmonics
+        const duration = 0.8;
+        const frequencies = [
+            { freq: 261, decay: 0.6, volume: 0.4 },  // C4 fundamental
+            { freq: 392, decay: 0.5, volume: 0.3 },  // G4 fifth
+            { freq: 523, decay: 0.4, volume: 0.25 }, // C5 octave
+            { freq: 659, decay: 0.35, volume: 0.2 }  // E5 overtone
+        ];
         
-        bell.type = 'sine';
-        bell.frequency.setValueAtTime(800, now);
-        bell.frequency.exponentialRampToValueAtTime(600, now + 0.3);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-        
-        bell.start(now);
-        bell.stop(now + 0.3);
+        frequencies.forEach(({freq, decay, volume}) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.frequency.setValueAtTime(freq, now);
+            osc.type = 'sine';
+            osc.connect(gain);
+            gain.connect(masterGain);
+            
+            // Quick attack, long decay
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration * decay);
+            
+            osc.start(now);
+            osc.stop(now + duration * decay);
+        });
     } else if (soundType === 'shush') {
-        // Shush sound - white noise burst
-        const bufferSize = audioContext.sampleRate * 0.3;
+        // Realistic "shush" sound - filtered noise with breath quality
+        const duration = 0.5;
+        const bufferSize = audioContext.sampleRate * duration;
         const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
         const data = buffer.getChannelData(0);
         
+        // Generate noise with natural variation
         for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
+            // Gaussian-like noise (sum of random values)
+            let sum = 0;
+            for (let j = 0; j < 3; j++) {
+                sum += Math.random();
+            }
+            data[i] = (sum / 3 - 0.5) * 2;
         }
+        
+        // Create high-pass filter to remove low frequencies
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(2000, now);
+        filter.Q.setValueAtTime(1, now);
         
         const noise = audioContext.createBufferSource();
         const gain = audioContext.createGain();
         
         noise.buffer = buffer;
-        noise.connect(gain);
-        gain.connect(audioContext.destination);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
         
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        // Quick attack and soft exponential decay
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
         
         noise.start(now);
     }
