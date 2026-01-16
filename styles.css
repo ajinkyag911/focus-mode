@@ -12,6 +12,7 @@
 @import url('https://fonts.cdnfonts.com/css/goodfish');
 @import url('https://fonts.cdnfonts.com/css/good-timing');
 @import url('https://fonts.cdnfonts.com/css/neuland');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
 /* ========== CSS VARIABLES ========== */
 :root {
@@ -71,6 +72,15 @@ body[data-theme="library"] {
     --bg-image: url('assets/backgrounds/library.png');
 }
 
+/* ========== THEME-SPECIFIC OVERRIDES ========== */
+body[data-theme="space"] .timer-display {
+    font-size: clamp(36px, 7vh, 64px);
+}
+
+body[data-theme="wizard"] .timer-display {
+    font-size: clamp(52px, 10vh, 90px);
+}
+
 
 /* ========== THEME FONTS ========== */
 /* Theme fonts apply to UI elements except theme selector */
@@ -89,7 +99,7 @@ body[data-theme="dinosaur"] .speech-bubble {
 body[data-theme="dance"] .card,
 body[data-theme="dance"] .music-player,
 body[data-theme="dance"] .speech-bubble {
-    font-family: 'Budmo', sans-serif;
+    font-family: 'Fredoka', sans-serif;
 }
 
 body[data-theme="egypt"] .card,
@@ -271,7 +281,7 @@ body {
 }
 
 .timer-display {
-    font-size: clamp(36px, 7vh, 64px);
+    font-size: clamp(48px, 9vh, 80px);
     font-weight: 700;
     color: #7B5FC4;
     letter-spacing: 1px;
@@ -382,12 +392,12 @@ body {
     justify-content: flex-start;
     flex: 1;
     padding: 0;
-    margin-top: 2px;
+    margin-top: -14px;
     background: transparent;
 }
 
 .gauge {
-    width: 85%;
+    width: 75%;
     height: auto;
 }
 
@@ -429,10 +439,11 @@ body {
 }
 
 .gauge-label {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
     color: var(--text-primary);
     text-align: center;
+    margin-top: -12px;
 }
 
 .sensitivity-control {
@@ -440,8 +451,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 80%;
-    gap: 4px;
-    margin-top: 4px;
+    gap: 12px;
 }
 
 .sensitivity-slider {
@@ -480,10 +490,12 @@ body {
 .sensitivity-label {
     font-size: 17px;
     color: var(--text-muted);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin-bottom: 4px;
 }
 
 .sensitivity-value {
-    color: var(--color-purple);
+    color: var(--text-muted);
     font-weight: 600;
 }
 
