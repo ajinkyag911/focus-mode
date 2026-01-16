@@ -101,6 +101,7 @@ const timerCard = document.querySelector('.timer-card');
 const minutesInput = document.getElementById('minutesInput');
 const toggleBtn = document.getElementById('toggleBtn');
 const toggleIcon = document.getElementById('toggleIcon');
+const editBtn = document.getElementById('editBtn');
 const resetBtn = document.getElementById('resetBtn');
 
 // Robot
@@ -233,6 +234,7 @@ function addGaugeGradient() {
 function setupEventListeners() {
     // Timer
     toggleBtn.addEventListener('click', toggleTimer);
+    editBtn.addEventListener('click', startTimerEdit);
     resetBtn.addEventListener('click', resetTimer);
     
     // Inline editing - click timer display to edit
@@ -538,7 +540,10 @@ function updateNoiseMeterLabel(theme, noiseLevel = 0) {
 
 // ========== TIMER ========== //
 function startTimerEdit() {
-    if (timerState.isRunning) return;
+    // Pause timer if it's running
+    if (timerState.isRunning) {
+        pauseTimer();
+    }
     timerState.isEditing = true;
     timerDisplay.style.opacity = '0';
     timerEditInput.classList.add('editing');
