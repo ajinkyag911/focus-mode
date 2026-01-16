@@ -649,18 +649,19 @@ body {
     height: 22px;
 }
 
-.noise-counter {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-secondary);
+.alert-sound-dropdown {
+    flex: 1;
+    min-width: 120px;
 }
 
-.noise-counter svg {
-    width: 24px;
-    height: 24px;
+.alert-sound-dropdown .dropdown-trigger {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.alert-sound-dropdown .dropdown-menu {
+    min-width: 120px;
 }
 
 

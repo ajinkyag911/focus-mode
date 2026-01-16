@@ -117,10 +117,13 @@ const micBtn = document.getElementById('micBtn');
 const gaugeFill = document.getElementById('gaugeFill');
 const gaugeNeedle = document.getElementById('gaugeNeedle');
 const gaugeThreshold = document.getElementById('gaugeThreshold');
-const noiseCounter = document.getElementById('noiseCounter');
 const sensitivitySlider = document.getElementById('sensitivitySlider');
 const sensitivityValue = document.getElementById('sensitivityValue');
 const noiseEffectLayer = document.getElementById('noiseEffectLayer');
+const alertSoundDropdown = document.getElementById('alertSoundDropdown');
+const alertSoundTrigger = document.getElementById('alertSoundTrigger');
+const alertSoundMenu = document.getElementById('alertSoundMenu');
+const alertSoundValue = document.getElementById('alertSoundValue');
 
 // Audio
 const audioPlayBtn = document.getElementById('audioPlayBtn');
@@ -152,6 +155,10 @@ let audioState = {
 
 let musicState = {
     isPlaying: false
+};
+
+let soundState = {
+    alertSound: 'none' // 'none', 'bell', 'shush'
 };
 
 let componentVisibility = {
@@ -211,6 +218,11 @@ function loadPreferences() {
     if (savedChannel) {
         radioChannel.value = savedChannel;
     }
+    
+    // Saved alert sound
+    const savedAlertSound = localStorage.getItem('focusMode_alertSound') || 'none';
+    soundState.alertSound = savedAlertSound;
+    alertSoundValue.textContent = savedAlertSound.charAt(0).toUpperCase() + savedAlertSound.slice(1);
 }
 
 function savePreference(key, value) {
@@ -337,6 +349,24 @@ function setupEventListeners() {
         sensitivityValue.textContent = percent;
         updateSensitivity(percent);
         savePreference('sensitivity', percent);
+    });
+    
+    // Alert sound dropdown
+    alertSoundTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        alertSoundTrigger.classList.toggle('open');
+        alertSoundMenu.classList.toggle('open');
+    });
+    
+    alertSoundMenu.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.getAttribute('data-value');
+            soundState.alertSound = value;
+            alertSoundValue.textContent = option.textContent;
+            alertSoundTrigger.classList.remove('open');
+            alertSoundMenu.classList.remove('open');
+            savePreference('alertSound', value);
+        });
     });
     
     // Audio
@@ -1113,7 +1143,9 @@ function triggerNoiseAlert() {
     showSpeechBubble(`${message} ${emoji}`);
     
     audioState.alertCount++;
-    noiseCounter.textContent = audioState.alertCount;
+    
+    // Play alert sound if enabled
+    playAlertSound(soundState.alertSound);
     
     robotWrapper.classList.remove('studying');
     robotWrapper.classList.add('alert');
@@ -1142,6 +1174,51 @@ function showSpeechBubble(message) {
     speechText.textContent = message;
     speechBubble.classList.add('show');
     setTimeout(() => speechBubble.classList.remove('show'), CONFIG.speechBubbleDuration);
+}
+
+function playAlertSound(soundType) {
+    if (soundType === 'none') return;
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioContext.currentTime;
+    
+    if (soundType === 'bell') {
+        // Bell sound - short descending tone
+        const bell = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        bell.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        bell.type = 'sine';
+        bell.frequency.setValueAtTime(800, now);
+        bell.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        
+        bell.start(now);
+        bell.stop(now + 0.3);
+    } else if (soundType === 'shush') {
+        // Shush sound - white noise burst
+        const bufferSize = audioContext.sampleRate * 0.3;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        
+        const noise = audioContext.createBufferSource();
+        const gain = audioContext.createGain();
+        
+        noise.buffer = buffer;
+        noise.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        
+        noise.start(now);
+    }
 }
 
 // ========== MUSIC PLAYER ========== //
