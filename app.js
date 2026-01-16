@@ -165,6 +165,8 @@ function init() {
     updateTimerDisplay();
     updateArc();
     setupEventListeners();
+    updateMicIcon(); // Set initial mic icon
+    startListening(); // Enable microphone by default
     console.log('🤖 Focus Mode initialized!');
 }
 
@@ -853,6 +855,8 @@ async function startListening() {
         audioState.isListening = true;
         
         micBtn.classList.add('active');
+        micBtn.classList.remove('muted');
+        updateMicIcon();
         analyzeAudio();
     } catch (error) {
         alert('Microphone access needed for noise detection.');
@@ -870,7 +874,22 @@ function stopListening() {
     }
     
     micBtn.classList.remove('active');
+    micBtn.classList.add('muted');
+    updateMicIcon();
     updateGauge(0);
+}
+
+function updateMicIcon() {
+    const micIcon = document.getElementById('micIcon');
+    if (!micIcon) return;
+    
+    if (audioState.isListening) {
+        // Normal mic icon
+        micIcon.innerHTML = '<path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />';
+    } else {
+        // Muted mic icon with slash
+        micIcon.innerHTML = '<path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.48L5.84 2.7C6.89 1.86 8.02 1.5 9 1.5c3.59 0 6.18 3.41 6.18 6.72h2c0-3.28-2.59-6.72-6.18-6.72-.88 0-1.73.16-2.51.45l2.49 2.49c.06 0 .11.02.17.02zm7.12.33l-1.23-1.23c.27-.62.43-1.31.43-2.05H19c0 1.19-.34 2.3-.9 3.28zM2.1 3.51L3.51 2.1 21.9 20.49l-1.41 1.41L2.1 3.51zM12 19c-3.59 0-6.18-3.41-6.18-6.72H3.82c0 3.28 2.59 6.72 6.18 6.72zm0-10c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z" />';
+    }
 }
 
 function analyzeAudio() {
