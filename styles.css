@@ -652,6 +652,8 @@ body {
 .alert-sound-dropdown {
     flex: 1;
     min-width: 120px;
+    position: relative;
+    z-index: 1001;
 }
 
 .alert-sound-dropdown .dropdown-trigger {
@@ -662,6 +664,17 @@ body {
 
 .alert-sound-dropdown .dropdown-menu {
     min-width: 120px;
+    top: auto;
+    bottom: 100%;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+.alert-sound-dropdown .dropdown-trigger.open {
+    border-radius: 0 0 8px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    border-top: 1px solid transparent;
 }
 
 

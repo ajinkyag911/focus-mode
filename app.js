@@ -310,6 +310,10 @@ function setupCustomDropdowns() {
             musicTrigger.classList.remove('open');
             musicMenu.classList.remove('open');
         }
+        if (!alertSoundDropdown.contains(e.target)) {
+            alertSoundTrigger.classList.remove('open');
+            alertSoundMenu.classList.remove('open');
+        }
     });
 }
 
