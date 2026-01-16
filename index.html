@@ -22,7 +22,24 @@
         <!-- Theme Selector -->
         <div class="theme-selector">
             <span class="theme-label">Theme:</span>
-            <select class="theme-select" id="themeSelect">
+            <div class="custom-dropdown" id="themeDropdown">
+                <div class="dropdown-trigger" id="themeTrigger">
+                    <span class="dropdown-value" id="themeValue">🚀 Space</span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu" id="themeMenu">
+                    <div class="dropdown-option" data-value="space">🚀 Space</div>
+                    <div class="dropdown-option" data-value="dinosaur">🦖 Dinosaur</div>
+                    <div class="dropdown-option" data-value="dance">💃 Dance</div>
+                    <div class="dropdown-option" data-value="egypt">🏛️ Ancient Egypt</div>
+                    <div class="dropdown-option" data-value="wizard">🧙 Wizard</div>
+                    <div class="dropdown-option" data-value="zombies">🧟 Zombies</div>
+                    <div class="dropdown-option" data-value="library">📚 Library</div>
+                </div>
+            </div>
+            <select class="theme-select" id="themeSelect" style="display: none;">
                 <option value="space">🚀 Space</option>
                 <option value="dinosaur">🦖 Dinosaur</option>
                 <option value="dance">💃 Dance</option>
@@ -122,7 +139,27 @@
                     <path d="M8 5v14l11-7z" />
                 </svg>
             </button>
-            <select class="music-select" id="radioChannel">
+            <div class="custom-dropdown music-dropdown" id="musicDropdown">
+                <div class="dropdown-trigger" id="musicTrigger">
+                    <span class="dropdown-value" id="musicValue">Groove Salad (Chill)</span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu" id="musicMenu">
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/groovesalad-128-mp3">Groove Salad (Chill)</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/dronezone-128-mp3">Drone Zone (Ambient)</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/deepspaceone-128-mp3">Deep Space One</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/spacestation-128-mp3">Space Station Soma</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/lush-128-mp3">Lush (Dreamy)</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/seventies-128-mp3">Left Coast 70s</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/beatblender-128-mp3">Beat Blender (Study)</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/defcon-128-mp3">DEF CON Radio</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/fluid-128-mp3">Fluid (Calm Focus)</div>
+                    <div class="dropdown-option" data-value="https://ice1.somafm.com/folkfwd-128-mp3">Folk Forward</div>
+                </div>
+            </div>
+            <select class="music-select" id="radioChannel" style="display: none;">
                 <option value="https://ice1.somafm.com/groovesalad-128-mp3">Groove Salad (Chill)</option>
                 <option value="https://ice1.somafm.com/dronezone-128-mp3">Drone Zone (Ambient)</option>
                 <option value="https://ice1.somafm.com/deepspaceone-128-mp3">Deep Space One</option>

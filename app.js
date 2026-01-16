@@ -232,8 +232,79 @@ function addGaugeGradient() {
     gaugeFill.style.stroke = 'url(#gaugeGradient)';
 }
 
+// ========== CUSTOM DROPDOWN SETUP ========== //
+function setupCustomDropdowns() {
+    // Theme dropdown
+    const themeDropdown = document.getElementById('themeDropdown');
+    const themeTrigger = document.getElementById('themeTrigger');
+    const themeMenu = document.getElementById('themeMenu');
+    const themeValue = document.getElementById('themeValue');
+    const themeOptions = themeMenu.querySelectorAll('.dropdown-option');
+    
+    themeTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        themeTrigger.classList.toggle('open');
+        themeMenu.classList.toggle('open');
+    });
+    
+    themeOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            const value = option.getAttribute('data-value');
+            const text = option.textContent;
+            themeValue.textContent = text;
+            themeSelect.value = value;
+            themeSelect.dispatchEvent(new Event('change'));
+            themeTrigger.classList.remove('open');
+            themeMenu.classList.remove('open');
+            themeOptions.forEach(o => o.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+    });
+    
+    // Music dropdown
+    const musicDropdown = document.getElementById('musicDropdown');
+    const musicTrigger = document.getElementById('musicTrigger');
+    const musicMenu = document.getElementById('musicMenu');
+    const musicValue = document.getElementById('musicValue');
+    const musicOptions = musicMenu.querySelectorAll('.dropdown-option');
+    
+    musicTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        musicTrigger.classList.toggle('open');
+        musicMenu.classList.toggle('open');
+    });
+    
+    musicOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            const value = option.getAttribute('data-value');
+            const text = option.textContent;
+            musicValue.textContent = text;
+            radioChannel.value = value;
+            radioChannel.dispatchEvent(new Event('change'));
+            musicTrigger.classList.remove('open');
+            musicMenu.classList.remove('open');
+            musicOptions.forEach(o => o.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!themeDropdown.contains(e.target)) {
+            themeTrigger.classList.remove('open');
+            themeMenu.classList.remove('open');
+        }
+        if (!musicDropdown.contains(e.target)) {
+            musicTrigger.classList.remove('open');
+            musicMenu.classList.remove('open');
+        }
+    });
+}
+
 // ========== EVENT LISTENERS ========== //
 function setupEventListeners() {
+    setupCustomDropdowns();
+    
     // Timer
     toggleBtn.addEventListener('click', toggleTimer);
     editBtn.addEventListener('click', startTimerEdit);
