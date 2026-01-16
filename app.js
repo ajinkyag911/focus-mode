@@ -1185,7 +1185,7 @@ function playAlertSound(soundType) {
     
     const soundFiles = {
         'bell': 'assets/sounds/bell.wav',
-        'shush': 'assets/sounds/shush.wav'
+        'shush': 'assets/sounds/shush.mp3'
     };
     
     const soundFile = soundFiles[soundType];
