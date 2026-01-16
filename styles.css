@@ -769,13 +769,16 @@ body.robot-hidden .robot-container {
     height: 20px;
     margin-left: -10px;
     margin-top: -10px;
-    border: 2px solid rgba(255, 255, 255, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.7);
     border-radius: 50%;
     opacity: 0;
+    --ripple-scale: 1;
+    --ripple-opacity: 0.3;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .noise-effect-layer.active .ripple {
-    animation: ripple-expand 2.5s ease-out infinite;
+    animation: ripple-expand 1.5s ease-out infinite;
 }
 
 .ripple-1 {
@@ -783,11 +786,23 @@ body.robot-hidden .robot-container {
 }
 
 .ripple-2 {
-    animation-delay: 0.8s;
+    animation-delay: 0.4s;
 }
 
 .ripple-3 {
+    animation-delay: 0.8s;
+}
+
+.ripple-4 {
+    animation-delay: 1.2s;
+}
+
+.ripple-5 {
     animation-delay: 1.6s;
+}
+
+.ripple-6 {
+    animation-delay: 2s;
 }
 
 @keyframes ripple-expand {
@@ -796,61 +811,118 @@ body.robot-hidden .robot-container {
         height: 20px;
         margin-left: -10px;
         margin-top: -10px;
-        opacity: 0.7;
+        opacity: calc(0.7 * var(--ripple-opacity));
     }
 
     100% {
-        width: 1200px;
-        height: 1200px;
-        margin-left: -600px;
-        margin-top: -600px;
+        width: calc(1200px * var(--ripple-scale));
+        height: calc(1200px * var(--ripple-scale));
+        margin-left: calc(-600px * var(--ripple-scale));
+        margin-top: calc(-600px * var(--ripple-scale));
         opacity: 0;
     }
 }
 
-/* Sound wave bars */
-.sound-wave {
+/* Sound wave groups */
+.wave-group {
     position: absolute;
     bottom: 0;
-    width: 4px;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5));
-    border-radius: 2px;
+    width: 18%;
+    height: 400px;
+    pointer-events: none;
     opacity: 0;
+    transition: none;
+    --group-animation-delay: 0s;
+    --group-pulse-duration: 0.6s;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.noise-effect-layer.active .wave-group {
+    animation: group-pulse var(--group-pulse-duration) ease-in-out infinite;
+    animation-delay: var(--group-animation-delay);
+}
+
+.wave-group-1 {
+    left: 2%;
+}
+
+.wave-group-2 {
+    left: 25%;
+}
+
+.wave-group-3 {
+    left: 48%;
+}
+
+.wave-group-4 {
+    left: 71%;
+}
+
+/* Sound wave bars */
+.sound-wave {
+    position: relative;
+    width: 12px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 1));
+    border-radius: 6px;
+    opacity: 1;
+    --wave-scale: 1;
+    --animation-duration: 0.8s;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
 }
 
 .noise-effect-layer.active .sound-wave {
-    animation: wave-pulse 0.8s ease-in-out infinite;
+    animation: wave-pulse var(--animation-duration) ease-in-out infinite;
+    animation-delay: calc(var(--group-animation-delay) + var(--wave-delay, 0s));
 }
 
 .sound-wave-1 {
-    left: 10%;
-    height: 60px;
-    animation-delay: 0s;
+    height: 80px;
+    --wave-delay: 0s;
 }
 
 .sound-wave-2 {
-    left: 15%;
-    height: 90px;
-    animation-delay: 0.1s;
+    height: 140px;
+    --wave-delay: 0.12s;
 }
 
 .sound-wave-3 {
-    right: 10%;
-    height: 70px;
-    animation-delay: 0.2s;
+    height: 100px;
+    --wave-delay: 0.24s;
 }
 
 @keyframes wave-pulse {
 
     0%,
     100% {
-        transform: scaleY(0.3);
+        transform: scaleY(calc(0.2 * var(--wave-scale)));
         opacity: 0.3;
     }
 
     50% {
-        transform: scaleY(1);
-        opacity: 0.7;
+        transform: scaleY(calc(1.4 * var(--wave-scale)));
+        opacity: 1;
+    }
+}
+
+@keyframes group-pulse {
+    0% {
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
     }
 }
 

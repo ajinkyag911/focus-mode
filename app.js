@@ -906,10 +906,16 @@ function analyzeAudio() {
     
     const isNoiseHigh = volumePercent > parseInt(sensitivitySlider.value);
     
-    // Toggle visual effect layer
+    // Toggle visual effect layer with intensity based on noise level
     if (noiseEffectLayer) {
         if (isNoiseHigh) {
             noiseEffectLayer.classList.add('active');
+            // Calculate intensity: how much louder than threshold
+            const threshold = parseInt(sensitivitySlider.value);
+            const excessNoise = volumePercent - threshold;
+            const maxExcess = 100 - threshold;
+            const intensity = Math.min(1, excessNoise / maxExcess);
+            updateNoiseEffectIntensity(intensity);
         } else {
             noiseEffectLayer.classList.remove('active');
         }
@@ -934,6 +940,79 @@ function analyzeAudio() {
     }
     
     requestAnimationFrame(analyzeAudio);
+}
+
+function updateNoiseEffectIntensity(intensity) {
+    // intensity ranges from 0 to 1
+    // 0 = just above threshold (subtle)
+    // 1 = max noise (intense)
+    
+    const ripples = document.querySelectorAll('.ripple');
+    const soundWaves = document.querySelectorAll('.sound-wave');
+    const waveGroups = document.querySelectorAll('.wave-group');
+    
+    // Scale ripple expansion based on intensity - MAXIMUM INTENSITY
+    const minRippleScale = 2;
+    const maxRippleScale = 4;
+    const rippleScale = minRippleScale + (maxRippleScale - minRippleScale) * intensity;
+    
+    // Scale ripple opacity based on intensity
+    const minRippleOpacity = 0.8;
+    const maxRippleOpacity = 1;
+    const rippleOpacity = minRippleOpacity + (maxRippleOpacity - minRippleOpacity) * intensity;
+    
+    ripples.forEach(ripple => {
+        ripple.style.setProperty('--ripple-scale', rippleScale);
+        ripple.style.setProperty('--ripple-opacity', rippleOpacity);
+    });
+    
+    // Scale sound wave heights and animation speed - MAXIMUM INTENSITY
+    const minWaveScale = 2;
+    const maxWaveScale = 5;
+    const waveScale = minWaveScale + (maxWaveScale - minWaveScale) * intensity;
+    
+    // Faster animation at 45%+ intensity
+    const minAnimationDuration = 1.2;
+    const maxAnimationDuration = intensity > 0.45 ? 0.08 : 0.15;
+    const animationDuration = minAnimationDuration - (minAnimationDuration - maxAnimationDuration) * intensity;
+    
+    soundWaves.forEach(wave => {
+        wave.style.setProperty('--wave-scale', waveScale);
+        wave.style.setProperty('--animation-duration', animationDuration + 's');
+    });
+    
+    // Show multiple wave groups based on intensity - AGGRESSIVE AT 45%+
+    // 0-0.2: 1 group, 0.2-0.35: 2 groups, 0.35-0.45: 3 groups, 0.45-1: 4 groups (all)
+    let groupsToShow = 1;
+    if (intensity > 0.2) groupsToShow = 2;
+    if (intensity > 0.35) groupsToShow = 3;
+    if (intensity > 0.45) groupsToShow = 4;
+    
+    // Stagger group animations - much more frequent at 45%+
+    // At 45%+: super fast cascading (0.02s), at lower: slower
+    const groupStaggerBase = intensity > 0.45 
+        ? 0.02 
+        : 0.12 - (intensity * 0.1); // From 0.12s down to 0.02s
+    
+    // At 45%+: pulse every 0.3s, below 45%: slower pulse
+    const pulseDuration = intensity > 0.45 ? 0.3 : 0.6;
+    
+    waveGroups.forEach((group, index) => {
+        if (index < groupsToShow) {
+            // Each group starts at a staggered time
+            const staggerDelay = (index * groupStaggerBase).toFixed(3);
+            group.style.setProperty('--group-animation-delay', staggerDelay + 's');
+            group.style.setProperty('--group-pulse-duration', pulseDuration + 's');
+        } else {
+            group.style.setProperty('--group-pulse-duration', pulseDuration + 's');
+        }
+    });
+    
+    // Update effect layer opacity for extra intensity
+    const minLayerOpacity = 0.5;
+    const maxLayerOpacity = 1;
+    const layerOpacity = minLayerOpacity + (maxLayerOpacity - minLayerOpacity) * intensity;
+    noiseEffectLayer.style.opacity = layerOpacity;
 }
 
 function updateGauge(percent) {
