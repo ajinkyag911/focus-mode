@@ -702,6 +702,13 @@ function setTheme(theme) {
     updateTimerArcGradient(theme);
     updateBallsTheme(theme);
     
+    // Handle Simple mode
+    if (theme === 'simple') {
+        initializeSimpleMode();
+    } else {
+        cleanupSimpleMode();
+    }
+    
     // Update dropdown display
     const themeValue = document.getElementById('themeValue');
     const themeOptions = document.querySelectorAll('#themeMenu .dropdown-option');
@@ -714,6 +721,121 @@ function setTheme(theme) {
                 option.classList.remove('selected');
             }
         });
+    }
+}
+
+// ========== SIMPLE MODE ========== //
+let simpleMode = {
+    timerVisible: true,
+    noiseVisible: true
+};
+
+function initializeSimpleMode() {
+    const simpleModeControls = document.getElementById('simpleModeControls');
+    const timerCard = document.querySelector('.timer-card');
+    const noiseCard = document.getElementById('noiseMeterContainer');
+    const simpleTimerToggle = document.getElementById('simpleTimerToggle');
+    const simpleNoiseToggle = document.getElementById('simpleNoiseToggle');
+    
+    if (!simpleModeControls) return;
+    
+    // Load saved preferences
+    const savedTimerVisible = localStorage.getItem('simpleMode_timerVisible');
+    const savedNoiseVisible = localStorage.getItem('simpleMode_noiseVisible');
+    
+    if (savedTimerVisible !== null) {
+        simpleMode.timerVisible = JSON.parse(savedTimerVisible);
+    }
+    if (savedNoiseVisible !== null) {
+        simpleMode.noiseVisible = JSON.parse(savedNoiseVisible);
+    }
+    
+    // Move cards to main content if not already there
+    const mainContent = document.querySelector('.main-content');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (timerCard && timerCard.parentElement !== mainContent) {
+        // Create wrapper for cards
+        let cardGroup = mainContent.querySelector('.simple-card-group');
+        if (!cardGroup) {
+            cardGroup = document.createElement('div');
+            cardGroup.className = 'simple-card-group';
+            mainContent.insertBefore(cardGroup, mainContent.firstChild);
+        }
+        
+        // Move cards
+        if (timerCard) cardGroup.appendChild(timerCard);
+        if (noiseCard) cardGroup.appendChild(noiseCard);
+    }
+    
+    // Set up event listeners
+    simpleTimerToggle.removeEventListener('click', toggleSimpleTimer);
+    simpleNoiseToggle.removeEventListener('click', toggleSimpleNoise);
+    simpleTimerToggle.addEventListener('click', toggleSimpleTimer);
+    simpleNoiseToggle.addEventListener('click', toggleSimpleNoise);
+    
+    // Update UI
+    updateSimpleModeUI();
+}
+
+function cleanupSimpleMode() {
+    const sidebar = document.querySelector('.sidebar');
+    const timerCard = document.querySelector('.timer-card');
+    const noiseCard = document.getElementById('noiseMeterContainer');
+    const cardGroup = document.querySelector('.simple-card-group');
+    
+    // Move cards back to sidebar
+    if (sidebar) {
+        // Find insertion points
+        const themeSelector = sidebar.querySelector('.theme-selector');
+        const musicPlayer = sidebar.querySelector('.music-player');
+        
+        if (timerCard && themeSelector) {
+            sidebar.insertBefore(timerCard, musicPlayer || themeSelector.nextElementSibling);
+        }
+        if (noiseCard && timerCard) {
+            sidebar.insertBefore(noiseCard, timerCard.nextElementSibling);
+        }
+    }
+    
+    // Remove card group if empty
+    if (cardGroup && cardGroup.children.length === 0) {
+        cardGroup.remove();
+    }
+}
+
+function toggleSimpleTimer() {
+    simpleMode.timerVisible = !simpleMode.timerVisible;
+    localStorage.setItem('simpleMode_timerVisible', JSON.stringify(simpleMode.timerVisible));
+    updateSimpleModeUI();
+}
+
+function toggleSimpleNoise() {
+    simpleMode.noiseVisible = !simpleMode.noiseVisible;
+    localStorage.setItem('simpleMode_noiseVisible', JSON.stringify(simpleMode.noiseVisible));
+    updateSimpleModeUI();
+}
+
+function updateSimpleModeUI() {
+    const timerCard = document.querySelector('.timer-card');
+    const noiseCard = document.getElementById('noiseMeterContainer');
+    const simpleTimerToggle = document.getElementById('simpleTimerToggle');
+    const simpleNoiseToggle = document.getElementById('simpleNoiseToggle');
+    
+    if (simpleMode.timerVisible) {
+        if (timerCard) timerCard.classList.remove('hidden');
+        simpleTimerToggle.classList.remove('disabled');
+    } else {
+        if (timerCard) timerCard.classList.add('hidden');
+        simpleTimerToggle.classList.add('disabled');
+    }
+    
+    if (simpleMode.noiseVisible) {
+        if (noiseCard) noiseCard.classList.remove('hidden');
+        simpleNoiseToggle.classList.remove('disabled');
+    } else {
+        if (noiseCard) noiseCard.classList.add('hidden');
+        simpleNoiseToggle.classList.add('disabled');
     }
 }
 
