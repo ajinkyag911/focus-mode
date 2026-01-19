@@ -57,7 +57,7 @@ const THEMED_MESSAGES = {
         "Starship\nquiet mode! ⭐", "Aliens might\nhear us!"
     ],
     dinosaur: [
-        "Don't wake\nthe T-Rex! 🦖", "Quiet or dinos\nwill find us!", "Prehistoric\nwhispers!",
+        "Don't wake\nthe dinosaurs! 🦖", "Quiet or dinos\nwill find us!", "Prehistoric\nwhispers!",
         "Shhh, raptors\nnearby! 🦕", "Fossils need\nsilence!", "Dino nap\ntime!",
         "Quiet in\nthe jungle!", "Even pterodactyls\nare quieter!"
     ],
@@ -1302,7 +1302,7 @@ const THEME_CLOCK_EMOJIS = {
 // Theme noise meter labels
 const THEME_NOISE_LABELS = {
     space: { quiet: '🤫 Silent Space', medium: '🛸 Spacecraft Hum', loud: '🚀 Rocket Launch!' },
-    dinosaur: { quiet: '🦕 Peaceful Forest', medium: '🌿 Rustling Leaves', loud: '🦖 T-Rex Roar!' },
+    dinosaur: { quiet: '🦕 Peaceful Forest', medium: '🌿 Rustling Leaves', loud: '🦖 Dino Roar!' },
     dance: { quiet: '🎵 Soft Melody', medium: '💃 Dance Floor', loud: '🎸 Rock Concert!' },
     egypt: { quiet: '🏺 Quiet Tomb', medium: '🐪 Desert Winds', loud: '👁️ Pharaoh\'s Call!' },
     wizard: { quiet: '📖 Library Whisper', medium: '✨ Magic Brewing', loud: '🔮 Spell Casting!' },
