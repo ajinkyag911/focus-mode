@@ -188,10 +188,54 @@ body {
     width: 100%;
 }
 
+.timer-toggle-btn {
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.timer-toggle-btn:hover {
+    background: #f0f0f0;
+    border-color: var(--color-purple);
+}
+
+.timer-toggle-btn.inactive {
+    opacity: 0.6;
+    background: #f0f0f0;
+}
+
+.timer-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.theme-selector-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .theme-label {
     font-size: 23px;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+.theme-selector .custom-dropdown {
+    width: 175px;
 }
 
 /* Custom Dropdowns */
@@ -200,9 +244,7 @@ body {
     display: inline-block;
 }
 
-.theme-selector .custom-dropdown {
-    width: 175px;
-}
+
 
 .dropdown-trigger {
     display: flex;
@@ -498,6 +540,57 @@ body {
 
 .noise-card.hidden {
     display: none;
+}
+
+/* Timer card visibility animations (not in simple mode) */
+.timer-card {
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
+}
+
+.timer-card.timer-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+    flex: 0;
+}
+
+/* Noise card expansion when timer is hidden (not in simple mode) */
+.noise-card {
+    transition: flex 0.3s ease, transform 0.3s ease, padding 0.3s ease;
+}
+
+.noise-card.expanded {
+    flex: 2;
+    padding: 12px 12px 16px 12px;
+    justify-content: center;
+}
+
+.noise-card.expanded .gauge-container {
+    flex: none;
+    justify-content: center;
+}
+
+.noise-card.expanded .gauge-label {
+    margin-bottom: 32px;
+}
+
+/* Ensure simple mode doesn't get these animations */
+body[data-theme="simple"] .timer-card.timer-hidden {
+    opacity: 1;
+    transform: none;
+    max-height: none;
+    padding: 70px 50px;
+    pointer-events: auto;
+}
+
+body[data-theme="simple"] .noise-card.expanded {
+    flex: unset;
+    transform: none;
 }
 
 .gauge-container {
@@ -1490,6 +1583,10 @@ body[data-theme="simple"] .theme-selector {
     z-index: 200;
     display: flex;
     align-items: center;
+    gap: 100px;
+}
+
+body[data-theme="simple"] .theme-selector-right {
     gap: 15px;
 }
 
@@ -1574,6 +1671,11 @@ body[data-theme="simple"] .sidebar {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    transition: gap 0.4s ease;
+}
+
+.simple-card-group:has(.timer-card.hidden) {
+    gap: 0;
 }
 
 body[data-theme="simple"] .card {
@@ -1639,9 +1741,11 @@ body[data-theme="simple"] .timer-btn {
 }
 
 body[data-theme="simple"] #noiseMeterContainer {
-    width: 600px;
+    width: 600px !important;
+    min-width: 600px;
     height: 600px;
     padding: 70px 50px;
+    flex-shrink: 0;
 }
 
 body[data-theme="simple"] .gauge-container {
@@ -1709,8 +1813,18 @@ body[data-theme="simple"] .mic-selector-dropdown {
     min-width: 200px;
 }
 
-body[data-theme="simple"] .card.hidden {
-    display: none !important;
+body[data-theme="simple"] .timer-card {
+    transition: opacity 0.4s ease, transform 0.4s ease, width 0.4s ease, margin 0.4s ease;
+}
+
+body[data-theme="simple"] .timer-card.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    width: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
 /* ========== RESPONSIVE ========== */

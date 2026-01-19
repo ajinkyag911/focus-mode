@@ -21,7 +21,14 @@
     <aside class="sidebar">
         <!-- Theme Selector -->
         <div class="theme-selector">
-            <span class="theme-label">Theme:</span>
+            <button class="timer-toggle-btn" id="timerToggleBtn" title="Toggle Timer">
+                <svg viewBox="0 0 24 24" fill="currentColor" id="timerToggleIcon">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+                <span id="timerToggleText">Hide Timer</span>
+            </button>
+            <div class="theme-selector-right">
+                <span class="theme-label">Theme:</span>
             <div class="custom-dropdown" id="themeDropdown">
                 <div class="dropdown-trigger" id="themeTrigger">
                     <span class="dropdown-value" id="themeValue">🎾 Balls</span>
@@ -40,6 +47,7 @@
                     <div class="dropdown-option" data-value="library">📚 Library</div>
                     <div class="dropdown-option" data-value="simple">⚡ Simple</div>
                 </div>
+            </div>
             </div>
             <select class="theme-select" id="themeSelect" style="display: none;">
                 <option value="balls">🎾 Balls</option>
@@ -195,15 +203,6 @@
             </select>
         </div>
 
-        <!-- Simple Mode Toggle Controls -->
-        <div class="simple-mode-controls" id="simpleModeControls" style="display: none;">
-            <button class="simple-toggle-btn" id="simpleTimerToggle" title="Toggle Timer">
-                <span>Timer</span>
-            </button>
-            <button class="simple-toggle-btn" id="simpleNoiseToggle" title="Toggle Noise">
-                <span>Noise</span>
-            </button>
-        </div>
     </aside>
 
     <!-- ========== MAIN CONTENT (Background Image Area) ========== -->
