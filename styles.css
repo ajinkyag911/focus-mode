@@ -1376,9 +1376,13 @@ body[data-theme="simple"] .noise-effect-layer {
 }
 
 #simpleModeControls {
-    display: flex !important;
+    display: none !important;
     gap: 15px;
     margin-top: 20px;
+}
+
+body[data-theme="simple"] #simpleModeControls {
+    display: flex !important;
 }
 
 .simple-toggle-btn {
@@ -1445,13 +1449,20 @@ body[data-theme="simple"] .timer-card {
 }
 
 body[data-theme="simple"] .card-title {
-    font-size: 36px;
+    font-size: 28px;
     margin-bottom: 20px;
+    font-size: 0;
+}
+
+body[data-theme="simple"] .card-title::before {
+    content: attr(data-simple-title);
+    font-size: 28px;
 }
 
 body[data-theme="simple"] .timer-display {
-    font-size: 140px !important;
+    font-size: 100px !important;
     font-weight: 700;
+    line-height: 1;
 }
 
 body[data-theme="simple"] .timer-arc-container {
@@ -1461,6 +1472,16 @@ body[data-theme="simple"] .timer-arc-container {
 body[data-theme="simple"] .timer-arc {
     width: 100%;
     height: 200px;
+}
+
+body[data-theme="simple"] .timer-display-wrapper {
+    position: absolute;
+    bottom: 50%;
+    transform: translateY(50%);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 body[data-theme="simple"] .timer-controls {
