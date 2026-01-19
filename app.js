@@ -112,43 +112,40 @@ class Ball {
         this.dragging = false;
         this.dragOffsetX = 0;
         this.dragOffsetY = 0;
+        this.sleeping = false;
+        this.sleepCounter = 0;
+    }
+    
+    wake() {
+        this.sleeping = false;
+        this.sleepCounter = 0;
     }
     
     update(width, height, noiseIntensity) {
         if (this.dragging) return;
         
-        // Add noise-based impulse
+        // Wake up if there's noise
         if (noiseIntensity > 0) {
+            this.wake();
             const angle = Math.random() * Math.PI * 2;
             const force = noiseIntensity * 12;
             this.vx += Math.cos(angle) * force;
             this.vy += Math.sin(angle) * force;
         }
         
-        // Check if ball is resting on floor with no noise
-        const onFloor = this.y + this.radius >= height - 1;
-        const speed = Math.hypot(this.vx, this.vy);
-        const isAtRest = onFloor && speed < 0.5 && noiseIntensity === 0;
-        
-        if (isAtRest) {
-            this.vx = 0;
-            this.vy = 0;
-            this.y = height - this.radius;
+        // If sleeping and no noise, stay completely still
+        if (this.sleeping) {
             return;
         }
         
         // Apply gravity
         this.vy += CONFIG.gravity;
         
-        // Apply friction
-        this.vx *= CONFIG.friction;
-        this.vy *= CONFIG.friction;
-        
         // Update position
         this.x += this.vx;
         this.y += this.vy;
         
-        // Boundary collisions
+        // Boundary collisions with proper floor handling
         if (this.x - this.radius < 0) {
             this.x = this.radius;
             this.vx *= -CONFIG.bounce;
@@ -164,17 +161,77 @@ class Ball {
         if (this.y + this.radius > height) {
             this.y = height - this.radius;
             this.vy *= -CONFIG.bounce;
+            // Apply ground friction
+            this.vx *= 0.8;
+        }
+        
+        // Apply air friction
+        this.vx *= CONFIG.friction;
+        this.vy *= CONFIG.friction;
+        
+        // Check for sleep - need sustained low motion
+        const speed = Math.hypot(this.vx, this.vy);
+        const onGround = this.y + this.radius >= height - 0.5;
+        
+        if (speed < 0.3 && onGround && noiseIntensity === 0) {
+            this.sleepCounter++;
+            if (this.sleepCounter > 30) { // ~0.5 seconds of low motion
+                this.vx = 0;
+                this.vy = 0;
+                this.y = height - this.radius;
+                this.sleeping = true;
+            }
+        } else {
+            this.sleepCounter = 0;
         }
     }
     
     draw(ctx) {
-        ctx.fillStyle = this.color;
+        // Create subtle 3D gradient effect
+        const gradient = ctx.createRadialGradient(
+            this.x - this.radius * 0.25, 
+            this.y - this.radius * 0.25, 
+            this.radius * 0.1,
+            this.x, 
+            this.y, 
+            this.radius
+        );
+        
+        // Parse HSL to create lighter and darker versions
+        const hslMatch = this.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+        if (hslMatch) {
+            const h = hslMatch[1];
+            const s = hslMatch[2];
+            const l = parseInt(hslMatch[3]);
+            gradient.addColorStop(0, `hsl(${h}, ${s}%, ${Math.min(85, l + 15)}%)`);
+            gradient.addColorStop(0.6, this.color);
+            gradient.addColorStop(1, `hsl(${h}, ${s}%, ${Math.max(35, l - 12)}%)`);
+        } else {
+            gradient.addColorStop(0, this.color);
+            gradient.addColorStop(1, this.color);
+        }
+        
+        ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        
+        // Add subtle highlight
+        const highlight = ctx.createRadialGradient(
+            this.x - this.radius * 0.35,
+            this.y - this.radius * 0.35,
+            0,
+            this.x - this.radius * 0.35,
+            this.y - this.radius * 0.35,
+            this.radius * 0.3
+        );
+        highlight.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+        highlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        ctx.fillStyle = highlight;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
     }
     
     contains(x, y) {
@@ -318,12 +375,24 @@ class BallsSystem {
     }
     
     checkCollision(ball1, ball2) {
+        // Skip if both balls are sleeping
+        if (ball1.sleeping && ball2.sleeping) {
+            return;
+        }
+        
         const dx = ball2.x - ball1.x;
         const dy = ball2.y - ball1.y;
         const dist = Math.hypot(dx, dy);
         const minDist = ball1.radius + ball2.radius;
         
-        if (dist < minDist) {
+        if (dist < minDist && dist > 0) {
+            // Wake up sleeping balls on collision with moving ball
+            const speed1 = Math.hypot(ball1.vx, ball1.vy);
+            const speed2 = Math.hypot(ball2.vx, ball2.vy);
+            
+            if (ball1.sleeping && speed2 > 2) ball1.wake();
+            if (ball2.sleeping && speed1 > 2) ball2.wake();
+            
             const angle = Math.atan2(dy, dx);
             const sin = Math.sin(angle);
             const cos = Math.cos(angle);
@@ -335,16 +404,26 @@ class BallsSystem {
             ball2.x += overlap * cos * 0.5;
             ball2.y += overlap * sin * 0.5;
             
-            // Exchange velocities
+            // Clamp to canvas boundaries after overlap resolution
+            const width = this.canvas.width;
+            const height = this.canvas.height;
+            
+            ball1.x = Math.max(ball1.radius, Math.min(width - ball1.radius, ball1.x));
+            ball1.y = Math.max(ball1.radius, Math.min(height - ball1.radius, ball1.y));
+            ball2.x = Math.max(ball2.radius, Math.min(width - ball2.radius, ball2.x));
+            ball2.y = Math.max(ball2.radius, Math.min(height - ball2.radius, ball2.y));
+            
+            // Exchange velocities with damping
             const vx1 = ball1.vx * cos + ball1.vy * sin;
             const vy1 = ball1.vy * cos - ball1.vx * sin;
             const vx2 = ball2.vx * cos + ball2.vy * sin;
             const vy2 = ball2.vy * cos - ball2.vx * sin;
             
-            ball1.vx = vx2 * cos - vy1 * sin;
-            ball1.vy = vy1 * cos + vx2 * sin;
-            ball2.vx = vx1 * cos - vy2 * sin;
-            ball2.vy = vy2 * cos + vx1 * sin;
+            const damping = 0.9;
+            ball1.vx = (vx2 * cos - vy1 * sin) * damping;
+            ball1.vy = (vy1 * cos + vx2 * sin) * damping;
+            ball2.vx = (vx1 * cos - vy2 * sin) * damping;
+            ball2.vy = (vy2 * cos + vx1 * sin) * damping;
         }
     }
     
