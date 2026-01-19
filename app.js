@@ -117,13 +117,6 @@ class Ball {
     update(width, height, noiseIntensity) {
         if (this.dragging) return;
         
-        // Apply gravity
-        this.vy += CONFIG.gravity;
-        
-        // Apply friction
-        this.vx *= CONFIG.friction;
-        this.vy *= CONFIG.friction;
-        
         // Add noise-based impulse
         if (noiseIntensity > 0) {
             const angle = Math.random() * Math.PI * 2;
@@ -131,6 +124,25 @@ class Ball {
             this.vx += Math.cos(angle) * force;
             this.vy += Math.sin(angle) * force;
         }
+        
+        // Check if ball is resting on floor with no noise
+        const onFloor = this.y + this.radius >= height - 1;
+        const speed = Math.hypot(this.vx, this.vy);
+        const isAtRest = onFloor && speed < 0.5 && noiseIntensity === 0;
+        
+        if (isAtRest) {
+            this.vx = 0;
+            this.vy = 0;
+            this.y = height - this.radius;
+            return;
+        }
+        
+        // Apply gravity
+        this.vy += CONFIG.gravity;
+        
+        // Apply friction
+        this.vx *= CONFIG.friction;
+        this.vy *= CONFIG.friction;
         
         // Update position
         this.x += this.vx;
