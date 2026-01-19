@@ -645,11 +645,26 @@ async function loadAvailableMicrophones() {
     }
 }
 
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        theme: params.get('theme'),
+        hideTimer: params.get('hideTimer'),
+        showTimer: params.get('showTimer')
+    };
+}
+
 function loadPreferences() {
-    // Theme
-    const savedTheme = localStorage.getItem('focusMode_theme') || 'space';
-    setTheme(savedTheme);
-    themeSelect.value = savedTheme;
+    const urlParams = getUrlParams();
+    
+    // Theme - URL param takes precedence over localStorage
+    const validThemes = ['balls', 'space', 'dinosaur', 'dance', 'egypt', 'wizard', 'zombies', 'library', 'simple'];
+    let theme = localStorage.getItem('focusMode_theme') || 'space';
+    if (urlParams.theme && validThemes.includes(urlParams.theme)) {
+        theme = urlParams.theme;
+    }
+    setTheme(theme);
+    themeSelect.value = theme;
     
     // Robot visibility
     if (localStorage.getItem('focusMode_robotHidden') === 'true') {
@@ -663,8 +678,14 @@ function loadPreferences() {
         noiseMeterContainer.classList.add('hidden');
     }
     
-    // Timer visibility
-    if (localStorage.getItem('focusMode_timerHidden') === 'true') {
+    // Timer visibility - URL param takes precedence over localStorage
+    let timerHidden = localStorage.getItem('focusMode_timerHidden') === 'true';
+    if (urlParams.hideTimer !== null) {
+        timerHidden = urlParams.hideTimer === 'true' || urlParams.hideTimer === '1';
+    } else if (urlParams.showTimer !== null) {
+        timerHidden = !(urlParams.showTimer === 'true' || urlParams.showTimer === '1');
+    }
+    if (timerHidden) {
         componentVisibility.timer = false;
         updateTimerVisibility();
     }
