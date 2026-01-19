@@ -1477,6 +1477,12 @@ body[data-theme="simple"] .main-content {
     justify-content: center;
     flex-direction: column;
     gap: 30px;
+    background-image: none !important;
+    background-color: #d1c4e9;
+}
+
+body[data-theme="simple"] .sidebar {
+    background-color: #d1c4e9;
 }
 
 .simple-card-group {
