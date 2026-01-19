@@ -626,7 +626,8 @@ function loadPreferences() {
     // Saved alert sound
     const savedAlertSound = localStorage.getItem('focusMode_alertSound') || 'none';
     soundState.alertSound = savedAlertSound;
-    alertSoundValue.textContent = savedAlertSound.charAt(0).toUpperCase() + savedAlertSound.slice(1);
+    const alertLabels = { none: 'No Alert', bell: 'Bell Alert', shush: 'Shush Alert' };
+    alertSoundValue.textContent = alertLabels[savedAlertSound] || 'No Alert';
 }
 
 function savePreference(key, value) {
