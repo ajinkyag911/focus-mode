@@ -253,19 +253,21 @@ body {
     left: 0;
     right: 0;
     background: var(--card-bg);
-    border: 1px solid #e0e0e0;
-    border-top: none;
+    border: none;
     border-radius: 0 0 8px 8px;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
     z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .dropdown-menu.open {
     max-height: 600px;
     overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-option {
@@ -297,10 +299,13 @@ body {
     top: auto;
     bottom: 100%;
     border-radius: 8px 8px 0 0;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: none;
     z-index: 1001;
     width: 100%;
+}
+
+.music-dropdown .dropdown-menu.open {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: none;
 }
 
 .music-dropdown .dropdown-trigger.open {
@@ -676,6 +681,9 @@ body {
     top: auto;
     bottom: 100%;
     border-radius: 8px 8px 0 0;
+}
+
+.alert-sound-dropdown .dropdown-menu.open {
     border-bottom: none;
     border-top: 1px solid #e0e0e0;
 }
