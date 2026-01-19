@@ -85,6 +85,9 @@ const THEMED_MESSAGES = {
         "Library voices\nplease! 📚", "Books need\nquiet!", "Shhh, readers\nstudying! 🦉",
         "Whisper in\nthe stacks!", "Page-turning\nsilence!", "Librarian\nsays hush!",
         "Quiet reading\nzone! 📖", "Knowledge\nneeds calm! ✏️"
+    ],
+    balls: [
+        "Shush!", "Too noisy!", "Quiet please!", "Focus!", "Hush!", "Silence please!", "Less noise!"
     ]
 };
 
@@ -1689,39 +1692,55 @@ function updateSensitivity(percent) {
 
 function triggerNoiseAlert() {
     const currentTheme = document.body.getAttribute('data-theme') || 'space';
-    const messages = THEMED_MESSAGES[currentTheme] || THEMED_MESSAGES.space;
-    const emojis = THEMED_EMOJIS[currentTheme] || THEMED_EMOJIS.space;
     
-    const message = messages[Math.floor(Math.random() * messages.length)];
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-    showSpeechBubble(`${message} ${emoji}`);
+    // Show alert text in balls theme
+    if (currentTheme === 'balls') {
+        const noiseAlertText = document.getElementById('noiseAlertText');
+        if (noiseAlertText) {
+            const messages = THEMED_MESSAGES[currentTheme] || THEMED_MESSAGES.space;
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            noiseAlertText.textContent = message;
+            noiseAlertText.classList.add('show');
+            setTimeout(() => {
+                noiseAlertText.classList.remove('show');
+            }, CONFIG.speechBubbleDuration);
+        }
+    } else {
+        // Show speech bubble for other themes
+        const messages = THEMED_MESSAGES[currentTheme] || THEMED_MESSAGES.space;
+        const emojis = THEMED_EMOJIS[currentTheme] || THEMED_EMOJIS.space;
+        
+        const message = messages[Math.floor(Math.random() * messages.length)];
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        showSpeechBubble(`${message} ${emoji}`);
+        
+        robotWrapper.classList.remove('studying');
+        robotWrapper.classList.add('alert');
+        
+        // Handle video alert state for all video themes
+        if (THEME_VIDEOS[currentTheme]) {
+            setVideoAlertState(true);
+        } else {
+            updateRobotImage(currentTheme, true);
+        }
+        
+        setTimeout(() => {
+            robotWrapper.classList.remove('alert');
+            if (THEME_VIDEOS[currentTheme]) {
+                setVideoAlertState(false);
+            } else {
+                updateRobotImage(currentTheme, false);
+            }
+            if (timerState.isRunning) {
+                robotWrapper.classList.add('studying');
+            }
+        }, CONFIG.speechBubbleDuration);
+    }
     
     audioState.alertCount++;
     
     // Play alert sound if enabled
     playAlertSound(soundState.alertSound);
-    
-    robotWrapper.classList.remove('studying');
-    robotWrapper.classList.add('alert');
-    
-    // Handle video alert state for all video themes
-    if (THEME_VIDEOS[currentTheme]) {
-        setVideoAlertState(true);
-    } else {
-        updateRobotImage(currentTheme, true);
-    }
-    
-    setTimeout(() => {
-        robotWrapper.classList.remove('alert');
-        if (THEME_VIDEOS[currentTheme]) {
-            setVideoAlertState(false);
-        } else {
-            updateRobotImage(currentTheme, false);
-        }
-        if (timerState.isRunning) {
-            robotWrapper.classList.add('studying');
-        }
-    }, CONFIG.speechBubbleDuration);
 }
 
 function showSpeechBubble(message) {
