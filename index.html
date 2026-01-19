@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body data-theme="space">
+<body data-theme="balls">
     <!-- ========== LEFT SIDEBAR ========== -->
     <aside class="sidebar">
         <!-- Theme Selector -->
@@ -24,12 +24,13 @@
             <span class="theme-label">Theme:</span>
             <div class="custom-dropdown" id="themeDropdown">
                 <div class="dropdown-trigger" id="themeTrigger">
-                    <span class="dropdown-value" id="themeValue">🚀 Space</span>
+                    <span class="dropdown-value" id="themeValue">🎾 Balls</span>
                     <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M7 10l5 5 5-5z"/>
                     </svg>
                 </div>
                 <div class="dropdown-menu" id="themeMenu">
+                    <div class="dropdown-option" data-value="balls">🎾 Balls</div>
                     <div class="dropdown-option" data-value="space">🚀 Space</div>
                     <div class="dropdown-option" data-value="dinosaur">🦖 Dinosaur</div>
                     <div class="dropdown-option" data-value="dance">💃 Dance</div>
@@ -37,11 +38,11 @@
                     <div class="dropdown-option" data-value="wizard">🧙 Wizard</div>
                     <div class="dropdown-option" data-value="zombies">🧟 Zombies</div>
                     <div class="dropdown-option" data-value="library">📚 Library</div>
-                    <div class="dropdown-option" data-value="balls">🎾 Balls</div>
                     <div class="dropdown-option" data-value="simple">⚡ Simple</div>
                 </div>
             </div>
             <select class="theme-select" id="themeSelect" style="display: none;">
+                <option value="balls">🎾 Balls</option>
                 <option value="space">🚀 Space</option>
                 <option value="dinosaur">🦖 Dinosaur</option>
                 <option value="dance">💃 Dance</option>
@@ -49,7 +50,6 @@
                 <option value="wizard">🧙 Wizard</option>
                 <option value="zombies">🧟 Zombies</option>
                 <option value="library">📚 Library</option>
-                <option value="balls">🎾 Balls</option>
                 <option value="simple">⚡ Simple</option>
             </select>
         </div>
