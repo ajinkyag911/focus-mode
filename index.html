@@ -127,6 +127,17 @@
                         <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
                     </svg>
                 </button>
+                <div class="custom-dropdown mic-selector-dropdown" id="micSelectorDropdown">
+                    <div class="dropdown-trigger" id="micSelectorTrigger">
+                        <span class="dropdown-value" id="micSelectorValue">Default Mic</span>
+                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu" id="micSelectorMenu">
+                        <div class="dropdown-option" data-value="default">Default Mic</div>
+                    </div>
+                </div>
                 <div class="custom-dropdown alert-sound-dropdown" id="alertSoundDropdown">
                     <div class="dropdown-trigger" id="alertSoundTrigger">
                         <span class="dropdown-value" id="alertSoundValue">No Alert</span>

@@ -694,6 +694,37 @@ body {
     border-top: 1px solid transparent;
 }
 
+.mic-selector-dropdown {
+    flex: 1;
+    min-width: 120px;
+    position: relative;
+    z-index: 1001;
+}
+
+.mic-selector-dropdown .dropdown-trigger {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.mic-selector-dropdown .dropdown-menu {
+    min-width: 120px;
+    top: auto;
+    bottom: 100%;
+    border-radius: 8px 8px 0 0;
+}
+
+.mic-selector-dropdown .dropdown-menu.open {
+    border-bottom: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+.mic-selector-dropdown .dropdown-trigger.open {
+    border-radius: 0 0 8px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    border-top: 1px solid transparent;
+}
+
 
 /* ========== MUSIC PLAYER ========== */
 .music-player {
@@ -1660,6 +1691,12 @@ body[data-theme="simple"] .component-btn {
 }
 
 body[data-theme="simple"] .alert-sound-dropdown {
+    flex: 0 0 auto;
+    width: 140px;
+    min-width: 140px;
+}
+
+body[data-theme="simple"] .mic-selector-dropdown {
     flex: 0 0 auto;
     width: 140px;
     min-width: 140px;

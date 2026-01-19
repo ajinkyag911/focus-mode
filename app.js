@@ -529,6 +529,11 @@ const alertSoundTrigger = document.getElementById('alertSoundTrigger');
 const alertSoundMenu = document.getElementById('alertSoundMenu');
 const alertSoundValue = document.getElementById('alertSoundValue');
 
+const micSelectorDropdown = document.getElementById('micSelectorDropdown');
+const micSelectorTrigger = document.getElementById('micSelectorTrigger');
+const micSelectorMenu = document.getElementById('micSelectorMenu');
+const micSelectorValue = document.getElementById('micSelectorValue');
+
 // Audio
 const audioPlayBtn = document.getElementById('audioPlayBtn');
 const audioPlayIcon = document.getElementById('audioPlayIcon');
@@ -562,7 +567,8 @@ let musicState = {
 };
 
 let soundState = {
-    alertSound: 'none' // 'none', 'bell', 'shush'
+    alertSound: 'none', // 'none', 'bell', 'shush'
+    micDevice: 'default' // 'default' or specific device ID
 };
 
 let componentVisibility = {
@@ -579,6 +585,62 @@ function init() {
     updateMicIcon(); // Set initial mic icon
     startListening(); // Enable microphone by default
     console.log('🤖 Focus Mode initialized!');
+}
+
+async function loadAvailableMicrophones() {
+    try {
+        // Request permissions first
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Get all audio devices
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const mics = devices.filter(device => device.kind === 'audioinput');
+        
+        // Clear existing options except default
+        const existingOptions = micSelectorMenu.querySelectorAll('.dropdown-option');
+        existingOptions.forEach(option => {
+            if (option.getAttribute('data-value') !== 'default') {
+                option.remove();
+            }
+        });
+        
+        // Add found microphones
+        mics.forEach(mic => {
+            if (mic.deviceId !== 'default') {
+                const option = document.createElement('div');
+                option.className = 'dropdown-option';
+                option.setAttribute('data-value', mic.deviceId);
+                option.textContent = mic.label || `Microphone ${mics.indexOf(mic) + 1}`;
+                micSelectorMenu.appendChild(option);
+                
+                // Add event listener
+                option.addEventListener('click', () => {
+                    const value = option.getAttribute('data-value');
+                    soundState.micDevice = value;
+                    micSelectorValue.textContent = option.textContent;
+                    micSelectorTrigger.classList.remove('open');
+                    micSelectorMenu.classList.remove('open');
+                    savePreference('micDevice', value);
+                    // Restart listening with new device
+                    stopListening();
+                    setTimeout(() => startListening(), 100);
+                });
+            }
+        });
+        
+        // Update selected mic label
+        if (soundState.micDevice !== 'default') {
+            const selectedMic = mics.find(m => m.deviceId === soundState.micDevice);
+            if (selectedMic) {
+                micSelectorValue.textContent = selectedMic.label || selectedMic.deviceId;
+            }
+        } else {
+            micSelectorValue.textContent = 'Default Mic';
+        }
+    } catch (err) {
+        console.error('Error loading microphones:', err);
+    }
 }
 
 function loadPreferences() {
@@ -628,6 +690,13 @@ function loadPreferences() {
     soundState.alertSound = savedAlertSound;
     const alertLabels = { none: 'No Alert', bell: 'Bell Alert', shush: 'Shush Alert' };
     alertSoundValue.textContent = alertLabels[savedAlertSound] || 'No Alert';
+    
+    // Saved mic device
+    const savedMicDevice = localStorage.getItem('focusMode_micDevice') || 'default';
+    soundState.micDevice = savedMicDevice;
+    
+    // Load available microphones
+    loadAvailableMicrophones();
 }
 
 function savePreference(key, value) {
@@ -719,6 +788,10 @@ function setupCustomDropdowns() {
             alertSoundTrigger.classList.remove('open');
             alertSoundMenu.classList.remove('open');
         }
+        if (!micSelectorDropdown.contains(e.target)) {
+            micSelectorTrigger.classList.remove('open');
+            micSelectorMenu.classList.remove('open');
+        }
     });
 }
 
@@ -775,6 +848,27 @@ function setupEventListeners() {
             alertSoundTrigger.classList.remove('open');
             alertSoundMenu.classList.remove('open');
             savePreference('alertSound', value);
+        });
+    });
+    
+    // Mic Selector Dropdown
+    micSelectorTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        micSelectorTrigger.classList.toggle('open');
+        micSelectorMenu.classList.toggle('open');
+    });
+    
+    micSelectorMenu.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.getAttribute('data-value');
+            soundState.micDevice = value;
+            micSelectorValue.textContent = option.textContent;
+            micSelectorTrigger.classList.remove('open');
+            micSelectorMenu.classList.remove('open');
+            savePreference('micDevice', value);
+            // Restart listening with new device
+            stopListening();
+            setTimeout(() => startListening(), 100);
         });
     });
     
@@ -1496,7 +1590,14 @@ async function toggleMicrophone() {
 
 async function startListening() {
     try {
-        audioState.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioConstraints = { audio: true };
+        
+        // If a specific mic device is selected, use it
+        if (soundState.micDevice !== 'default') {
+            audioConstraints.audio = { deviceId: { exact: soundState.micDevice } };
+        }
+        
+        audioState.mediaStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
         audioState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         audioState.analyser = audioState.audioContext.createAnalyser();
         
