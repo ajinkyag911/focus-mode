@@ -1477,12 +1477,14 @@ body[data-theme="simple"] .timer-arc {
 
 body[data-theme="simple"] .timer-display-wrapper {
     position: absolute;
-    bottom: 50%;
-    transform: translateY(50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 20;
 }
 
 body[data-theme="simple"] .timer-controls {
