@@ -20,8 +20,8 @@ const CONFIG = {
     alertCooldown: 5000,
     ballCount: 150,
     ballRadius: 20,
-    minBallRadius: 8,
-    maxBallRadius: 28,
+    minBallRadius: 12,
+    maxBallRadius: 24,
     gravity: 0.5,
     bounce: 0.8,
     friction: 0.98
@@ -100,6 +100,32 @@ const THEMED_EMOJIS = {
 };
 
 // ========== BALLS SYSTEM ========== //
+// Load and cache robot face image
+const robotFaceImg = new Image();
+robotFaceImg.src = 'assets/robot-face.svg';
+
+// Cache rendered robot faces at different sizes
+const robotFaceCache = new Map();
+
+function getCachedRobotFace(size) {
+    const key = Math.round(size);
+    if (robotFaceCache.has(key)) {
+        return robotFaceCache.get(key);
+    }
+    
+    if (!robotFaceImg.complete || robotFaceImg.naturalWidth === 0) {
+        return null;
+    }
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = key;
+    canvas.height = key;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(robotFaceImg, 0, 0, key, key);
+    robotFaceCache.set(key, canvas);
+    return canvas;
+}
+
 class Ball {
     constructor(x, y, radius = null) {
         this.x = x;
@@ -114,6 +140,8 @@ class Ball {
         this.dragOffsetY = 0;
         this.sleeping = false;
         this.sleepCounter = 0;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.hasRobotFace = Math.random() < 0.5;
     }
     
     wake() {
@@ -144,6 +172,11 @@ class Ball {
         // Update position
         this.x += this.vx;
         this.y += this.vy;
+        
+        // Update rotation based on horizontal movement (only when moving)
+        if (Math.abs(this.vx) > 0.5) {
+            this.rotation += this.vx / this.radius;
+        }
         
         // Boundary collisions with proper floor handling
         if (this.x - this.radius < 0) {
@@ -187,7 +220,21 @@ class Ball {
     }
     
     draw(ctx) {
-        // Create subtle 3D gradient effect
+        if (this.hasRobotFace) {
+            const size = this.radius * 2;
+            const cachedFace = getCachedRobotFace(size);
+            
+            if (cachedFace) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.drawImage(cachedFace, -this.radius, -this.radius);
+                ctx.restore();
+                return;
+            }
+        }
+        
+        // Draw 3D ball
         const gradient = ctx.createRadialGradient(
             this.x - this.radius * 0.25, 
             this.y - this.radius * 0.25, 
@@ -197,7 +244,6 @@ class Ball {
             this.radius
         );
         
-        // Parse HSL to create lighter and darker versions
         const hslMatch = this.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
         if (hslMatch) {
             const h = hslMatch[1];
@@ -216,7 +262,7 @@ class Ball {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         
-        // Add subtle highlight
+        // Subtle highlight
         const highlight = ctx.createRadialGradient(
             this.x - this.radius * 0.35,
             this.y - this.radius * 0.35,
