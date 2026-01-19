@@ -763,13 +763,14 @@ function handleKeyboard(e) {
 // ========== THEME ========== //
 // Theme-specific noise meter colors (based on background image colors)
 const THEME_GAUGE_COLORS = {
-    space: { start: '#1a237e', mid: '#5c6bc0', end: '#e91e63', needle: '#7c4dff' },
-    dinosaur: { start: '#2e7d32', mid: '#8bc34a', end: '#ff5722', needle: '#4e342e' },
-    dance: { start: '#e91e63', mid: '#ff4081', end: '#7b1fa2', needle: '#f50057' },
-    egypt: { start: '#ff8f00', mid: '#ffc107', end: '#d84315', needle: '#5d4037' },
-    wizard: { start: '#4a148c', mid: '#9c27b0', end: '#e91e63', needle: '#7c4dff' },
-    zombies: { start: '#1b5e20', mid: '#4caf50', end: '#b71c1c', needle: '#212121' },
-    library: { start: '#3e2723', mid: '#8d6e63', end: '#bf360c', needle: '#4e342e' }
+    space: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#7c4dff' },
+    dinosaur: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#4e342e' },
+    dance: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#f50057' },
+    egypt: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#5d4037' },
+    wizard: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#7c4dff' },
+    zombies: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#212121' },
+    library: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#4e342e' },
+    balls: { start: '#4CAF50', mid: '#FFC107', end: '#F44336', needle: '#333' }
 };
 
 // Theme video files
@@ -1365,7 +1366,8 @@ const THEME_TIMER_TITLES = {
     egypt: 'Sand Timer',
     wizard: 'Wizard Watch',
     zombies: 'Spooky Timer',
-    library: 'Study Timer'
+    library: 'Study Timer',
+    balls: 'Focus Timer'
 };
 
 // Theme timer arc gradients (left to right)
