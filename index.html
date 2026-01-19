@@ -37,6 +37,7 @@
                     <div class="dropdown-option" data-value="wizard">🧙 Wizard</div>
                     <div class="dropdown-option" data-value="zombies">🧟 Zombies</div>
                     <div class="dropdown-option" data-value="library">📚 Library</div>
+                    <div class="dropdown-option" data-value="balls">🎾 Balls</div>
                 </div>
             </div>
             <select class="theme-select" id="themeSelect" style="display: none;">
@@ -47,6 +48,7 @@
                 <option value="wizard">🧙 Wizard</option>
                 <option value="zombies">🧟 Zombies</option>
                 <option value="library">📚 Library</option>
+                <option value="balls">🎾 Balls</option>
             </select>
         </div>
 
@@ -183,8 +185,11 @@
 
     <!-- ========== MAIN CONTENT (Background Image Area) ========== -->
     <main class="main-content">
-        <!-- Noise Visual Effect Layer -->
-         <div class="noise-effect-layer" id="noiseEffectLayer">
+         <!-- Canvas for Balls Theme -->
+         <canvas id="ballsCanvas" class="balls-canvas" style="display: none;"></canvas>
+         
+         <!-- Noise Visual Effect Layer -->
+          <div class="noise-effect-layer" id="noiseEffectLayer">
              <div class="ripple ripple-1"></div>
              <div class="ripple ripple-2"></div>
              <div class="ripple ripple-3"></div>

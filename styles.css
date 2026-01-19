@@ -72,6 +72,10 @@ body[data-theme="library"] {
     --bg-image: url('assets/backgrounds/library.png');
 }
 
+body[data-theme="balls"] {
+    --bg-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 /* ========== THEME-SPECIFIC OVERRIDES ========== */
 body[data-theme="space"] .timer-display {
     font-size: clamp(36px, 7vh, 64px);
@@ -1306,6 +1310,26 @@ body[data-theme="library"] .speech-bubble-tail {
     border-right: 12px solid white;
     border-top: 12px solid transparent;
     border-bottom: 12px solid transparent;
+}
+
+/* Balls Theme */
+body[data-theme="balls"] .robot-container {
+    display: none;
+}
+
+body[data-theme="balls"] .noise-effect-layer {
+    display: none;
+}
+
+.balls-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+.balls-canvas:active {
+    cursor: grabbing;
 }
 
 

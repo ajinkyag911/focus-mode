@@ -17,7 +17,12 @@ const CONFIG = {
     noiseSensitivity: 0.2,
     gaugeScale: 3.5,
     speechBubbleDuration: 3000,
-    alertCooldown: 5000
+    alertCooldown: 5000,
+    ballCount: 15,
+    ballRadius: 20,
+    gravity: 0.5,
+    bounce: 0.8,
+    friction: 0.98
 };
 
 // Theme backgrounds (Unsplash - open source)
@@ -91,6 +96,262 @@ const THEMED_EMOJIS = {
     zombies: ["🧟", "💀", "🪦", "🧠", "👻", "🦇", "🌙", "⚰️"],
     library: ["📚", "🦉", "📖", "✏️", "🔖", "📝", "🎓", "💡"]
 };
+
+// ========== BALLS SYSTEM ========== //
+class Ball {
+    constructor(x, y, radius = CONFIG.ballRadius) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = (Math.random() - 0.5) * 4;
+        this.radius = radius;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+        this.dragging = false;
+        this.dragOffsetX = 0;
+        this.dragOffsetY = 0;
+    }
+    
+    update(width, height, noiseIntensity) {
+        if (this.dragging) return;
+        
+        // Apply gravity
+        this.vy += CONFIG.gravity;
+        
+        // Apply friction
+        this.vx *= CONFIG.friction;
+        this.vy *= CONFIG.friction;
+        
+        // Add noise-based impulse
+        if (noiseIntensity > 0) {
+            const angle = Math.random() * Math.PI * 2;
+            const force = noiseIntensity * 3;
+            this.vx += Math.cos(angle) * force;
+            this.vy += Math.sin(angle) * force;
+        }
+        
+        // Update position
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Boundary collisions
+        if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.vx *= -CONFIG.bounce;
+        }
+        if (this.x + this.radius > width) {
+            this.x = width - this.radius;
+            this.vx *= -CONFIG.bounce;
+        }
+        if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.vy *= -CONFIG.bounce;
+        }
+        if (this.y + this.radius > height) {
+            this.y = height - this.radius;
+            this.vy *= -CONFIG.bounce;
+        }
+    }
+    
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+    
+    contains(x, y) {
+        const dist = Math.hypot(x - this.x, y - this.y);
+        return dist <= this.radius;
+    }
+}
+
+class BallsSystem {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.balls = [];
+        this.draggedBall = null;
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.currentNoiseIntensity = 0;
+        
+        this.resizeCanvas();
+        this.createBalls();
+        this.setupEventListeners();
+        this.animate();
+    }
+    
+    resizeCanvas() {
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+    }
+    
+    createBalls() {
+        this.balls = [];
+        for (let i = 0; i < CONFIG.ballCount; i++) {
+            const x = Math.random() * (this.canvas.width - CONFIG.ballRadius * 2) + CONFIG.ballRadius;
+            const y = Math.random() * (this.canvas.height * 0.5) + CONFIG.ballRadius;
+            this.balls.push(new Ball(x, y));
+        }
+    }
+    
+    setupEventListeners() {
+        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+        
+        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+        this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+        
+        window.addEventListener('resize', () => {
+            this.resizeCanvas();
+            this.createBalls();
+        });
+    }
+    
+    getCanvasCoords(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+    
+    handleMouseDown(e) {
+        const coords = this.getCanvasCoords(e.clientX, e.clientY);
+        for (let i = this.balls.length - 1; i >= 0; i--) {
+            if (this.balls[i].contains(coords.x, coords.y)) {
+                this.draggedBall = this.balls[i];
+                this.draggedBall.dragging = true;
+                this.draggedBall.dragOffsetX = coords.x - this.draggedBall.x;
+                this.draggedBall.dragOffsetY = coords.y - this.draggedBall.y;
+                break;
+            }
+        }
+    }
+    
+    handleMouseMove(e) {
+        const coords = this.getCanvasCoords(e.clientX, e.clientY);
+        this.mouseX = coords.x;
+        this.mouseY = coords.y;
+        
+        if (this.draggedBall) {
+            this.draggedBall.x = coords.x - this.draggedBall.dragOffsetX;
+            this.draggedBall.y = coords.y - this.draggedBall.dragOffsetY;
+            this.draggedBall.vx = 0;
+            this.draggedBall.vy = 0;
+        }
+    }
+    
+    handleMouseUp() {
+        if (this.draggedBall) {
+            this.draggedBall.dragging = false;
+            this.draggedBall = null;
+        }
+    }
+    
+    handleTouchStart(e) {
+        const touch = e.touches[0];
+        const coords = this.getCanvasCoords(touch.clientX, touch.clientY);
+        for (let i = this.balls.length - 1; i >= 0; i--) {
+            if (this.balls[i].contains(coords.x, coords.y)) {
+                this.draggedBall = this.balls[i];
+                this.draggedBall.dragging = true;
+                this.draggedBall.dragOffsetX = coords.x - this.draggedBall.x;
+                this.draggedBall.dragOffsetY = coords.y - this.draggedBall.y;
+                break;
+            }
+        }
+    }
+    
+    handleTouchMove(e) {
+        const touch = e.touches[0];
+        const coords = this.getCanvasCoords(touch.clientX, touch.clientY);
+        
+        if (this.draggedBall) {
+            this.draggedBall.x = coords.x - this.draggedBall.dragOffsetX;
+            this.draggedBall.y = coords.y - this.draggedBall.dragOffsetY;
+            this.draggedBall.vx = 0;
+            this.draggedBall.vy = 0;
+        }
+    }
+    
+    handleTouchEnd() {
+        if (this.draggedBall) {
+            this.draggedBall.dragging = false;
+            this.draggedBall = null;
+        }
+    }
+    
+    update(noiseIntensity) {
+        this.currentNoiseIntensity = noiseIntensity;
+        
+        for (let ball of this.balls) {
+            ball.update(this.canvas.width, this.canvas.height, noiseIntensity);
+        }
+        
+        // Ball-to-ball collision
+        for (let i = 0; i < this.balls.length; i++) {
+            for (let j = i + 1; j < this.balls.length; j++) {
+                this.checkCollision(this.balls[i], this.balls[j]);
+            }
+        }
+    }
+    
+    checkCollision(ball1, ball2) {
+        const dx = ball2.x - ball1.x;
+        const dy = ball2.y - ball1.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = ball1.radius + ball2.radius;
+        
+        if (dist < minDist) {
+            const angle = Math.atan2(dy, dx);
+            const sin = Math.sin(angle);
+            const cos = Math.cos(angle);
+            
+            // Resolve overlap
+            const overlap = minDist - dist;
+            ball1.x -= overlap * cos * 0.5;
+            ball1.y -= overlap * sin * 0.5;
+            ball2.x += overlap * cos * 0.5;
+            ball2.y += overlap * sin * 0.5;
+            
+            // Exchange velocities
+            const vx1 = ball1.vx * cos + ball1.vy * sin;
+            const vy1 = ball1.vy * cos - ball1.vx * sin;
+            const vx2 = ball2.vx * cos + ball2.vy * sin;
+            const vy2 = ball2.vy * cos - ball2.vx * sin;
+            
+            ball1.vx = vx2 * cos - vy1 * sin;
+            ball1.vy = vy1 * cos + vx2 * sin;
+            ball2.vx = vx1 * cos - vy2 * sin;
+            ball2.vy = vy2 * cos + vx1 * sin;
+        }
+    }
+    
+    draw() {
+        // Clear canvas
+        this.ctx.fillStyle = 'transparent';
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw balls
+        for (let ball of this.balls) {
+            ball.draw(this.ctx);
+        }
+    }
+    
+    animate = () => {
+        this.update(this.currentNoiseIntensity);
+        this.draw();
+        requestAnimationFrame(this.animate);
+    }
+}
+
+let ballsSystem = null;
 
 // ========== DOM ELEMENTS ========== //
 // Timer
@@ -436,6 +697,7 @@ function setTheme(theme) {
     updateNoiseMeterColors(theme);
     updateTimerTitle(theme);
     updateTimerArcGradient(theme);
+    updateBallsTheme(theme);
 }
 
 function updateNoiseMeterColors(theme) {
@@ -486,15 +748,19 @@ function updateTimerArcGradient(theme) {
             stops[2].style.stopColor = colors.end;
         }
     }
-    
-    // Update timer text color to gradient end color
-    updateTimerTextColor(theme);
-    
-    // Update timer arc background (unfilled portion) to lighter version of start color
-    updateTimerArcBgColor(theme);
-    
-    // Update noise meter needle color
-    updateNoiseNeedleColor(theme);
+}
+
+function updateBallsTheme(theme) {
+    const ballsCanvas = document.getElementById('ballsCanvas');
+    if (theme === 'balls') {
+        ballsCanvas.style.display = 'block';
+        if (!ballsSystem) {
+            ballsSystem = new BallsSystem(ballsCanvas);
+        }
+    } else {
+        ballsCanvas.style.display = 'none';
+        ballsSystem = null;
+    }
 }
 
 function updateTimerTextColor(theme) {
@@ -1011,15 +1277,21 @@ function analyzeAudio() {
     
     const isNoiseHigh = volumePercent > parseInt(sensitivitySlider.value);
     
+    // Calculate intensity for noise effects
+    const threshold = parseInt(sensitivitySlider.value);
+    const excessNoise = Math.max(0, volumePercent - threshold);
+    const maxExcess = 100 - threshold;
+    const intensity = Math.min(1, excessNoise / maxExcess);
+    
+    // Update balls system with noise intensity
+    if (ballsSystem) {
+        ballsSystem.currentNoiseIntensity = intensity;
+    }
+    
     // Toggle visual effect layer with intensity based on noise level
     if (noiseEffectLayer) {
         if (isNoiseHigh) {
             noiseEffectLayer.classList.add('active');
-            // Calculate intensity: how much louder than threshold
-            const threshold = parseInt(sensitivitySlider.value);
-            const excessNoise = volumePercent - threshold;
-            const maxExcess = 100 - threshold;
-            const intensity = Math.min(1, excessNoise / maxExcess);
             updateNoiseEffectIntensity(intensity);
         } else {
             noiseEffectLayer.classList.remove('active');
