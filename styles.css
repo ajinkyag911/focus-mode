@@ -1425,18 +1425,109 @@ body[data-theme="simple"] .main-content {
 
 .simple-card-group {
     display: flex;
-    gap: 40px;
+    gap: 60px;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 body[data-theme="simple"] .card {
     display: flex !important;
-    max-width: 300px;
+    width: 500px;
+    height: 500px;
+    padding: 60px 40px;
+}
+
+body[data-theme="simple"] .timer-card {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+body[data-theme="simple"] .card-title {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+body[data-theme="simple"] .timer-display {
+    font-size: 140px !important;
+    font-weight: 700;
+}
+
+body[data-theme="simple"] .timer-arc-container {
+    width: 100%;
+}
+
+body[data-theme="simple"] .timer-arc {
+    width: 100%;
+    height: 200px;
+}
+
+body[data-theme="simple"] .timer-controls {
+    margin-top: 30px;
+    gap: 20px;
+}
+
+body[data-theme="simple"] .timer-btn {
+    width: 60px;
+    height: 60px;
 }
 
 body[data-theme="simple"] #noiseMeterContainer {
-    max-width: 300px;
+    width: 500px;
+    height: 500px;
+    padding: 60px 40px;
+}
+
+body[data-theme="simple"] .gauge-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+body[data-theme="simple"] .gauge {
+    width: 300px;
+    height: 200px;
+}
+
+body[data-theme="simple"] .gauge-label {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+body[data-theme="simple"] .sensitivity-control {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+body[data-theme="simple"] .sensitivity-slider {
+    width: 80%;
+    height: 8px;
+}
+
+body[data-theme="simple"] .sensitivity-label {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+body[data-theme="simple"] .mic-controls {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+body[data-theme="simple"] .component-btn {
+    width: 60px;
+    height: 60px;
+    padding: 12px;
 }
 
 body[data-theme="simple"] .card.hidden {
