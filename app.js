@@ -18,8 +18,10 @@ const CONFIG = {
     gaugeScale: 3.5,
     speechBubbleDuration: 3000,
     alertCooldown: 5000,
-    ballCount: 15,
+    ballCount: 150,
     ballRadius: 20,
+    minBallRadius: 8,
+    maxBallRadius: 28,
     gravity: 0.5,
     bounce: 0.8,
     friction: 0.98
@@ -99,12 +101,13 @@ const THEMED_EMOJIS = {
 
 // ========== BALLS SYSTEM ========== //
 class Ball {
-    constructor(x, y, radius = CONFIG.ballRadius) {
+    constructor(x, y, radius = null) {
         this.x = x;
         this.y = y;
         this.vx = (Math.random() - 0.5) * 4;
         this.vy = (Math.random() - 0.5) * 4;
-        this.radius = radius;
+        // Random radius between min and max if not specified
+        this.radius = radius !== null ? radius : (CONFIG.minBallRadius + Math.random() * (CONFIG.maxBallRadius - CONFIG.minBallRadius));
         this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
         this.dragging = false;
         this.dragOffsetX = 0;
@@ -124,7 +127,7 @@ class Ball {
         // Add noise-based impulse
         if (noiseIntensity > 0) {
             const angle = Math.random() * Math.PI * 2;
-            const force = noiseIntensity * 3;
+            const force = noiseIntensity * 12;
             this.vx += Math.cos(angle) * force;
             this.vy += Math.sin(angle) * force;
         }
@@ -698,6 +701,20 @@ function setTheme(theme) {
     updateTimerTitle(theme);
     updateTimerArcGradient(theme);
     updateBallsTheme(theme);
+    
+    // Update dropdown display
+    const themeValue = document.getElementById('themeValue');
+    const themeOptions = document.querySelectorAll('#themeMenu .dropdown-option');
+    if (themeValue) {
+        themeOptions.forEach(option => {
+            if (option.getAttribute('data-value') === theme) {
+                themeValue.textContent = option.textContent;
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+    }
 }
 
 function updateNoiseMeterColors(theme) {

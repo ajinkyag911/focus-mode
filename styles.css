@@ -73,7 +73,7 @@ body[data-theme="library"] {
 }
 
 body[data-theme="balls"] {
-    --bg-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-image: linear-gradient(135deg, #1a1a3e 0%, #2d1b4e 100%);
 }
 
 /* ========== THEME-SPECIFIC OVERRIDES ========== */
