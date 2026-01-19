@@ -1761,67 +1761,64 @@ function updateNoiseEffectIntensity(intensity) {
     
     const ripples = document.querySelectorAll('.ripple');
     const soundWaves = document.querySelectorAll('.sound-wave');
-    const waveGroups = document.querySelectorAll('.wave-group');
+    const screenFlash = document.getElementById('screenFlash');
     
-    // Scale ripple expansion based on intensity - MAXIMUM INTENSITY
-    const minRippleScale = 2;
-    const maxRippleScale = 4;
+    // ===== RIPPLE EFFECTS =====
+    const minRippleScale = 1;
+    const maxRippleScale = 2.5;
     const rippleScale = minRippleScale + (maxRippleScale - minRippleScale) * intensity;
     
-    // Scale ripple opacity based on intensity
-    const minRippleOpacity = 0.8;
-    const maxRippleOpacity = 1;
+    const minRippleOpacity = 0.4;
+    const maxRippleOpacity = 0.8;
     const rippleOpacity = minRippleOpacity + (maxRippleOpacity - minRippleOpacity) * intensity;
+    
+    const maxRippleSpeed = 2.5;
+    const minRippleSpeed = 1.2;
+    const rippleSpeed = maxRippleSpeed - (maxRippleSpeed - minRippleSpeed) * intensity;
     
     ripples.forEach(ripple => {
         ripple.style.setProperty('--ripple-scale', rippleScale);
         ripple.style.setProperty('--ripple-opacity', rippleOpacity);
+        ripple.style.setProperty('--ripple-speed', rippleSpeed + 's');
     });
     
-    // Scale sound wave heights and animation speed - MAXIMUM INTENSITY
-    const minWaveScale = 2;
-    const maxWaveScale = 5;
-    const waveScale = minWaveScale + (maxWaveScale - minWaveScale) * intensity;
+    // ===== SOUND WAVE EFFECTS - Natural spread =====
+    // Wave scale based on intensity
+    const minWaveScale = 1;
+    const maxWaveScale = 4;
+    const baseWaveScale = minWaveScale + (maxWaveScale - minWaveScale) * intensity;
     
-    // Faster animation at 45%+ intensity
-    const minAnimationDuration = 1.2;
-    const maxAnimationDuration = intensity > 0.45 ? 0.08 : 0.15;
-    const animationDuration = minAnimationDuration - (minAnimationDuration - maxAnimationDuration) * intensity;
+    // Natural height variations for each bar (base heights)
+    const heights = [80, 120, 180, 100, 150, 90, 140, 110, 170, 130, 95, 160];
+    const positions = [3, 11, 19, 28, 37, 46, 54, 63, 72, 80, 88, 95];
     
-    soundWaves.forEach(wave => {
+    soundWaves.forEach((wave, index) => {
+        const idx = parseInt(wave.getAttribute('data-index')) || index;
+        
+        // Natural variation in scale per bar
+        const scaleVariation = 0.7 + Math.sin(idx * 0.8) * 0.3;
+        const waveScale = baseWaveScale * scaleVariation;
+        
+        // Stagger animation delays naturally
+        const delay = (idx * 0.07) % 0.8;
+        
         wave.style.setProperty('--wave-scale', waveScale);
-        wave.style.setProperty('--animation-duration', animationDuration + 's');
+        wave.style.setProperty('--wave-delay', delay + 's');
+        wave.style.height = heights[idx % heights.length] + 'px';
+        wave.style.left = positions[idx % positions.length] + '%';
+        wave.style.width = (6 + intensity * 4) + 'px';
     });
     
-    // Show multiple wave groups based on intensity - AGGRESSIVE AT 45%+
-    // 0-0.2: 1 group, 0.2-0.35: 2 groups, 0.35-0.45: 3 groups, 0.45-1: 4 groups (all)
-    let groupsToShow = 1;
-    if (intensity > 0.2) groupsToShow = 2;
-    if (intensity > 0.35) groupsToShow = 3;
-    if (intensity > 0.45) groupsToShow = 4;
+    // ===== SCREEN FLASH EFFECT =====
+    if (screenFlash) {
+        const flashOpacity = Math.max(0, (intensity - 0.4) * 0.4);
+        const flashDuration = 0.8 - (intensity * 0.3);
+        screenFlash.style.setProperty('--flash-opacity', flashOpacity);
+        screenFlash.style.setProperty('--flash-duration', flashDuration + 's');
+    }
     
-    // Stagger group animations - much more frequent at 45%+
-    // At 45%+: super fast cascading (0.02s), at lower: slower
-    const groupStaggerBase = intensity > 0.45 
-        ? 0.02 
-        : 0.12 - (intensity * 0.1); // From 0.12s down to 0.02s
-    
-    // At 45%+: pulse every 0.3s, below 45%: slower pulse
-    const pulseDuration = intensity > 0.45 ? 0.3 : 0.6;
-    
-    waveGroups.forEach((group, index) => {
-        if (index < groupsToShow) {
-            // Each group starts at a staggered time
-            const staggerDelay = (index * groupStaggerBase).toFixed(3);
-            group.style.setProperty('--group-animation-delay', staggerDelay + 's');
-            group.style.setProperty('--group-pulse-duration', pulseDuration + 's');
-        } else {
-            group.style.setProperty('--group-pulse-duration', pulseDuration + 's');
-        }
-    });
-    
-    // Update effect layer opacity for extra intensity
-    const minLayerOpacity = 0.5;
+    // ===== OVERALL LAYER INTENSITY =====
+    const minLayerOpacity = 0.7;
     const maxLayerOpacity = 1;
     const layerOpacity = minLayerOpacity + (maxLayerOpacity - minLayerOpacity) * intensity;
     noiseEffectLayer.style.opacity = layerOpacity;
